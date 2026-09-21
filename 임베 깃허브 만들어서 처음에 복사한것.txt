@@ -1,0 +1,19 @@
+임베 깃허브 만들어서 처음에 복사한것
+
+
+echo "# EC-STM32F4-22400462" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M main
+git remote add origin https://github.com/bitna-cmd/EC-STM32F4-22400462.git
+git push -u origin main
+
+
+
+
+
+
+git remote add origin https://github.com/bitna-cmd/EC-STM32F4-22400462.git
+git branch -M main
+git push -u origin main
