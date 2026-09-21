@@ -10,7 +10,7 @@ Description      : SysTick Library. Distributed to Students for LAB_SYSTICK
 
 
 // #include "ecSysTick2.h"
-#include "ecSysTick2_student.h"
+#include "ecSysTick2_22400462.h"
 
 
 volatile uint32_t msTicks;
