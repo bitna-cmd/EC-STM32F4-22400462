@@ -2,16 +2,11 @@
 @ Embedded Controller by Young-Keun Kim - Handong Global University
 Author           : Won Bitna
 Created          : 09-17-2026
-Modified         : 09-14-2026
+Modified         : 09-21-2026
 Language/ver     : C++ in VS Code
 
 Description      : LAB: GPIO 7-segment(eval board)
 /----------------------------------------------------------------*/
-
-
-///////////////////////////////////////////////
-//              Problem 1                    //
-///////////////////////////////////////////////
 
 #include "stm32f4xx.h"
 #include "ecGPIO2_22400462.h"
@@ -61,41 +56,3 @@ int main(void) {
 			numDisplay = 0;
 	}
 }
-
-///////////////////////////////////////////////
-//              Problem 2                    //
-///////////////////////////////////////////////
-// 0~9
-
-// // Problem 2 source code
-// //#include "ecSTM32F4v2.h"
-// #include "ecRCC2_22400462.h"
-// #include "ecGPIO2_22400462.h"
-// #include "ecSysTick2_22400462.h"
-
-// #define BUTTON_PIN PC_13
-
-// // Initialiization 
-// void setup(void)
-// {
-// 	RCC_PLL_init();
-// 	SysTick_init();
-// 	GPIO_init(BUTTON_PIN, INPUT);  
-// 	sevensegment_init();
-// }
-	
-// int main(void) { 
-// 	setup();
-// 	unsigned int cnt = 0;
-		
-// 	while(1){
-// 		// display 7-segment 0 to 9
-// 		sevensegment_decode(cnt % 10);
-// 		// increase number with button push
-// 		if(GPIO_read(BUTTON_PIN) == 0) {
-// 			cnt++; 
-// 			delay_ms(500);
-// 		}
-// 		if (cnt > 9) cnt = 0;
-// 	}
-// }
