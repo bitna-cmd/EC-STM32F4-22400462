@@ -46,8 +46,8 @@ int main(void) {
 
 	while(1){
 		if(GPIO_read(SW_2) == LOW){
-			numDisplay++;
 			FND_display(numDisplay);
+			numDisplay++;
 
 			while(GPIO_read(SW_2) == LOW)
 				continue;
