@@ -1,0 +1,214 @@
+/*----------------------------------------------------------------\
+@ Embedded Controller by Young-Keun Kim - Handong Global University
+Author           : Won Bitna
+Created          : 05-03-2021
+Modified         : 09-14-2026
+Language/ver     : C++ in VS Code
+
+Description      : GPIO Library. Distributed to Students for LAB_GPIO
+/----------------------------------------------------------------*/
+
+
+#include "ecGPIO2_22400462.h"
+//#include "ecGPIO2.h"
+
+
+/*---------------------------------------------------------------- 
+				[EXERCISE]
+---------------------------------------------------------------- */
+
+
+
+// Enable and set the mode of a pin (mode: INPUT, OUTPUT, AF, ANALOG)
+void GPIO_init(PinName_t pinName, uint32_t mode){     
+	GPIO_TypeDef * Port;
+	unsigned int pin;
+	ecPinmap(pinName, &Port, &pin);
+	
+	// mode  : Input(0), Output(1), AlterFunc(2), Analog(3)   
+	if (Port == GPIOA)
+		RCC_GPIOA_enable();
+	if (Port == GPIOB)
+		RCC_GPIOB_enable();
+	
+	// Make it for GPIOC, GPIOD..GPIOH
+	if (Port == GPIOC)
+		RCC_GPIOC_enable();
+		
+	if (Port == GPIOD)
+		RCC_GPIOD_enable();
+	
+	if (Port == GPIOE)
+		RCC_GPIOE_enable();
+
+	if (Port == GPIOH)
+		RCC_GPIOH_enable();
+
+	// You can also make and use a more general function of
+	// void RCC_GPIO_enable(GPIO_TypeDef *Port); 
+
+	GPIO_mode(pinName, mode);
+}
+
+
+// GPIO Mode          : Input(00), Output(01), AlterFunc(10), Analog(11)
+void GPIO_mode(PinName_t pinName, uint32_t mode){
+   GPIO_TypeDef * Port;
+   unsigned int pin;
+   ecPinmap(pinName,&Port,&pin);
+
+   Port->MODER &= ~(3UL<<(2*pin));     
+   Port->MODER |= mode<<(2*pin);    
+}
+
+
+// GPIO Speed          : Low speed (00), Medium speed (01), Fast speed (10), High speed (11)
+void GPIO_ospeed(PinName_t pinName, uint32_t speed){
+	GPIO_TypeDef * Port;
+	unsigned int pin;
+	ecPinmap(pinName,&Port,&pin);
+
+	Port->OSPEEDR &= ~(3UL<<pin * 2);
+	Port->OSPEEDR |= (speed<<pin * 2);
+}
+
+// GPIO Output Type: Output push-pull (0, reset), Output open drain (1)
+void GPIO_otype(PinName_t pinName, uint32_t type){
+	GPIO_TypeDef * Port;
+	unsigned int pin;
+	ecPinmap(pinName,&Port,&pin);
+
+	Port->OTYPER &= ~(1UL<<pin);
+	Port->OTYPER |= (type<<pin);
+}
+
+// GPIO Push-Pull    : No pull-up, pull-down (00), Pull-up (01), Pull-down (10), Reserved (11)
+void GPIO_pupd(PinName_t pinName, uint32_t pupd){
+	GPIO_TypeDef * Port;
+	unsigned int pin;
+	ecPinmap(pinName,&Port,&pin);
+
+	Port->PUPDR &= ~(3UL<<pin * 2);
+	Port->PUPDR |= (pupd<<pin * 2);
+}
+
+// Write output on the pin (output: HIGH, LOW)
+void GPIO_write(PinName_t pinName, uint32_t Output){
+	GPIO_TypeDef *port;
+	unsigned int pin;
+	ecPinmap(pinName, &port, &pin);
+
+	if(Output == 1)	
+		port->ODR |= (1UL<<pin);
+	else
+		port->ODR &= ~(1UL<<pin);
+}
+
+
+// Read and return the input value through the pin
+uint32_t GPIO_read(PinName_t pinName){
+	GPIO_TypeDef * Port;
+	unsigned int pin;
+	ecPinmap(pinName,&Port,&pin);
+
+	uint32_t reVal = (Port->IDR >> pin) & 1UL;
+	return reVal;
+}
+
+// Initialize the pin mode, speed, type pupd at once
+// mode: INPUT, OUTPUT, AF, ANALOG
+// speed: MEDIUM_SPEED, FAST_SPEED, LOW_SPEED, HIGH_SPEED
+// type: OPEN_DRAIN, PUSH_PULL
+// pupd: NO_PUPD, PULL_UP, PULL_DOWN, RESERVED
+void GPIO_init_all(PinName_t pinName, uint32_t mode, uint32_t speed, uint32_t type, uint32_t pupd){
+	GPIO_TypeDef * Port;
+	unsigned int pin;
+	ecPinmap(pinName, &Port, &pin);
+
+	GPIO_init(pinName, mode);
+	GPIO_ospeed(pinName, speed);
+	GPIO_otype(pinName, type);
+	GPIO_pupd(pinName, pupd);
+}
+
+
+/*---------------------------------------------------------------- 
+				[Optional EXERCISE]
+---------------------------------------------------------------- */
+void pinMode(PinName_t pin, uint32_t mode){
+	GPIO_init(pin, mode);
+}
+
+void digitalWrite(PinName_t pin, uint32_t value){
+	GPIO_write(pin, value);
+}
+
+uint32_t  digitalRead(PinName_t pin){
+	uint32_t reVal = GPIO_read(pin);
+	return reVal;
+}
+
+/*---------------------------------------------------------------- 
+				[FND Exercise]
+---------------------------------------------------------------- */
+
+// FND - JKIT board
+static PinName_t _fndPins[8];
+static PinName_t _fndSel[4];
+
+//Each led that has to light up gets a 1, every other led gets a 0
+//its in order  { (a,b,c,d,e,f,g,dp) }
+int numberFND[12][8]={
+                    {1,1,1,1,1,1,0,0},          //zero
+                    {0,1,1,0,0,0,0,0},          //one
+                    {1,1,0,1,1,0,1,0},          //two
+                    
+					{1,1,1,1,0,0,1,0},			//three
+					{0,1,1,0,0,1,1,0},			//four
+					{1,0,1,1,0,1,1,0},			//five
+					{1,0,1,1,1,1,1,0},			//six
+					{1,1,1,0,0,1,0,0},			//seven
+					{1,1,1,1,1,1,1,0},			//eight
+					{1,1,1,1,0,1,1,0},			//nine
+
+                    {0,0,0,0,0,0,0,1},          //dot
+                   	{0,0,0,0,0,0,0,0}		      //blank
+                  };
+                  
+
+// Initialize DOUT pins for 7 segment leds
+void FND_init(PinName_t *pinFND){
+	for (int i=0; i<8; i++){
+		_fndPins[i] = pinFND[i];
+		GPIO_init(_fndPins[i], OUTPUT);
+	}
+}
+
+// Initialize select pins (FND0~FND3) as DOUT
+void FND_select_init(PinName_t *selectFND){	
+    // [YOUR CODE GOES HERE]
+	for (int i=0; i<4; i++){
+		_fndSel[i] = selectFND[i];
+		GPIO_init(_fndSel[i], OUTPUT);
+	}
+}
+
+// Display a number 0 - 9 only
+void FND_display(uint8_t num){
+    // [YOUR CODE GOES HERE]    
+    for(int i=0; i<8; i++){
+		GPIO_write(_fndPins[i], numberFND[num][i]);
+	}
+}
+
+// Select display: FND0 to FND3
+void FND_select(uint8_t digit){
+    // [YOUR CODE GOES HERE]    
+	for(int i=0; i<4; i++){
+		if(i == digit)
+			GPIO_write(_fndSel[i], HIGH);
+		else
+			GPIO_write(_fndSel[i], LOW);
+	}
+
+}
