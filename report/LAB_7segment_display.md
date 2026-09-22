@@ -107,87 +107,71 @@ Display a decimal number: 0\~9 on each and all FNDs
 
 **Example Code**
 
-**LAB_GPIO_7segment_22400462**
+**LAB_7segment_display_22400462**
+
 ```c
 #include "stm32f4xx.h"
-#include "ecGPIO2.h"
-#include "ecRCC2.h"
+#include "ecGPIO2_22400462.h"
+#include "ecRCC2_22400462.h"
 
-
-PinName_t pinFND[8]   = {PB_0, PB_1, PB_2, PB_3, PB_4, PB_5, PB_6, PB_7};
-
-// PinName_t selectFND[4]={PA_10, ... }
-
-PinName_t selectFND[4] = {PA_10, PA_11, PC_4, PC_3};
-
-
-
-void setup(void){
-
-  int i, j;
-
-  // Intialize System Clock
-
-  RCC_HSI_init();   
-
-  // Intialize FND pins and Others
-
-  FND_init(pinFND);
-
-  FND_select_init(selectFND);   
-
-  // Intialize  Others
-
-  for(i=0; i<8; i++){
-
-    GPIO_otype(pinFND[i], PUSH_PULL);
-
-    GPIO_ospeed(pinFND[i], MEDIUM_SPEED);
-
-  }
-
-  for(j=0; j<4; j++){
-
-    GPIO_otype(selectFND[j], PUSH_PULL);
-
-  }
-
+// FND segment pins (a~g, dot)
+PinName_t pinFND[8] = {
+    PB_0, PB_1, PB_2, PB_3,
+    PB_4, PB_5, PB_6, PB_7
 };
 
+// FND selection pins (FND0~FND3)
+PinName_t selectFND[4] = {
+    PA_10, PA_11, PC_4, PC_3
+};
 
+void setup(void){
+    int i, j;
 
-int main(void) {
+    // Initialize system clock
+    RCC_HSI_init();
 
-  setup();
+    // Initialize FND segment pins and selection pins
+    FND_init(pinFND);
+    FND_select_init(selectFND);
 
-  uint8_t numDisplay1  = 0;
+    // Configure FND segment pins
+    for(i=0; i<8; i++){
+        GPIO_otype(pinFND[i], PUSH_PULL);
+        GPIO_ospeed(pinFND[i], MEDIUM_SPEED);
+    }
 
-  uint8_t numDisplay2  = 5;
-
-  uint8_t selectFND1  = 0;
-
-  uint8_t selectFND2  = 1;
-
-
-
-  while (1) {
-
-    FND_select(selectFND1);
-
-    FND_display(numDisplay1);
-
-    delay_ms_HSI(1);           
-
-    FND_select(selectFND2);
-
-    FND_display(numDisplay2);
-
-    delay_ms_HSI(1);   
-
-  }
-
+    // Configure FND selection pins
+    for(j=0; j<4; j++){
+        GPIO_otype(selectFND[j], PUSH_PULL);
+    }
 }
 
+int main(void){
+
+    setup();
+
+    // Numbers to display
+    uint8_t numDisplay1 = 0;
+    uint8_t numDisplay2 = 5;
+
+    // Select FND0 and FND1
+    uint8_t selectFND1 = 0;
+    uint8_t selectFND2 = 1;
+
+    while(1){
+
+        // Display 0 on FND0
+        FND_select(selectFND1);
+        FND_display(numDisplay1);
+        delay_ms_HSI(1);
+
+        // Display 5 on FND1
+        FND_select(selectFND2);
+        FND_display(numDisplay2);
+        delay_ms_HSI(1);
+    }
+}
 ```
 
 **ecGPIO2_22400462.h**
@@ -251,7 +235,6 @@ void FND_select_init(PinName_t *selectFND){
 
 // Display a number 0 - 9 only
 void FND_display(uint8_t num){
-    // [YOUR CODE GOES HERE]    
     for(int i=0; i<8; i++){
 		GPIO_write(_fndPins[i], numberFND[num][i]);
 	}
@@ -259,7 +242,6 @@ void FND_display(uint8_t num){
 
 // Select display: FND0 to FND3
 void FND_select(uint8_t digit){
-    // [YOUR CODE GOES HERE]    
 	for(int i=0; i<4; i++){
 		if(i == digit)
 			GPIO_write(_fndSel[i], HIGH);
@@ -276,9 +258,7 @@ void FND_select(uint8_t digit){
 
 Experiment images and results
 
-> Show experiment images /results
-
-![Prob1](./img/Prob1.jpg)
+> ![Prob1](./img/Prob1.jpg)
 
 <p align="center"><b>Figure 2. Display 50</b></p>
 
@@ -287,8 +267,7 @@ Experiment images and results
 
 #### Procedure <a href="#procedure-1" id="procedure-1"></a>
 
-\
-Create a code that increases the displayed number from 0 to 9 with each button press.
+- Create a code that increases the displayed number from 0 to 9 with each button press.
 
 * After the number '9', it should start from '0' again.
 * Modify from Problem 1 source code
@@ -317,35 +296,37 @@ Configure the MCU GPIO
 
 **Code**
 
-Your code goes here:
 
-> Explain your source code with necessary comments.
-
-```
+```c
 #include "stm32f4xx.h"
 #include "ecGPIO2_22400462.h"
 #include "ecRCC2_22400462.h"
 
+// FND segment pins (a~g, dot)
 PinName_t pinFND[8]    = {PB_0, PB_1, PB_2, PB_3, PB_4, PB_5, PB_6, PB_7};
-// PinName_t selectFND[4]={PA_10, ... }
-// [YOUR CODE GOES HERE]
+// FND selection pins (FND0~FND3)
 PinName_t selectFND[4] = {PA_10, PA_11, PC_4, PC_3};
+// Push button SW2
 PinName_t SW_2 = PA_4;
 
 void setup(void){
     int i, j;
     // Intialize System Clock
     RCC_HSI_init();    
+
     // Intialize FND pins and Others
     FND_init(pinFND);
     FND_select_init(selectFND);    
-    // Intialize  Others
+
+    // Set SW2 as input and pull-up resistor
 	GPIO_init(SW_2, INPUT);
 	GPIO_pupd(SW_2, PULL_UP);
 
+	// Configure FND segment pins as output
     for(i=0; i<8; i++){
 		GPIO_init_all(pinFND[i], OUTPUT, MEDIUM_SPEED, PUSH_PULL, NO_PUPD);
     }
+	// Configure FND selection pins as push-pull
     for(j=0; j<4; j++){
         GPIO_otype(selectFND[j], PUSH_PULL);
     }
@@ -353,19 +334,22 @@ void setup(void){
 
 int main(void) {
     setup();
-    uint8_t numDisplay  = 0;
-    uint8_t selectFND  = 0;
-
+    uint8_t numDisplay  = 0;		// Number to display
+    uint8_t selectFND  = 0;			// Select FND0
 	FND_select(selectFND);
 
-	while(1){
-		if(GPIO_read(SW_2) == LOW){
-			FND_display(numDisplay);
-			numDisplay++;
 
+	while(1){
+		// Check if SW2 is pressed
+		if(GPIO_read(SW_2) == LOW){
+			FND_display(numDisplay);	// Display the current display number
+			numDisplay++;				// Increase the display number
+
+			// Wait until the button is released
 			while(GPIO_read(SW_2) == LOW)
 				continue;
 		}
+		// Return to 0 after 9
 		if(numDisplay > 9)
 			numDisplay = 0;
 	}
@@ -378,9 +362,7 @@ int main(void) {
 
 Experiment images and results
 
-> Show experiment images /results
-
-[demo video link](https://youtu.be/q7Zn8oR_eJY)
+> [demo video link](https://youtu.be/q7Zn8oR_eJY)
 
 | ![Prob2_0_first](./img/Prob2_0_first.png)   | ![Prob2_1](./img/Prob2_1.png) |
 | :-------------------------------------------: | :-----------------------------: |
@@ -426,7 +408,7 @@ Experiment images and results
 
 ### Reference
 
-Figure 1, Configuration Image: 
+Figure 1 and Configuration Image: 
 
 ```
 https://raw.githubusercontent.com/LeeJunjae1/EC_22000573
