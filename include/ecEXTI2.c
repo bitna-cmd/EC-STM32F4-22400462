@@ -17,7 +17,7 @@ Description      : EXTI header file
 
 void EXTI_init(PinName_t pinName, uint32_t trig_type,uint32_t priority){
 
-	GPIO_Typedef *Port;
+	GPIO_TypeDef *Port;
 	unsigned int pin;
 	ecPinmap(pinName,&Port,&pin);
 	
@@ -37,27 +37,27 @@ void EXTI_init(PinName_t pinName, uint32_t trig_type,uint32_t priority){
 	else if	(Port == GPIOD) EXTICR_port = 3;
 	else					EXTICR_port = 4;
 	
-	SYSCFG->EXTICR[_______] &= ________________;			// clear 4 bits
-	SYSCFG->EXTICR[_______] |= ________________;			// Set 4 bits
+	SYSCFG->EXTICR[pin/4] &= ~(0xFUL << (pin%4)*4);			// clear 4 bits
+	SYSCFG->EXTICR[pin/4] |= (EXTICR_port << (pin%4)*4);			// Set 4 bits
 	
 
 	// Select  Trigger edge (RISE, FALL, BOTH)
-	if (trig_type == FALL) 		EXTI->FTSR |= 1UL << __________;  // Falling trigger enable 
-	else if	(trig_type == RISE) EXTI->RTSR |= 1UL << __________;   // Rising trigger enable 
+	if (trig_type == FALL) 		EXTI->FTSR |= 1UL << pin;  // Falling trigger enable 
+	else if	(trig_type == RISE) EXTI->RTSR |= 1UL << pin;   // Rising trigger enable 
 	else if	(trig_type == BOTH) {			// Both falling/rising trigger enable
-		EXTI->RTSR |= _______; 
-		EXTI->FTSR |= _______;
+		EXTI->RTSR |= pin; 
+		EXTI->FTSR |= pin;
 	} 
 	
 	// Enable EXTI, with Not-Masked Interrupt Request 
 	// Not-mask (==Enable) EXTIx
- 	EXTI->IMR |= 1UL << ___________;
+ 	EXTI->IMR |= 1UL << pin;
 	
 	
 	// NVIC(IRQ) Setting
 	uint32_t EXTI_IRQn = 0;
-	if (pin < 5) 		EXTI_IRQn = _______;
-	else if	(pin < 10) 	EXTI_IRQn = _______;
+	if (pin < 5) 		EXTI_IRQn = EXTI0_IRQn + pin;
+	else if	(pin < 10) 	EXTI_IRQn = EXTI9_5_IRQn;
 	else 				EXTI_IRQn = EXTI15_10_IRQn;
 		
 	NVIC_SetPriority(EXTI_IRQn, priority);	
@@ -66,30 +66,30 @@ void EXTI_init(PinName_t pinName, uint32_t trig_type,uint32_t priority){
 
 
 void EXTI_enable(PinName_t pinName) {
-	GPIO_Typedef *Port;
+	GPIO_TypeDef *Port;
 	unsigned int pin;
 	ecPinmap(pinName,&Port,&pin);
 	
-	EXTI->IMR __= _______;     // not masked (i.e., Interrupt enabled)
+	EXTI->IMR |= (1UL << pin);     // not masked (i.e., Interrupt enabled)
 }
 
 void EXTI_disable(PinName_t pinName) {
-	GPIO_Typedef *Port;
+	GPIO_TypeDef *Port;
 	unsigned int pin;
 	ecPinmap(pinName,&Port,&pin);
 
-	EXTI->IMR __= _______;     // masked (i.e., Interrupt disabled)
+	EXTI->IMR &= ~(1UL << pin);     // masked (i.e., Interrupt disabled)
 }
 
 
 
 uint32_t is_pending_EXTI(PinName_t pinName) {
-	GPIO_Typedef *Port;
+	GPIO_TypeDef *Port;
 	unsigned int pin;
 	ecPinmap(pinName,&Port,&pin);
 
-	uint32_t EXTI_PRx =  _______;     // read PRx, EXTI pending bit.  Use  (REG>>k & 1) to read.
-	return  _______; 	// Return only 0 or 1
+	uint32_t EXTI_PRx = (EXTI->PR >> pin) & 1UL;     // read PRx, EXTI pending bit.  Use  (REG>>k & 1) to read.
+	return  EXTI_PRx; 	// Return only 0 or 1
 }
 
 

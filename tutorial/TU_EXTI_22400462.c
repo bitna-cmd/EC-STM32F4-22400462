@@ -25,7 +25,7 @@ void led_toggle(PinName_t pinName){
 	ecPinmap(pinName,&Port,&pin);
     
 	// YOUR CODE GOES HERE - Use XOR 
-	// [YOUR CODE GOES HERE]
+    Port->ODR ^= (1UL << pin);
 }
 
 // Initialiization 

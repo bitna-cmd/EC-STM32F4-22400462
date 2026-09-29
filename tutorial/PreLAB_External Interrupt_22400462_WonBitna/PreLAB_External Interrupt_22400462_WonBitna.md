@@ -278,7 +278,7 @@ GPIO_pupd(PA_4, PULL_UP);
 
 ```c
 uint32_t is_pending_EXTI(PinName_t pinName) {
-	GPIO_Typedef *Port;
+	GPIO_TypeDef *Port;
 	unsigned int pin;
 	ecPinmap(pinName,&Port,&pin);
     
@@ -295,7 +295,7 @@ uint32_t is_pending_EXTI(PinName_t pinName) {
 ```c
 
 void clear_pending_EXTI(PinName_t pinName){
-	GPIO_Typedef *Port;
+	GPIO_TypeDef *Port;
 	unsigned int pin;
 	ecPinmap(pinName, &Port, &pin);
 
