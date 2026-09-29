@@ -8,8 +8,8 @@ Language/ver     : C++ in VS Code
 Description      : Prob3. Toggle multiple LEDs with a button
 /----------------------------------------------------------------*/
 
-#include "ecRCC2_22400462.h"
-#include "ecGPIO2_22400462.h"
+#include "ecRCC2.h"
+#include "ecGPIO2.h"
 
 #define LED_0       PB_12
 #define LED_1       PB_13

@@ -18,7 +18,7 @@ Description      : Tutorial Digital InOut
 
 
 #include "stm32f411xe.h"
-#include "ecRCC2_22400462.h"
+#include "ecRCC2.h"
 
 #define LED_PIN    5		//LD2
 #define BUTTON_PIN 13		// B1 Button

@@ -17,7 +17,7 @@ Description      : Tutorial Digital Out
 
 
 #include "stm32f411xe.h"
-#include "ecRCC2_22400462.h"
+#include "ecRCC2.h"
 
 #define LED_PIN    PA_5		//LD2
 

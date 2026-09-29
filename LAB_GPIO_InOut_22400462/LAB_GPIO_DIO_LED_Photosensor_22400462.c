@@ -8,8 +8,8 @@ Language/ver     : C++ in VS Code
 Description      : Prob2. Toggle a single LED with Digital Sensor(Photodetector)
 /----------------------------------------------------------------*/
 
-#include "ecRCC2_22400462.h"
-#include "ecGPIO2_22400462.h"
+#include "ecRCC2.h"
+#include "ecGPIO2.h"
 
 #define PHOTO_PIN   PA_0      // Photodetector
 #define LED_PIN     PB_12     // LED0 on JKIT

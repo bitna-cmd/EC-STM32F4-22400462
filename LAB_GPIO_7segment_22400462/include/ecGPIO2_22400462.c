@@ -9,7 +9,7 @@ Description      : GPIO Library. Distributed to Students for LAB_GPIO
 /----------------------------------------------------------------*/
 
 
-#include "ecGPIO2_22400462.h"
+#include "ecGPIO2.h"
 //#include "ecGPIO2.h"
 
 

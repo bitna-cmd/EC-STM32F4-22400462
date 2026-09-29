@@ -1,5 +1,5 @@
-#include "ecRCC2_22400462.h"
-#include "ecGPIO2_22400462.h"
+#include "ecRCC2.h"
+#include "ecGPIO2.h"
 
 void setup(void);
 	
