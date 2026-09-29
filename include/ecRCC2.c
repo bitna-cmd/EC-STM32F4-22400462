@@ -8,7 +8,7 @@ Language/ver     : C++ in VS Code
 Description      : System Clock Library. Distributed to Students for LAB_GPIO
 /----------------------------------------------------------------*/
 
-#include "ecRCC2_22400462.h"
+#include "ecRCC2.h"
 
 volatile int EC_SYSCLK=16000000;
 

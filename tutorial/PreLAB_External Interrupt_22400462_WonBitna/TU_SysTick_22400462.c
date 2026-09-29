@@ -1,18 +1,18 @@
 /*----------------------------------------------------------------\
 @ Embedded Controller by Young-Keun Kim - Handong Global University
-Author           : [ YOUR NAME GOES HERE !!!!!]
+Author           : Won Bitna
 Created          : 05-03-2021
-Modified         : 09-09-2026
+Modified         : 09-28-2026
 Language/ver     : C++ in VS Code
 
-Description      : Tutorial - [Your Description GOES HERE !!] 
+Description      : PreLAB: External Interrupt
 /----------------------------------------------------------------*/
 
 
 #include "stm32f411xe.h"
-#include "ecRCC2_22400462.h"
-#include "ecGPIO2_22400462.h"
-#include "ecSysTick2_22400462.h"  // < --  added !!!!
+#include "ecRCC2.h"
+#include "ecGPIO2.h"
+#include "ecSysTick2.h"  // < --  added !!!!
 
 #define LED_JK PB_12  // LED for Eval Board	JKIT
 

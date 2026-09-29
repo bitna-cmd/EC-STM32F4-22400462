@@ -12,7 +12,7 @@ Description      : GPIO Library. Distributed to Students for LAB_GPIO
 #define __ECGPIO2_H
 
 #include "stm32f411xe.h"
-#include "ecRCC2_22400462.h"
+#include "ecRCC2.h"
 #include "ecPinNames.h"
 
 #define INPUT  0x00

@@ -13,7 +13,7 @@ Description      : SysTick Library. Distributed to Students for LAB_SYSTICK
 #define __EC_SYSTICK2_H
 
 #include "stm32f4xx.h"
-#include "ecRCC2_22400462.h"
+#include "ecRCC2.h"
 #include <stdint.h>
 
 #ifdef __cplusplus

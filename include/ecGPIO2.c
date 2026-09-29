@@ -9,7 +9,7 @@ Description      : GPIO Library. Distributed to Students for LAB_GPIO
 /----------------------------------------------------------------*/
 
 
-#include "ecGPIO2_22400462.h"
+#include "ecGPIO2.h"
 //#include "ecGPIO2.h"
 
 
@@ -82,7 +82,7 @@ void GPIO_otype(PinName_t pinName, uint32_t type){
 	Port->OTYPER |= (type<<pin);
 }
 
-// GPIO Push-Pull    : No pull-up, pull-down (00), Pull-up (01), Pull-down (10), Reserved (11)
+// GPIO Push-Pull    : NO_PUPD (00), PULL_UP (01), PULL_DOWN (10), RESERVED (11)
 void GPIO_pupd(PinName_t pinName, uint32_t pupd){
 	GPIO_TypeDef * Port;
 	unsigned int pin;
