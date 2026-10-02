@@ -9,47 +9,48 @@ Description      : Tutorial - PreLAB: External Interrupt
 /----------------------------------------------------------------*/
 
 
-#include "ecRCC2.h"
-#include "ecGPIO2.h"
-#include "ecSysTick2.h"
-#include "ecEXTI2.h"
-
-#define LED0_PIN   PB_12 		//EVAL board JKIT LED0
-#define LED7_PIN   PC_3 		//EVAL board JKIT LED7
-#define SW2_PIN    PA_4			//EVAL board JKIT SW2
+// Add like this 
+// #define LED_PIN_MUCLER		PA_5
+// #define LED0_PIN_JKIT   	PA_6
 
 
-void led_toggle(PinName_t pinName){
-	GPIO_TypeDef *Port;    
-	unsigned int pin;
-	ecPinmap(pinName,&Port,&pin);
-    
-	// YOUR CODE GOES HERE - Use XOR 
-    Port->ODR ^= (1UL << pin);
-}
+
+// #include "ecRCC2.h"
+// #include "ecGPIO2.h"
+// #include "ecSysTick2.h"
+// #include "ecEXTI2.h"
+#include "ecSTM32F4v2.h"
+
+// #define LED0_PIN   PB_12 		//EVAL board JKIT LED0
+// #define LED7_PIN   PC_3 		//EVAL board JKIT LED7
+// #define SW2_PIN    PA_4			//EVAL board JKIT SW2
+
+
+
 
 // Initialiization 
-void setup(void)
-{
-		RCC_PLL_init();                 // System Clock = 84MHz
-		SysTick_init();                 // SysTick Timer Initialization
-		// Initialize GPIOB_12 for Output
-		GPIO_init(LED0_PIN, OUTPUT);    // LED0 for EVAL board	
-		GPIO_init(LED7_PIN, OUTPUT);    // LED7 for EVAL board
+// void setup(void)
+// {
+// 		RCC_PLL_init();                 // System Clock = 84MHz
+// 		SysTick_init();                 // SysTick Timer Initialization
+// 		// Initialize GPIOB_12 for Output
+// 		GPIO_init(LED0_PIN, OUTPUT);    // LED0 for EVAL board	
+// 		GPIO_init(LED7_PIN, OUTPUT);    // LED7 for EVAL board
 		
-		// Initialize GPIOA_4 for Input Button
-		GPIO_init(SW2_PIN, INPUT);  // INPUT for EVAL board
-		GPIO_pupd(SW2_PIN, PULL_UP);  // PULL-UP for EVAL board
+// 		// Initialize GPIOA_4 for Input Button
+// 		GPIO_init(SW2_PIN, INPUT);  // INPUT for EVAL board
+// 		GPIO_pupd(SW2_PIN, PULL_UP);  // PULL-UP for EVAL board
 		
-		// Initialize EXTI PA_4
-		EXTI_init(SW2_PIN, FALL, 10);		
-}
+// 		// Initialize EXTI PA_4
+// 		EXTI_init(SW2_PIN, FALL, 10);		
+// }
 
 
 
 // MAIN  ----------------------------------------
 int main(void) {
-	setup();
+	//setup();
+	MCU_init();
 	while (1){
         GPIO_write(LED7_PIN, HIGH);
         delay_ms(1000);

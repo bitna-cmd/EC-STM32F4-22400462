@@ -1,5 +1,6 @@
-#include "ecRCC2.h"
-#include "ecGPIO2.h"
+// #include "ecRCC2.h"
+// #include "ecGPIO2.h"
+#include "ecSTM32F4v2.h"
 
 void setup(void);
 	

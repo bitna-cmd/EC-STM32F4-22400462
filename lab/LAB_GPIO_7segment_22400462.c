@@ -8,9 +8,10 @@ Language/ver     : C++ in VS Code
 Description      : LAB: GPIO 7-segment(eval board)
 /----------------------------------------------------------------*/
 
-#include "stm32f4xx.h"
-#include "ecGPIO2.h"
-#include "ecRCC2.h"
+// #include "stm32f4xx.h"
+// #include "ecGPIO2.h"
+// #include "ecRCC2.h"
+#include "ecSTM32F4v2.h"
 
 // FND segment pins (a~g, dot)
 PinName_t pinFND[8]    = {PB_0, PB_1, PB_2, PB_3, PB_4, PB_5, PB_6, PB_7};

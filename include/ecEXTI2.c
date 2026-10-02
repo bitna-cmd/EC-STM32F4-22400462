@@ -102,3 +102,4 @@ void clear_pending_EXTI(PinName_t pinName){
 	// clear by writing 1 to the pending bit
 	EXTI->PR  = (1 << pin);     
 }
+

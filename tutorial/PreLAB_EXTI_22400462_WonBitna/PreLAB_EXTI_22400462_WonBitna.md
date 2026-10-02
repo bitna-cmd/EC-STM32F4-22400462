@@ -4,7 +4,7 @@
 
 **Author/Partner:** Won Bitna
 
-**Demo Video:** Youtube link
+**Demo Video:** https://youtu.be/1l5tOc4s6R0
 
 ***
 
@@ -104,7 +104,7 @@ GPIO_pupd(PA_4, PULL_UP);
 
   ```c
   // SYSCFG peripheral clock enable
-  RCC->APB2ENR |= RCC_AHB1ENR_GPIOAEN;
+  RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN;
   ```
 
   <figure><img src="https://3453146497-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F-MgmrEstOHxu62gXxq1t%2Fuploads%2Fgit-blob-22a479648a995e84c2e4abf7be52e552109bf0e8%2Fimage-20260915192550889.png?alt=media" alt=""><figcaption></figcaption></figure>
@@ -119,8 +119,8 @@ GPIO_pupd(PA_4, PULL_UP);
   	// Button: PA_4 -> EXTICR2(EXTI4)
   	// Pin 4~7: EXTICR2 // EXTICR[1]
 
-  	SYSCFG->EXTICR[1] &= ~(0xFUL << 4);
-  	SYSCFG->EXTICR[1] |=  0UL<<4;
+  	SYSCFG->EXTICR[1] &= ~(0xFUL << 0);
+  	SYSCFG->EXTICR[1] |=  0UL<<0;
 
   	// These are the same as
   	SYSCFG->EXTICR[1] &= ~SYSCFG_EXTICR2_EXTI4;  
@@ -145,8 +145,8 @@ GPIO_pupd(PA_4, PULL_UP);
   	else if	(Port == GPIOD) EXTICR_port = 3;
   	else					EXTICR_port = 4;
   	
-  	SYSCFG->EXTICR[x/4] &= ~(0xFUL<<(x%4)*4);			// clear 4 bits
-  	SYSCFG->EXTICR[x/4] |= (EXTICR_port<<(x%4)*4);			// Set 4 bits	
+  	SYSCFG->EXTICR[pin/4] &= ~(0xFUL<<(pin%4)*4);			// clear 4 bits
+  	SYSCFG->EXTICR[pin/4] |= (EXTICR_port<<(pin%4)*4);			// Set 4 bits	
   ```
 
 > HINT 1 : mod(pin,4) \* 4, (int)(pin/4)
@@ -167,11 +167,11 @@ GPIO_pupd(PA_4, PULL_UP);
 
   ```c
   	// Select  Trigger edge (RISE, FALL, BOTH)
-  	if (trig_type == FALL) 		EXTI->FTSR |= 1UL << x;  // Falling trigger enable 
-  	else if	(trig_type == RISE) EXTI->RTSR |= 1UL << x;   // Rising trigger enable 
+  	if (trig_type == FALL) 		EXTI->FTSR |= 1UL << pin;  // Falling trigger enable 
+  	else if	(trig_type == RISE) EXTI->RTSR |= 1UL << pin;   // Rising trigger enable 
   	else if	(trig_type == BOTH) {			// Both falling/rising trigger enable
-  		EXTI->RTSR |= 1UL << x; 
-  		EXTI->FTSR |= 1UL << x;
+  		EXTI->RTSR |= 1UL << pin; 
+  		EXTI->FTSR |= 1UL << pin;
   ```
 
   
@@ -188,7 +188,7 @@ GPIO_pupd(PA_4, PULL_UP);
 ```c
 	// Enable EXTI, with Not-Masked Interrupt Request 
 	// Not-mask (==Enable) EXTIx
- 	EXTI->IMR |= 1UL << x;
+ 	EXTI->IMR |= 1UL << pin;
 ```
 
 ![IMR in reference manual](./IMR.png)
@@ -322,7 +322,7 @@ This is an example code for toggling LED on/off with the button input trigger (E
   > Write your name and modified date in the comment box
 * Create a new project under the directory `EC\tutorial\`
   * Environment : `env:TU_EXTI`
-  * Source file: `TU_EXTI_student.c`
+  * Source file: `TU_EXTI_22400462.c`
 * Modify the `platformio.ini` **,** to add new environment.
 
 Complete the function  `led_toggle(void)`
@@ -332,12 +332,12 @@ Complete the function  `led_toggle(void)`
 ```c
 /*----------------------------------------------------------------\
 @ Embedded Controller by Young-Keun Kim - Handong Global University
-Author           : [ YOUR NAME GOES HERE !!!!!]
+Author           : Won Bitna
 Created          : 05-03-2021
-Modified         : 09-09-2026
+Modified         : 09-29-2026
 Language/ver     : C++ in VS Code
 
-Description      : Tutorial - [Your Description GOES HERE !!] 
+Description      : Tutorial - PreLAB: External Interrupt
 /----------------------------------------------------------------*/
 
 
@@ -357,7 +357,7 @@ void led_toggle(PinName_t pinName){
 	ecPinmap(pinName,&Port,&pin);
     
 	// YOUR CODE GOES HERE - Use XOR 
-	// [YOUR CODE GOES HERE]
+    Port->ODR ^= (1UL << pin);
 }
 
 // Initialiization 
@@ -371,7 +371,7 @@ void setup(void)
 		
 		// Initialize GPIOA_4 for Input Button
 		GPIO_init(SW2_PIN, INPUT);  // INPUT for EVAL board
-		GPIO_pupd(SW2_PIN, EC_PU);  // PULL-UP for EVAL board
+		GPIO_pupd(SW2_PIN, PULL_UP);  // PULL-UP for EVAL board
 		
 		// Initialize EXTI PA_4
 		EXTI_init(SW2_PIN, FALL, 10);		
@@ -397,7 +397,5 @@ void EXTI4_IRQHandler(void) {
 		clear_pending_EXTI(SW2_PIN);
 	}
 }
-
-
 
 ```
