@@ -59,6 +59,9 @@ void MCU_init(void){
 		GPIO_init(SW2_PIN, INPUT);  // INPUT for EVAL board
 		GPIO_pupd(SW2_PIN, PULL_UP);  // PULL-UP for EVAL board
 
+        FND_init(pinFND);
+        FND_select_init(selectFND);
+
         // Initialize 7-segment pins
         for(int i=0; i<8; i++){
             GPIO_init_all(pinFND[i], OUTPUT, MEDIUM_SPEED, PUSH_PULL, NO_PUPD);
