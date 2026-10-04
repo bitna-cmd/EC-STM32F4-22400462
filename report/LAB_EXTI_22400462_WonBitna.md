@@ -2,13 +2,11 @@
 
 ##
 
-**Date:** 2026-09-02
+**Date:** 2026-10-02
 
-**Author/Partner:** YOUR NAME GOES HERE
+**Author/Partner:** Won Bitna
 
-**Demo Video:** Youtube link
-
-**PDF version:**
+**Demo Video:** https://youtu.be/e9Rxjhfbl_I
 
 ### Introduction
 
@@ -17,12 +15,6 @@ In this lab, you are required to create two simple programs using interrupt:
 (1) Display the number counting from 0 to 9 with Button Press
 
 (2) Counting at a rate of 1 second
-
-You must submit
-
-* LAB Report (\*.md & \*.pdf)
-* Zip source files(main\*.c, ecRCC2.h, ecGPIO2.h, ecSysTick2.c etc...).
-  * Only the source files. Do not submit project files
 
 #### Requirement
 
@@ -36,22 +28,6 @@ You must submit
 **Software**
 
 * PlatformIO, CMSIS, EC\_HAL library
-
-***
-
-## Tutorial: Programming Tips
-
-#### 1.Tutorial: Managing library header files
-
-Read how to manage library header files for MCU register configurations. Apply it in your LAB.
-
-{% embed url="<https://ykkim.gitbook.io/ec/ec-course/tutorial/tutorial-library-header-files#ec-2024>" %}
-
-#### 2.Tutorial: Custom Initialization
-
-Instead of writing initial setting functions for each registers, you can call a user defined function e.g. `MCU_init()` for the commonly used default initialization. Follow the tutorial and apply it in your LAB.
-
-{% embed url="<https://ykkim.gitbook.io/ec/ec-course/tutorial/tutorial-custom-initialization>" %}
 
 ***
 
@@ -111,6 +87,30 @@ void blink(){
 
 4. Click on **upload** button.
 5. Whenever the user button(BT1) is pressed (at fall), LED should be ON. When the button is released, the LED should be OFF.
+
+
+
+#### Results
+
+<table align="center">
+  <tr>
+    <td align="center">
+      <img src="./img/Prob0_LED_OFF.png" width="200">
+    </td>
+    <td align="center">
+      <img src="./img/Prob0_LED_ON.png" width="200">
+    </td>
+  </tr>
+  <tr>
+    <td align="center">(a) Prob0_LED_OFF</td>
+    <td align="center">(b) Prob0_LED_ON</td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center"><b>Prob0: STM-Arduino</b></td>
+  </tr>
+</table>
+
+
 
 ***
 
@@ -179,96 +179,170 @@ Configure the MCU GPIO
 
 #### Code
 
-Your code goes here.
-
 Explain your source code with the necessary comments.
 
 ```c
-// YOUR MAIN CODE ONLY
-// YOUR CODE
+// MAIN CODE ONLY
+int main(void) {
+    MCU_init();
+	while (1){
+    }
+}
 ```
 
-**Sample Code**
+**Source Code**
 
 {% code expandable="true" %}
 
 ```c
 /*----------------------------------------------------------------\
 @ Embedded Controller by Young-Keun Kim - Handong Global University
-Author           : [ YOUR NAME GOES HERE !!!!!]
+Author           : Won Bitna
 Created          : 05-03-2021
-Modified         : 09-09-2026
+Modified         : 10-01-2026
 Language/ver     : C++ in VS Code
 
-Description      : Tutorial - [Your Description GOES HERE !!] 
+Description      : Tutorial - EXTI & SysTick(eval)
 /----------------------------------------------------------------*/
 
+#include "ecSTM32F4v2.h"
 
-#include "ecRCC2.h"
-#include "ecGPIO2.h"
-#include "ecSysTick2.h"
-#include "ecEXTI2.h"
-
-#define LED0_PIN   PB_12 		//EVAL board JKIT LED0
-#define SW2_PIN    PA_4			//EVAL board JKIT SW2
-
-
-// void led_toggle(PinName_t pinName);  // in ecGPIO2.h
-
-// Initialiization 
-void setup(void)
-{
-    RCC_PLL_init();                 // System Clock = 84MHz
-    SysTick_init();                 // SysTick Timer Initialization
-    // Initialize GPIOB_12 for Output
-    GPIO_init(LED0_PIN, OUTPUT);    // LED0 for EVAL board	
-
-    // Initialize GPIOA_4 for Input Button
-    GPIO_init(SW2_PIN, INPUT);  // INPUT for EVAL board
-    GPIO_pupd(SW2_PIN, EC_PU);  // PULL-UP for EVAL board
-
-    // Initialize EXTI PA_4
-    EXTI_init(SW2_PIN, FALL, 10);		
-}
+uint8_t count = 0;      // Counter number for 7-segment
+uint8_t pause = 0;      // Check the counter is pause or not
 
 
 // MAIN  ----------------------------------------
 int main(void) {
-	setup();
-	while (1){
-        delay_ms(5000);
+    MCU_init();         // Initialize MCU, GPIO, EXTI and SysTick
+
+    while (1){
+        // Main loop is empty because main operation is done by interrupts
     }
 }
 
+
+// SW2 interrupt : pause
 void EXTI4_IRQHandler(void) {
-	if (is_pending_EXTI(SW2_PIN)) {   
-			led_toggle(LED0_PIN);
-			clear_pending_EXTI(SW2_PIN);
-	}
+    if (is_pending_EXTI(SW2_PIN)) {   // Check SW2 interrupt
+
+        pause = !pause;               // Change pause each time SW2 is pressed
+
+        clear_pending_EXTI(SW2_PIN);  // Clear pending flag after interrupt
+    }
 }
 
+
+// SW1 interrupt : reset counter
+void EXTI2_IRQHandler(void) {
+    if (is_pending_EXTI(SW1_PIN)) {   // Check SW1 interrupt
+
+        count = 0;                    // Reset displayed number to 0
+        msTicks = 0;                  // Reset tick count to restart 1 sec tick
+
+        clear_pending_EXTI(SW1_PIN);  // Clear pending flag after interrupt
+    }
+}
+
+
+// SysTick interrupt : called every 1 ms
+void SysTick_Handler(void){
+
+    SysTick_counter();                // Increase msTicks every 1 ms
+
+    if(msTicks == 1000){
+        msTicks = 0;                  // Reset tick count for next 1 second
+
+        if(pause == 0){               // Increase count only when it is not paused
+            count++;
+
+            if(count > 9)
+                count = 0;            // 0 after number 9
+        }
+    }
+
+    FND_select(0);                    // Select LED0
+    FND_display(count);               // Display current count number
+}
 ```
 
 {% endcode %}
 
 #### Results
 
-Experiment images and results go here
+<table align="center">
+  <tr>
+    <td align="center">
+      <img src="./img/Prob1_7seg_0.png" width="300">
+    </td>
+    <td align="center">
+      <img src="./img/Prob1_7seg_1.png" width="300">
+    </td>
+  </tr>
+  <tr>
+    <td align="center">(a) Prob1_7seg_0</td>
+    <td align="center">(b) Prob1_7seg_1</td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="./img/Prob1_7seg_2.png" width="300">
+    </td>
+    <td align="center">
+      <img src="./img/Prob1_7seg_3.png" width="300">
+    </td>
+  </tr>
+  <tr>
+    <td align="center">(c) Prob1_7seg_2</td>
+    <td align="center">(d) Prob1_7seg_3</td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="./img/Prob1_7seg_4.png" width="300">
+    </td>
+    <td align="center">
+      <img src="./img/Prob1_7seg_5.png" width="300">
+    </td>
+  </tr>
+  <tr>
+    <td align="center">(e) Prob1_7seg_4</td>
+    <td align="center">(f) Prob1_7seg_5</td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="./img/Prob1_7seg_6.png" width="300">
+    </td>
+    <td align="center">
+      <img src="./img/Prob1_7seg_7.png" width="300">
+    </td>
+  </tr>
+  <tr>
+    <td align="center">(g) Prob1_7seg_6</td>
+    <td align="center">(h) Prob1_7seg_7</td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="./img/Prob1_7seg_8.png" width="300">
+    </td>
+    <td align="center">
+      <img src="./img/Prob1_7seg_9.png" width="300">
+    </td>
+  </tr>
+  <tr>
+    <td align="center">(i) Prob1_7seg_8</td>
+    <td align="center">(j) Prob1_7seg_9</td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center"><b>Prob1: Counter on 7-segment display using EXTI</b></td>
+  </tr>
+</table>
 
-> Show experiment images /results
-
-Add [demo video link](https://github.com/ykkimhgu/course-doc/blob/master/ec-course/lab/link/README.md)
+- Demo Video: [demo video link](https://youtu.be/e9Rxjhfbl_I)
 
 #### Discussion
 
 1. Analyze the result and explain any other necessary discussion.
 2. We can use two different methods to detect an external signal: polling and interrupt. What are the advantages and disadvantages of each approach?
 
-> Answer discussion questions
-
 3. What would happen if the EXTI interrupt handler does not clear the interrupt pending flag? Check with your code
-
-> Answer discussion questions
 
 ### Reference
 
