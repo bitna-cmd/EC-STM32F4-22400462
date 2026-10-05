@@ -102,7 +102,7 @@ void blink(){
 </table>
 
 
-#### Disucssion
+#### Discussion
 
 - Unlike the previous Arduino code, where the input was checked repeatedly inside loop(), attachInterrupt() was used to handle the external signal by interrupt instead of polling. Because of this, the program does not need to continuously check the input state in the main loop.
 
