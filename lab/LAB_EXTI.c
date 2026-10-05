@@ -26,6 +26,7 @@ int main(void) {
 
 
 // SW2 interrupt : pause
+// Handle SW2 interrupt for pause and resume
 void EXTI4_IRQHandler(void) {
     if (is_pending_EXTI(SW2_PIN)) {   // Check SW2 interrupt
 
@@ -37,6 +38,7 @@ void EXTI4_IRQHandler(void) {
 
 
 // SW1 interrupt : reset counter
+// Handle SW1 interrupt for counter reset
 void EXTI2_IRQHandler(void) {
     if (is_pending_EXTI(SW1_PIN)) {   // Check SW1 interrupt
 

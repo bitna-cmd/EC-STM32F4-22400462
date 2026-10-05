@@ -31,7 +31,7 @@ void RCC_HSI_init() {
 	EC_SYSCLK=16000000;	
 }
 
-
+// Initialize system clock to 84 MHz using PLL
 void RCC_PLL_init() {	
 	// To correctly read data from FLASH memory, the number of wait states (LATENCY)
   // must be correctly programmed according to the frequency of the CPU clock

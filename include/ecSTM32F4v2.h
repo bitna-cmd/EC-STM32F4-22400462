@@ -43,7 +43,7 @@ PinName_t pinFND[8]    = {PB_0, PB_1, PB_2, PB_3, PB_4, PB_5, PB_6, PB_7};
 // FND selection pins (FND0~FND3)
 PinName_t selectFND[4] = {PA_10, PA_11, PC_4, PC_3};
 
-//Initialize MCU, User-Defined 
+// Initialize MCU clock, SysTick, GPIO, FND, and EXTI
 void MCU_init(void){
 		RCC_PLL_init();                 // System Clock = 84MHz
 		SysTick_init();                 // SysTick Timer Initialization

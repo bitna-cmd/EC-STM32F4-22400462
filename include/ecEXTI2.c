@@ -14,7 +14,7 @@ Description      : EXTI header file
 #include "ecEXTI2.h"
 //#include "ecEXTI2.h"
 
-
+// Initialize EXTI with trigger type and interrupt priority
 void EXTI_init(PinName_t pinName, uint32_t trig_type,uint32_t priority){
 
 	GPIO_TypeDef *Port;
@@ -64,7 +64,7 @@ void EXTI_init(PinName_t pinName, uint32_t trig_type,uint32_t priority){
 	NVIC_EnableIRQ(EXTI_IRQn); 				
 }
 
-
+// Enable EXTI interrupt
 void EXTI_enable(PinName_t pinName) {
 	GPIO_TypeDef *Port;
 	unsigned int pin;
@@ -73,6 +73,7 @@ void EXTI_enable(PinName_t pinName) {
 	EXTI->IMR |= (1UL << pin);     // not masked (i.e., Interrupt enabled)
 }
 
+// Disable EXTI interrupt
 void EXTI_disable(PinName_t pinName) {
 	GPIO_TypeDef *Port;
 	unsigned int pin;
@@ -82,7 +83,7 @@ void EXTI_disable(PinName_t pinName) {
 }
 
 
-
+// Check whether EXTI interrupt is pending
 uint32_t is_pending_EXTI(PinName_t pinName) {
 	GPIO_TypeDef *Port;
 	unsigned int pin;
@@ -92,7 +93,7 @@ uint32_t is_pending_EXTI(PinName_t pinName) {
 	return  EXTI_PRx; 	// Return only 0 or 1
 }
 
-
+// Clear EXTI interrupt pending flag after handling interrupt
 void clear_pending_EXTI(PinName_t pinName){
 	// Port, Pin Configuration
 	GPIO_TypeDef *Port;

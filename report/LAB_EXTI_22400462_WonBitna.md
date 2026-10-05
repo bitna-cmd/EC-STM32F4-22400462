@@ -163,11 +163,7 @@ Configure the MCU GPIO
 | **7-Segment DOUT**                 | <p>PB\_0, PB\_1, PB\_2, PB\_3, PB\_4, PB\_5, PB\_6, PB\_7</p><p>('a'\~'g''dot', respectively)</p> | Push-Pull, No Pull-up-Pull-down, Medium Speed |
 | **Selection of 7-Segment Display** | PA\_10 (FND\_0)                                              | DOUT, Push-Pull,                              |
 
-#### Circuit Diagram
 
-> You need to include the circuit diagram (if necessary)
-
-![image](https://user-images.githubusercontent.com/38373000/192134563-72f68b29-4127-42ac-b064-2eda95a9a52a.png)
 
 #### Main Functions
 
@@ -175,38 +171,22 @@ Configure the MCU GPIO
 // Initialize MCU clock, SysTick, GPIO, FND, and EXTI
 void MCU_init(void);
 
-// Initialize system clock to 84 MHz using PLL
-void RCC_PLL_init(void);
-
-// Initialize SysTick timer to generate interrupt every 1 ms
+// Set SysTick interrupt every 1 ms
 void SysTick_init(void);
 
-// Increase msTicks by 1 every SysTick interrupt
+// Increment msTicks every 1 ms
 void SysTick_counter(void);
 
-// Initialize GPIO pin mode
-void GPIO_init(PinName_t pinName, uint32_t mode);
-
-// Set output type of GPIO pin (PUSH_PULL or OPEN_DRAIN)
-void GPIO_otype(PinName_t pinName, uint32_t type);
-
-// Set pull-up or pull-down resistor of GPIO pin
-void GPIO_pupd(PinName_t pinName, uint32_t pupd);
-
-// Initialize GPIO mode, speed, output type, and pull-up/down at once
-void GPIO_init_all(PinName_t pinName, uint32_t mode, uint32_t speed,
-                   uint32_t type, uint32_t pupd);
-
-// Initialize 7-segment LED pins
+// Initialize DOUT pins for 7 segment leds
 void FND_init(PinName_t *pinFND);
 
-// Initialize 7-segment selection pins
+// Initialize select pins (FND0~FND3) as DOUT
 void FND_select_init(PinName_t *selectFND);
 
-// Select one 7-segment display
+// Select display: FND0 to FND3
 void FND_select(uint8_t digit);
 
-// Display a number on selected 7-segment
+// Display a number 0 - 9 only
 void FND_display(uint8_t num);
 
 // Initialize EXTI with trigger type and interrupt priority
@@ -224,7 +204,7 @@ void EXTI4_IRQHandler(void);
 // Handle SW1 interrupt for counter reset
 void EXTI2_IRQHandler(void);
 
-// Handle SysTick interrupt every 1 ms
+// SysTick interrupt : called every 1 ms
 void SysTick_Handler(void);
 ```
 
