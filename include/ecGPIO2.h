@@ -25,8 +25,8 @@ Description      : GPIO Library. Distributed to Students for LAB_GPIO
 
 #define NO_PUPD    0x00
 #define PULL_UP    0x01
-#define PULL_DOWN  0x10
-#define RESERVED   0x11
+#define PULL_DOWN  0x02
+#define RESERVED   0x03
 
 #define PUSH_PULL  0x00
 #define OPEN_DRAIN 0x01
@@ -34,8 +34,8 @@ Description      : GPIO Library. Distributed to Students for LAB_GPIO
 
 #define LOW_SPEED     0x00
 #define MEDIUM_SPEED  0x01
-#define FAST_SPEED    0x10
-#define HIGH_SPEED    0x11
+#define FAST_SPEED    0x02
+#define HIGH_SPEED    0x03
 
 // typedef enum{
 //     Push_Pull 0

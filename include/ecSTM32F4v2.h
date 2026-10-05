@@ -56,8 +56,8 @@ void MCU_init(void){
 		GPIO_pupd(SW2_PIN, PULL_UP);  // PULL-UP for EVAL board
 
         // Initialize GPIOD_2 for Input Button
-		GPIO_init(SW2_PIN, INPUT);  // INPUT for EVAL board
-		GPIO_pupd(SW2_PIN, PULL_UP);  // PULL-UP for EVAL board
+		GPIO_init(SW1_PIN, INPUT);  // INPUT for EVAL board
+		GPIO_pupd(SW1_PIN, PULL_UP);  // PULL-UP for EVAL board
 
         FND_init(pinFND);
         FND_select_init(selectFND);
