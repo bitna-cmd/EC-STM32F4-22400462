@@ -12,6 +12,7 @@ Description      : Tutorial - EXTI & SysTick(eval)
 
 uint8_t count = 0;      // Counter number for 7-segment
 uint8_t pause = 0;      // Check the counter is pause or not
+uint8_t digit = 0;      // A flag for alternately displaying two-digit numbers
 
 
 // MAIN  ----------------------------------------
@@ -58,11 +59,18 @@ void SysTick_Handler(void){
         if(pause == 0){               // Increase count only when it is not paused
             count++;
 
-            if(count > 9)
-                count = 0;            // 0 after number 9
+            if(count > 59)
+                count = 0;            // 0 after number 59
         }
     }
 
-    FND_select(0);                    // Select LED0
-    FND_display(count);               // Display current count number
+    if(digit == 0){
+        FND_select(0);                    // Select LED0
+        FND_display(count%10);               // Display current count number
+        digit = 1;
+    } else {
+        FND_select(1);
+        FND_display(count/10);
+        digit = 0;
+    }
 }

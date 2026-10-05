@@ -1,29 +1,22 @@
 # LAB: EXTI & SysTick(eval board)
 
-##
-
 **Date:** 2026-10-02
 
 **Author/Partner:** Won Bitna
 
-**Demo Video:** https://youtu.be/e9Rxjhfbl_I
+**Demo Video:** https://youtu.be/m-AsQYC6X7I
 
 ### Introduction
 
-In this lab, you are required to create two simple programs using interrupt:
-
-(1) Display the number counting from 0 to 9 with Button Press
-
-(2) Counting at a rate of 1 second
+In this lab, external interrupts and SysTick interrupts were implemented using the NUCLEO-F411RE and JKIT evaluation board. EXTI was used to control the counter with push buttons, and SysTick was used to generate the 1-second counting interval.
 
 #### Requirement
 
 **Hardware**
 
-* MCU
-  * NUCLEO-F411RE
+* MCU(NUCLEO-F411RE)
 * Eval Board (JKIT)
-* Actuator/Sensor/Others:
+* Actuator/Sensor/Others
 
 **Software**
 
@@ -32,8 +25,6 @@ In this lab, you are required to create two simple programs using interrupt:
 ***
 
 ## Problem 0: STM-Arduino
-
-{% embed url="<https://ykkim.gitbook.io/ec/ec-course/tutorial/tutorial-arduino-stm32/tutorial-arduino-stm32-part1#external-interrupt>" %}
 
 We are going to create a simple program that turns LED(LD2) on triggered by **External Interrupt** of user button(BT1) (on NUCLEO-64, not on JKIT)
 
@@ -111,8 +102,9 @@ void blink(){
 </table>
 
 
+#### Disucssion
 
-***
+- Unlike the previous Arduino code, where the input was checked repeatedly inside loop(), attachInterrupt() was used to handle the external signal by interrupt instead of polling. Because of this, the program does not need to continuously check the input state in the main loop.
 
 ## Prelab: EXTI Register Setting
 
@@ -177,7 +169,68 @@ Configure the MCU GPIO
 
 ![image](https://user-images.githubusercontent.com/38373000/192134563-72f68b29-4127-42ac-b064-2eda95a9a52a.png)
 
-#### Code
+#### Main Functions
+
+```c
+// Initialize MCU clock, SysTick, GPIO, FND, and EXTI
+void MCU_init(void);
+
+// Initialize system clock to 84 MHz using PLL
+void RCC_PLL_init(void);
+
+// Initialize SysTick timer to generate interrupt every 1 ms
+void SysTick_init(void);
+
+// Increase msTicks by 1 every SysTick interrupt
+void SysTick_counter(void);
+
+// Initialize GPIO pin mode
+void GPIO_init(PinName_t pinName, uint32_t mode);
+
+// Set output type of GPIO pin (PUSH_PULL or OPEN_DRAIN)
+void GPIO_otype(PinName_t pinName, uint32_t type);
+
+// Set pull-up or pull-down resistor of GPIO pin
+void GPIO_pupd(PinName_t pinName, uint32_t pupd);
+
+// Initialize GPIO mode, speed, output type, and pull-up/down at once
+void GPIO_init_all(PinName_t pinName, uint32_t mode, uint32_t speed,
+                   uint32_t type, uint32_t pupd);
+
+// Initialize 7-segment LED pins
+void FND_init(PinName_t *pinFND);
+
+// Initialize 7-segment selection pins
+void FND_select_init(PinName_t *selectFND);
+
+// Select one 7-segment display
+void FND_select(uint8_t digit);
+
+// Display a number on selected 7-segment
+void FND_display(uint8_t num);
+
+// Initialize EXTI with trigger type and interrupt priority
+void EXTI_init(PinName_t pinName, uint32_t trig_type, uint32_t priority);
+
+// Check whether EXTI interrupt is pending
+uint32_t is_pending_EXTI(PinName_t pinName);
+
+// Clear EXTI interrupt pending flag after handling interrupt
+void clear_pending_EXTI(PinName_t pinName);
+
+// Handle SW2 interrupt for pause and resume
+void EXTI4_IRQHandler(void);
+
+// Handle SW1 interrupt for counter reset
+void EXTI2_IRQHandler(void);
+
+// Handle SysTick interrupt every 1 ms
+void SysTick_Handler(void);
+```
+
+
+
+#### Example Code
 
 Explain your source code with the necessary comments.
 
@@ -335,23 +388,126 @@ void SysTick_Handler(void){
   </tr>
 </table>
 
-- Demo Video: [demo video link](https://youtu.be/e9Rxjhfbl_I)
+- Demo Video: [demo video link](https://youtu.be/m-AsQYC6X7I)
 
 #### Discussion
 
 1. Analyze the result and explain any other necessary discussion.
+- The 7-segment display increases from 0 to 9 every 1 second. SW1 is used to reset the count to 0, and SW2 is used to pause and resume the counting.
+- To use interrupt instead of polling, SysTick_Handler() and EXTIx_IRQHandler() were used. The main() function only has the initialization and an empty while(1) loop. The while(1) loop keeps the program running, and the actual operations are done by the interrupt handlers when an interrupt occurs.
+- msTicks is used to measure the time. Since the SysTick interrupt occurs every 1 ms, the count increases when msTicks reaches 1000.
+- In EXTI2_IRQHandler(), when SW1 is pressed, both count and msTicks are reset to 0. Resetting msTicks makes the program start counting a new 1000 ms again.
+- In EXTI4_IRQHandler(), a pause flag is used. Every time SW2 is pressed, the value of pause changes, so the counter can repeat pause and resume.
+- SW1 is connected to PD2, so it uses EXTI2. SW2 is connected to PA4, so it uses EXTI4. I gave SW1 a higher priority than SW2 because I considered that reset is more important than pause/resume. Therefore, priority 5 was used for SW1 and priority 10 was used for SW2.
+
+
+
 2. We can use two different methods to detect an external signal: polling and interrupt. What are the advantages and disadvantages of each approach?
+- Polling checks the input state continuously inside the main loop. It is simple to understand and make, but the CPU keeps checking the input even when there is no event. If there are many inputs to check, it can be inefficient.
+- Interrupt works only when an event occurs. Because the CPU does not need to check the input continuously, it is more efficient. It can also react quickly to an external event. However, interrupt is more complicated because interrupt priority, pending flag, and interrupt handlers should be managed correctly.
+
+
 
 3. What would happen if the EXTI interrupt handler does not clear the interrupt pending flag? Check with your code
+- The EXTI pending flag shows that an external interrupt event has occurred. If the pending flag is not cleared inside the interrupt handler, the interrupt can stay in the pending state even after the handler is finished.
+- Then, the CPU can enter the same interrupt handler repeatedly. Therefore, clear_pending_EXTI() was used at the end of each EXTI interrupt handler to clear the pending flag.
 
-### Reference
 
-Complete list of all references used (github, blog, paper, etc)
-
-```
-
-```
 
 ### Troubleshooting
 
-(Option) You can write a Troubleshooting section
+- At first, I removed the while(1) loop in the main() function because there was no code inside the loop. However, the program did not keep running correctly because the main() function finished after MCU_init(). After adding the infinite while(1) loop again, the program kept running and could receive interrupts continuously. From this, I understood that the empty while(1) loop is needed to keep the program running even if the main operation is done by interrupts.
+- At first, I put SysTick_counter(), which increases msTicks, at the end of SysTick_Handler(). So, the count increased immediately when the program started. This happened because msTicks = 0 could satisfy the timing condition. To fix this, I moved SysTick_counter() to the beginning of SysTick_Handler(). Then, msTicks increases first, and the program checks whether 1000 ms has passed after that.
+- Another problem was that the 7-segment display did not turn on even though the program compiled successfully. I checked the code and found that the FND pins were not initialized correctly in MCU_init(). The GPIO pins were set as output, but FND_init() and FND_select_init() were not called. These functions save the FND pin information used by FND_display() and FND_select(). After adding these functions, the 7-segment display worked correctly.
+- Also, while writing the interrupt code, I understood that the operation inside SysTick_Handler() and EXTIx_IRQHandler() can be changed depending on the purpose of the program. Therefore, functions commonly used for program settings, such as MCU_init(), were defined in the library, and the actual interrupt operations were written in the LAB source file.
+
+
+
+
+---
+
+### Appendix (Challenge: Count upto 59)
+
+In this code, the variable "digit" is added to display two digits.
+
+Therefore, the 0th digit and the 1st digit are displayed alternately every 1 ms.
+
+```c
+/*----------------------------------------------------------------\
+@ Embedded Controller by Young-Keun Kim - Handong Global University
+Author           : Won Bitna
+Created          : 05-03-2021
+Modified         : 10-01-2026
+Language/ver     : C++ in VS Code
+
+Description      : Tutorial - EXTI & SysTick(eval)
+/----------------------------------------------------------------*/
+
+#include "ecSTM32F4v2.h"
+
+uint8_t count = 0;      // Counter number for 7-segment
+uint8_t pause = 0;      // Check the counter is pause or not
+uint8_t digit = 0;      // A flag for alternately displaying two-digit numbers
+
+
+// MAIN  ----------------------------------------
+int main(void) {
+    MCU_init();         // Initialize MCU, GPIO, EXTI and SysTick
+
+    while (1){
+        // Main loop is empty because main operation is done by interrupts
+    }
+}
+
+
+// SW2 interrupt : pause
+void EXTI4_IRQHandler(void) {
+    if (is_pending_EXTI(SW2_PIN)) {   // Check SW2 interrupt
+
+        pause = !pause;               // Change pause each time SW2 is pressed
+
+        clear_pending_EXTI(SW2_PIN);  // Clear pending flag after interrupt
+    }
+}
+
+
+// SW1 interrupt : reset counter
+void EXTI2_IRQHandler(void) {
+    if (is_pending_EXTI(SW1_PIN)) {   // Check SW1 interrupt
+
+        count = 0;                    // Reset displayed number to 0
+        msTicks = 0;                  // Reset tick count to restart 1 sec tick
+
+        clear_pending_EXTI(SW1_PIN);  // Clear pending flag after interrupt
+    }
+}
+
+
+// SysTick interrupt : called every 1 ms
+void SysTick_Handler(void){
+
+    SysTick_counter();                // Increase msTicks every 1 ms
+
+    if(msTicks == 1000){
+        msTicks = 0;                  // Reset tick count for next 1 second
+
+        if(pause == 0){               // Increase count only when it is not paused
+            count++;
+
+            if(count > 59)
+                count = 0;            // 0 after number 59
+        }
+    }
+
+    if(digit == 0){
+        FND_select(0);                    // Select LED0
+        FND_display(count%10);               // Display current count number
+        digit = 1;
+    } else {
+        FND_select(1);
+        FND_display(count/10);
+        digit = 0;
+    }
+}
+```
+

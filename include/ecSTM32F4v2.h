@@ -73,7 +73,8 @@ void MCU_init(void){
 		
 		// Initialize EXTI PA_4
 		EXTI_init(SW2_PIN, FALL, 10);	
-        EXTI_init(SW1_PIN, FALL, 10);	
+        // Initialize EXTI PD_2
+        EXTI_init(SW1_PIN, FALL, 5);	
 
     // TIMx Default Initialization
     // ...
