@@ -15,6 +15,8 @@ Description      : EXTI header file
 //#include "ecEXTI2.h"
 
 // Initialize EXTI with trigger type and interrupt priority
+// trig_type: trigger type (FALL(0), RISE(1), BOTH(2))
+// priority: Priorities for handling
 void EXTI_init(PinName_t pinName, uint32_t trig_type,uint32_t priority){
 
 	GPIO_TypeDef *Port;
