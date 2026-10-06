@@ -108,33 +108,39 @@ void blink(){
 
 ## Prelab: EXTI Register Setting
 
-Do the PreLAB: External Interrupt
-
-* It is about creating `ecEXTI.*` library
-* Fill-in the blanks in the given header files
-* Submit the Prelab report
+This functions are defined in ecEXTI.* library.
 
 ```c
+// Initialize EXTI with trigger type and interrupt priority
+// pinName: GPIO pin for external interrupt
+// trig_type: trigger type (FALL(0), RISE(1), BOTH(2))
+// priority: interrupt priority
 void EXTI_init(PinName_t pinName, uint32_t trig_type, uint32_t priority);
-void EXTI_enable(uint32_t pin);  // mask in IMR
-void EXTI_disable(uint32_t pin);  // unmask in IMR
-uint32_t  is_pending_EXTI(uint32_t pin);
-void clear_pending_EXTI(uint32_t pin);
+
+// Enable EXTI interrupt
+// pinName: GPIO pin to enable
+void EXTI_enable(PinName_t pinName);
+
+// Disable EXTI interrupt
+// pinName: GPIO pin to disable
+void EXTI_disable(PinName_t pinName);
+
+// Check whether EXTI interrupt is pending
+// pinName: GPIO pin to check
+uint32_t is_pending_EXTI(PinName_t pinName);
+
+// Clear EXTI interrupt pending flag
+// pinName: GPIO pin to clear
+void clear_pending_EXTI(PinName_t pinName);
 ```
 
 ## Problem 1: Counter on 7-Segment display using EXTI
-
-#### Problem
-
-Create a code to display the counter-up from 0 to 9 and repeating.
+Problem: Create a code to display the counter-up from 0 to 9 and repeating.  The necessary conditions are the same as below.
 
 * Count up at the rate of 1 sec.
-  * Use `delay_ms()` in the main loop
 * Pause the counting when SW2 is pressed
 * Resets to zero when the push button is pressed: SW1
-  * Must use External Interrupts for SW1, SW2
-
-**\* Challenge : Extend the count-up number : 0 to 59**
+  * Use External Interrupts for SW1, SW2
 
 #### Procedure
 
@@ -148,9 +154,9 @@ Create a code to display the counter-up from 0 to 9 and repeating.
 3. Create a new project under the directory `EC\lab\`
 
 * Environment: “**LAB\_EXTI”.**
-* Source File: “**LAB\_EXTI.c”**
+* Source File: “**LAB\_EXTI_22400462.c”**
 
-4. You must modify the `platformio.ini` **,** to add new environment.
+4. Modify the `platformio.ini` **,** to add new environment.
 
 #### Configuration
 
@@ -217,13 +223,14 @@ void SysTick_Handler(void);
 
 #### Example Code
 
-Explain your source code with the necessary comments.
+The main function only initializes the MCU and has an empty while loop. The actual operation is done by SysTick and EXTI interrupts.
 
 ```c
-// MAIN CODE ONLY
 int main(void) {
-    MCU_init();
-	while (1){
+    MCU_init();         // Initialize MCU, GPIO, EXTI and SysTick
+
+    while (1){
+        // Main loop is empty because main operation is done by interrupts
     }
 }
 ```
@@ -240,7 +247,7 @@ Created          : 05-03-2021
 Modified         : 10-01-2026
 Language/ver     : C++ in VS Code
 
-Description      : Tutorial - EXTI & SysTick(eval)
+Description      : LAB - EXTI & SysTick(eval)
 /----------------------------------------------------------------*/
 
 #include "ecSTM32F4v2.h"
@@ -425,7 +432,7 @@ Created          : 05-03-2021
 Modified         : 10-01-2026
 Language/ver     : C++ in VS Code
 
-Description      : Tutorial - EXTI & SysTick(eval)
+Description      : LAB - EXTI & SysTick(eval)
 /----------------------------------------------------------------*/
 
 #include "ecSTM32F4v2.h"

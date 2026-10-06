@@ -5,7 +5,7 @@ Created          : 05-03-2021
 Modified         : 10-01-2026
 Language/ver     : C++ in VS Code
 
-Description      : Tutorial - EXTI & SysTick(eval)
+Description      : LAB - EXTI & SysTick(eval)
 /----------------------------------------------------------------*/
 
 #include "ecSTM32F4v2.h"
