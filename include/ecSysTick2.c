@@ -48,9 +48,9 @@ void SysTick_init(void){
 
 
 // SysTick_Handler() is called every 1 ms by the SysTick IRQ
-// void SysTick_Handler(void){
-// 	SysTick_counter();	
-// }
+void SysTick_Handler(void){
+	SysTick_counter();	
+}
 
 // Increment msTicks every 1 ms
 void SysTick_counter(void){

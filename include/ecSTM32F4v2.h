@@ -26,7 +26,7 @@ Description      : STM32F411 Library.
 #include "ecSysTick2.h"
 //#include "ecTIM2.h"
 //#include "ecPWM2.h"
-//#include "ecStepper2.h"
+#include "ecStepper2.h"
 //#include "ecADC2.h"
 //#include "ecUART2.h"
 
@@ -38,6 +38,7 @@ Description      : STM32F411 Library.
 #define LED7_PIN   PC_3 		//EVAL board JKIT LED7
 #define SW1_PIN    PD_2         //EVAL board JKIT SW1
 #define SW2_PIN    PA_4			//EVAL board JKIT SW2
+
 // FND segment pins (a~g, dot)
 PinName_t pinFND[8]    = {PB_0, PB_1, PB_2, PB_3, PB_4, PB_5, PB_6, PB_7};
 // FND selection pins (FND0~FND3)
