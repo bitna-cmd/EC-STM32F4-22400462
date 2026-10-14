@@ -10,12 +10,6 @@ Description      : GPIO Library. Distributed to Students for LAB_GPIO
 
 
 #include "ecGPIO2.h"
-//#include "ecGPIO2.h"
-
-
-/*---------------------------------------------------------------- 
-				[EXERCISE]
----------------------------------------------------------------- */
 
 
 
@@ -211,7 +205,7 @@ void FND_select(uint8_t digit){
 }
 
 
-
+// toggle the led
 void led_toggle(PinName_t pinName){
 	GPIO_TypeDef *Port;    
 	unsigned int pin;
