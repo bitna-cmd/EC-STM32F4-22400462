@@ -186,7 +186,6 @@ void FND_init(PinName_t *pinFND){
 
 // Initialize select pins (FND0~FND3) as DOUT
 void FND_select_init(PinName_t *selectFND){	
-    // [YOUR CODE GOES HERE]
 	for (int i=0; i<4; i++){
 		_fndSel[i] = selectFND[i];
 		GPIO_init(_fndSel[i], OUTPUT);
@@ -195,7 +194,6 @@ void FND_select_init(PinName_t *selectFND){
 
 // Display a number 0 - 9 only
 void FND_display(uint8_t num){
-    // [YOUR CODE GOES HERE]    
     for(int i=0; i<8; i++){
 		GPIO_write(_fndPins[i], numberFND[num][i]);
 	}
@@ -203,7 +201,6 @@ void FND_display(uint8_t num){
 
 // Select display: FND0 to FND3
 void FND_select(uint8_t digit){
-    // [YOUR CODE GOES HERE]    
 	for(int i=0; i<4; i++){
 		if(i == digit)
 			GPIO_write(_fndSel[i], HIGH);
@@ -220,6 +217,5 @@ void led_toggle(PinName_t pinName){
 	unsigned int pin;
 	ecPinmap(pinName,&Port,&pin);
     
-	// YOUR CODE GOES HERE - Use XOR 
     Port->ODR ^= (1UL << pin);
 }

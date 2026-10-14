@@ -12,7 +12,7 @@ You must submit your API documentation before the last day of class
 
 ### Embedded Controller - STM32F411 Driver Library
 
-Written by: Your Name
+Written by: Won Bitna
 
 Program: C/C++
 

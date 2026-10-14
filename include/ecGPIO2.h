@@ -44,13 +44,6 @@ Description      : GPIO Library. Distributed to Students for LAB_GPIO
 //#define LED_PIN 	PA_5
 //#define BUTTON_PIN  PC_13
 
-/*---------------------------------------------------------------- 
-                    [EXERCISE]
----------------------------------------------------------------- */
-// ADD MORE  MACRO related to GPIO 
-// PU, PD, NO_PUPD, PUSH_PULL, LOW, MEDIUM, etc
-
-
 
 #ifdef __cplusplus
  extern "C" {

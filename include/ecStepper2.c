@@ -15,14 +15,14 @@ Description      : Stepper Library. Stepper Motor Control with FSM
 // Stepper Motor variable
 static PinName_t stepperPins[4];
 static volatile uint32_t _steps;
-static volatile uint32_t _step_delay = 100;		
+static volatile uint32_t _step_delay_ms = 100;		// millisec	
+static volatile uint32_t _step_delay_us = 100000;		// microsec
 static const StateStepper_t *fsm;				// points at fsm_full or fsm_half (chosen in stepper_init)
 static volatile uint32_t state = 0;				// current FSM state
 
 
 
-// Output: A B A' B'
-// Next State, Output
+// FSM States for Full Stepping (S0~S3)
 static const StateStepper_t fsm_Full[4] = {	
  	{{S1,S3},{HIGH,HIGH,LOW,LOW}},		// S0 
 	{{S2,S0},{LOW,HIGH,HIGH,LOW}},		// S1
@@ -30,7 +30,7 @@ static const StateStepper_t fsm_Full[4] = {
 	{{S0,S2},{HIGH,LOW,LOW,HIGH}}		// S3
 };
 
-
+// FSM States for Half Stepping (S0~S7)
 static const StateStepper_t fsm_Half[8] = {  
 	{{S1,S7},{1,0,0,0}},		// S0
 	{{S2,S0},{1,1,0,0}},		// S1
@@ -43,7 +43,7 @@ static const StateStepper_t fsm_Half[8] = {
 };
 
 
-// Initialization of Stepper Motor
+// Initialization of Stepper Motor (mode: HALF(0), FULL(1) / pinStepper: [A, B, AN, BN])
 void stepper_init(uint32_t mode, PinName_t *pinStepper){
 	if (mode == HALF) 
 		fsm = fsm_Half;
@@ -52,25 +52,32 @@ void stepper_init(uint32_t mode, PinName_t *pinStepper){
 
 	//  GPIO Digital Out Initiation
 	// For A, B, AN, BN
-
 	for (int i=0; i<4; i++){
 		stepperPins[i] = pinStepper[i];
 		GPIO_init(stepperPins[i], OUTPUT);
 	}
 }
 
-// Converts Motor [rpm] to step delay in [msec]
-void stepper_speed (uint32_t speedRPM){      // rpm
-		_step_delay = 60*1000/(STEP_PER_REV*speedRPM); 		//in [msec]	
-		// [usec] can be used for a higher accuracy
-		// But needs delay_us() 
+// Converts Motor [rpm] to step delay in [msec] or [usec]
+void stepper_speed (uint32_t speedRPM, uint32_t speed_mode){      // rpm
+	// [usec] can be used for a higher accuracy, but needs delay_us() 
+
+	// Divide it by STEP_PER_REV to get one step delay
+	if(speed_mode == MS)
+		_step_delay_ms = 60*1000UL/(STEP_PER_REV*speedRPM); 		//in [msec]	
+	else if(speed_mode == US)
+		_step_delay_us = 60*1000000UL/(STEP_PER_REV*speedRPM); 		//in [microsec]	
+
 }
 
-
-// Run Stepper Motor for given steps and direction
-void stepper_step(uint32_t steps, uint32_t direction){
+// Run Stepper Motor for given steps, direction and speed mode
+// (dir: DIR_CW(0), DIR_CCW(1))
+// speed_mode: MS(millisec, 0), US(microsec,1))
+void stepper_step(uint32_t steps, uint32_t direction, uint32_t speed_mode){
 	// Exit if stepper_init() not called 
 	if (fsm == 0) return;
+
+	// Save the number of steps
 	_steps = steps;
 
 	// run for step size: 
@@ -82,7 +89,10 @@ void stepper_step(uint32_t steps, uint32_t direction){
 		stepper_out(state);
 	
 		// Delay for steppermotor speed
-		delay_ms(_step_delay);
+		if(speed_mode == MS)
+			delay_ms(_step_delay_ms);
+		else if(speed_mode == US)
+			delay_us(_step_delay_us);
 	}
 }
 
@@ -107,6 +117,3 @@ void stepper_stop(void) {
 		GPIO_write(stepperPins[i], LOW);
 	}
 }
-
-
-

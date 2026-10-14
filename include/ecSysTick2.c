@@ -13,7 +13,7 @@ Description      : SysTick Library. Distributed to Students for LAB_SYSTICK
 #include "ecSysTick2.h"
 
 
-volatile uint32_t msTicks;
+volatile uint32_t msTicks;		// millisec tick
 
 // Initialize 1 ms tick of SysTick timer. 
 // Must call AFTER RCC_HSI_init() (16 MHz) or RCC_PLL_init() (84 MHz)
@@ -65,6 +65,30 @@ void delay_ms (uint32_t msec){
 }
 
 
+// Blocking delay in microseconds
+void delay_us(uint32_t usec){
+    
+    uint32_t reload = SysTick->LOAD + 1;				// Total clock cycles in one SysTick period
+    uint32_t prev = SysTick->VAL;						// Previous SysTick counter value
+    uint32_t curr;										// Current SysTick counter value 
+    uint32_t elapsed = 0;								// Total clock cycles passed
+    uint32_t target = usec * (EC_SYSCLK / 1000000UL);	// Convert time (us) to clock cycles
+
+    // Wait until the target time is reached
+    while(elapsed < target){
+
+        curr = SysTick->VAL;					// Read the current counter value
+        if(prev >= curr){
+            elapsed += prev - curr;				// Normal countdown
+        } else {
+            elapsed += prev + reload - curr;	// Counter reloads after reaching 0
+        }
+
+        prev = curr;		// Update the previous counter value
+    }
+}
+
+
 // Reset the SysTick counter to 0
 void SysTick_reset(void)
 {
@@ -75,6 +99,3 @@ void SysTick_reset(void)
 uint32_t SysTick_val(void) {
 	return SysTick->VAL;
 }
-
-
-
