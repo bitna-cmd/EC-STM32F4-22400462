@@ -46,25 +46,23 @@ MCU: STM32F411RE, Nucleo-64
 `#include "ecGPIO.h"`
 
 ```c
+
+#ifndef __ECGPIO2_H
+#define __ECGPIO2_H
+
+#include "stm32f411xe.h"
+#include "ecRCC2.h"
+#include "ecPinNames.h"
+
 // MODER
-#define INPUT       0x00
-#define OUTPUT      0x01
-#define AF          0x02
-#define ANALOG      0x03
+#define INPUT  0x00
+#define OUTPUT 0x01
+#define AF     0x02
+#define ANALOG 0x03
 
 // IDR & ODR
 #define HIGH        1
 #define LOW         0
-
-// OSPEED
-#define LOW_SPEED       0x00
-#define MID_SPEED       0x01
-#define FAST_SPEED      0x02
-#define HIGH_SPEED      0x03
-
-// OTYPER
-#define PUSH_PULL       0   // Push-pull
-#define OPEN_DRAIN      1   // Open-Drain
 
 // PUDR
 #define NO_PUPD         0x00    // No pull-up, pull-down
@@ -72,17 +70,39 @@ MCU: STM32F411RE, Nucleo-64
 #define PULL_DOWN       0x02    // Pull-down
 #define RESERVED        0x03    // Reserved
 
+// OTYPER
+#define PUSH_PULL       0   // Push-pull
+#define OPEN_DRAIN      1   // Open-Drain
+
+// OSPEED
+#define LOW_SPEED     0x00
+#define MEDIUM_SPEED  0x01
+#define FAST_SPEED    0x02
+#define HIGH_SPEED    0x03
+
 // PIN
 #define LED_PIN         5
 #define BUTTON_PIN      13
 
-void GPIO_init(GPIO_TypeDef *Port, int pin, int mode);
-void GPIO_mode(GPIO_TypeDef* Port, int pin, int mode);
-void GPIO_write(GPIO_TypeDef *Port, int pin, int output);
-int  GPIO_read(GPIO_TypeDef *Port, int pin);
-void GPIO_ospeed(GPIO_TypeDef* Port, int pin, int speed);
-void GPIO_otype(GPIO_TypeDef* Port, int pin, int type);
-void GPIO_pupdr(GPIO_TypeDef* Port, int pin, int pupd);
+
+void GPIO_init(PinName_t pinName, uint32_t mode);     
+void GPIO_mode(PinName_t pinName, uint32_t mode);
+void GPIO_ospeed(PinName_t pinName, uint32_t speed);
+void GPIO_otype(PinName_t pinName, uint32_t type);
+void GPIO_pupd(PinName_t pinName, uint32_t pupd);
+void GPIO_write(PinName_t pinName, uint32_t Output);
+uint32_t  GPIO_read(PinName_t pinName);
+void GPIO_init_all(PinName_t pinName, uint32_t mode, uint32_t speed, uint32_t type, uint32_t pupd);
+void pinMode(PinName_t pin, uint32_t mode);
+void digitalWrite(PinName_t pin, uint32_t value);
+uint32_t  digitalRead(PinName_t pin);
+extern int numberFND[12][8];
+void FND_init(PinName_t *pinFND);
+void FND_select_init(PinName_t *selectFND);
+void FND_display(uint8_t num);
+void FND_select(uint8_t digit);
+
+void led_toggle(PinName_t pinName);
 ```
 
 #### GPIO_init()
