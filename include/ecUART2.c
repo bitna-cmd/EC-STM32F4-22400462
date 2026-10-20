@@ -1,4 +1,3 @@
-
 /*----------------------------------------------------------------\
 @ Embedded Controller by Young-Keun Kim - Handong Global University
 Author           : Won Bitna
@@ -90,9 +89,9 @@ void USART_init(USART_TypeDef* USARTx, PinName_t pin_GPIO_TX, PinName_t pin_GPIO
 	USARTx->CR1 |= USART_CR1_UE; 						          // USART enable
 
 // 3. RX interrupt (data ready to be read)
-  // Enable RXNE interrupt
+    // Enable RXNE interrupt
 	USARTx->CR1 |= USART_CR1_RXNEIE;
-  // USART_IRQn
+    // USART_IRQn
 	uint32_t USART_IRQ = USART2_IRQn;
     // Set the priority and enable interrupt
     // [YOUR CODE HERE] 
@@ -122,7 +121,6 @@ void USART_baud(USART_TypeDef* USARTx, uint32_t baud){
 	//   BRR[15:4] = DIV_Mantissa (integer part of USARTDIV)
 	//   BRR[3:0]  = DIV_Fraction (counts 1/16 steps -> multiply the fraction by 16)
     // [YOUR CODE HERE]
-    // USARTx->BRR = _______________ 
 	USARTx->BRR |= ((uint32_t)USARTDIV<<4);			// mastissa
 	USARTx->BRR |= (uint32_t)round((USARTDIV-(uint32_t)USARTDIV) * 16);	// fraction
   
@@ -157,14 +155,19 @@ void USART_pins(USART_TypeDef* USARTx, PinName_t pin_GPIO_TX, PinName_t pin_GPIO
 	//   AF7 - USART1, USART2
 	//   AF8 - USART6
 	uint32_t AF_num = (USARTx == USART6) ? 8 : 7;
-	if (pinTX < 8) { GPIO_TX->AFR[0] &= ~(0xFUL << (4*pinTX));     GPIO_TX->AFR[0] |= AF_num << (4*pinTX); }
-	else           { GPIO_TX->AFR[1] &= ~(0xFUL << (4*(pinTX-8))); GPIO_TX->AFR[1] |= AF_num << (4*(pinTX-8)); }
+	if (pinTX < 8) { 
+		GPIO_TX->AFR[0] &= ~(0xFUL << (4*pinTX));     
+		GPIO_TX->AFR[0] |= AF_num << (4*pinTX); 
+	} else { 
+		GPIO_TX->AFR[1] &= ~(0xFUL << (4*(pinTX-8))); 
+		GPIO_TX->AFR[1] |= AF_num << (4*(pinTX-8)); 
+	}
 	
  	if (pinRX < 8) {
     	// [YOUR CODE HERE] 
 		GPIO_RX->AFR[0] &= ~(15UL<<(pinRX*4));
 		GPIO_RX->AFR[0] |= (AF_num<<(pinRX*4));
-    } else{
+    } else {
     	// [YOUR CODE HERE] 
 		GPIO_RX->AFR[1] &= ~(15UL<<((pinRX-8)*4));
 		GPIO_RX->AFR[1] |= (AF_num<<((pinRX-8)*4));
@@ -252,7 +255,7 @@ void USART1_init(void){
   //    USARTDIV = f_APB1 / (16 x baud)
   //    USART_baud(USARTx, 9600);
   uint32_t baud=  9600;				// Default baud rate for USART2
-  float fCK      = (float)EC_SYSCLK / 2;		// APB1 : 84MHz PLL -> 42MHz
+  float fCK      = (float)EC_SYSCLK;		// APB1 : 84MHz PLL -> 42MHz
   float USARTDIV = fCK / 16 / baud;
   uint32_t MNT   = (uint32_t)USARTDIV;
   uint32_t FRC   = round((USARTDIV - MNT) * 16);

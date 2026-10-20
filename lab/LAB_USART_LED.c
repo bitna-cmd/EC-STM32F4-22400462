@@ -1,43 +1,38 @@
-
 /*----------------------------------------------------------------\
 @ Embedded Controller by Young-Keun Kim - Handong Global University
 Author           : Won Bitna
-Created          : 05-03-2021
+Created          : 10-08-2026
 Modified         : 10-19-2026
 Language/ver     : C in VS Code
 
-Description      : LAB USART LED
+Description      : USART2 Problem 1
 /----------------------------------------------------------------*/
 
-#include "ecSTM32F4v2.h"
+#include "ecSTM32F4v2.h"  // this should include #include "ecUART2.h"
 
-#define MAX_BUF 32       // Maximum string length + 1
-#define END_CHAR 13      // Enter (\r)
+#define MAX_BUF 32          // maximum size of buffer
+#define END_CHAR 13         // this means enter. ASCII 13: \r
 
-static volatile uint8_t PC_Data = 0;
-static volatile uint8_t BT_Data = 0;
+static volatile uint8_t buffer[MAX_BUF]={0, };          // temporarily store the recieved letters
+static volatile uint8_t PC_string[MAX_BUF+1]={0, };       // store the completed letters
+static volatile uint8_t PC_data = 0;                    // store one recieved character 
 
-// [추가] Example 2: String buffer
-static volatile uint8_t buffer[MAX_BUF] = {0, };
-static volatile uint8_t BT_string[MAX_BUF] = {0, };
-
-static volatile int idx = 0;
-static volatile int bReceive = 0;
-static volatile int bOverflow = 0;
+static volatile int idx = 0;            // index for next letter
+static volatile int bReceive =0;        // flag for check if the string is completed
 
 void setup(void){
     RCC_PLL_init();
     SysTick_init();
 
-    // [추가] LD2 initialization
-    GPIO_init(PA_5, OUTPUT);
-    GPIO_write(PA_5, LOW);
+	GPIO_init(PA_5, OUTPUT);
+	GPIO_write(PA_5, LOW);
 
     // USART2: USB serial init
-    USART_init(USART2, PA_2, PA_3, BAUD_9600);
-
+	USART_init(USART2, PA_2, PA_3, 9600);
+    //USART2_baud(BAUD_38400);
     // USART1: MCU2 serial init
-    USART_init(USART1, PA_9, PA_10, BAUD_9600);
+	USART_init(USART1, PA_9, PA_10, 9600);
+    //USART1_baud(BAUD_38400);
 }
 
 int main(void){
@@ -45,63 +40,74 @@ int main(void){
     printf("MCU Initialized\r\n");
 
     while(1){
-        // USART Receive: Use Interrupt only
-        // USART Transmit: Polling
-
-        // Example 2: Process completed string
-        if(bReceive == 1){
-            printf("RX: %s\r\n", (char*)BT_string);
-
-            // LED Control
-            if(BT_string[0] == 'H' && BT_string[1] == '\0'){
-                GPIO_write(PA_5, HIGH);
-            }
-            else if(BT_string[0] == 'L' && BT_string[1] == '\0'){
-                GPIO_write(PA_5, LOW);
-            }
-
+        if (bReceive == 1){
+            printf("PC_string: %s\r\n", PC_string);
             bReceive = 0;
         }
     }
 }
 
-void USART2_IRQHandler(void){       // USART2 RX Interrupt
+void USART2_IRQHandler(){       // USART2 RX Interrupt
     if(is_USART2_RXNE()){
-        PC_Data = USART2_read();     // RX from UART2 (PC)
+        PC_data = USART2_read();     // RX from UART2 (PC)
+        USART2_write(&PC_data,1);    // TX to USART2 (PC) Echo of keyboard typing
+        USART1_write(&PC_data, 1);   // TX to USART1 (other MCU)
 
-        USART2_write(&PC_Data, 1);  // Echo keyboard typing
-        USART1_write(&PC_Data, 1);  // TX to Other MCU
+        // Creates a String from received serial character
+        if(PC_data != END_CHAR && (idx < MAX_BUF)){
+            buffer[idx] = PC_data;
+            idx++;
+        }
+        else if (PC_data== END_CHAR) {
+            bReceive = 1;
+            // reset PC_string
+            memset(PC_string, 0, sizeof(char) * MAX_BUF);
+            // copy to PC_string
+            memcpy(PC_string, buffer, sizeof(char) * idx);
+            // reset buffer
+            memset(buffer, 0, sizeof(char) * MAX_BUF);
+            idx = 0;
+        }
+        else{       // if(idx >= MAX_BUF)
+            idx = 0;
+            // reset PC_string
+            memset(PC_string, 0, sizeof(char) * MAX_BUF);
+            // reset buffer
+            memset(buffer, 0, sizeof(char) * MAX_BUF);
+            printf("ERROR : Too long string\r\n");
+        }
     }
 }
 
-void USART1_IRQHandler(void){       // USART1 RX Interrupt
+// Added: receive a string from the other MCU through PA9/PA10.
+void USART1_IRQHandler(){
     if(is_USART1_RXNE()){
-        BT_Data = USART1_read();    // RX from other MCU
+        PC_data = USART1_read();
+        //USART2_write(&PC_data,1); // Echo received character to local PC
 
-        // Example 2: Create string
-        if(BT_Data != END_CHAR && BT_Data != '\n'){
-            if(idx < MAX_BUF - 1 && bOverflow == 0){    // -1 is for '\0'
-                buffer[idx] = BT_Data;
-                idx++;
-            }
-            else{
-                bOverflow = 1;
-            }
+		// if other MCU get 'H' or 'L' from my PC, its LED(PA_5) will change
+		if(PC_data == 'H')
+			GPIO_write(PA_5, HIGH);
+		else if (PC_data == 'L')
+			GPIO_write(PA_5, LOW);
+
+		// get string
+        if(PC_data != END_CHAR && (idx < MAX_BUF)){
+            buffer[idx] = PC_data;
+            idx++;
         }
-        else if(BT_Data == END_CHAR){
-            if(bOverflow == 0 && bReceive == 0){
-                buffer[idx] = '\0';
-
-                // Copy completed string
-                for(int i = 0; i <= idx; i++){
-                    BT_string[i] = buffer[i];
-                }
-
-                bReceive = 1;
-            }
-
+        else if (PC_data == END_CHAR){
+            bReceive = 1;
+            memset(PC_string, 0, sizeof(char) * MAX_BUF);
+            memcpy(PC_string, buffer, sizeof(char) * idx);
+            memset(buffer, 0, sizeof(char) * MAX_BUF);
             idx = 0;
-            bOverflow = 0;
+        }
+        else{
+            idx = 0;
+            memset(PC_string, 0, sizeof(char) * MAX_BUF);
+            memset(buffer, 0, sizeof(char) * MAX_BUF);
+            printf("ERROR : Too long string\r\n");
         }
     }
 }

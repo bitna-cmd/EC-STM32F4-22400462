@@ -17,8 +17,8 @@ Description      : Source Code. Stepper Motor Control with FSM
 #include "ecSTM32F4v2.h"
 
 #define BUTTON_PIN      PC_13
-#define DELAY_UNIT		US
-#define MOTOR_RPM		1
+#define DELAY_UNIT		US			// microsec
+#define MOTOR_RPM		1			// 1rpm
 
 // ( A, B,  AN,  BN)
 PinName_t pinStepper[4]    = {PB_10,PB_4,PB_5,PB_3};
