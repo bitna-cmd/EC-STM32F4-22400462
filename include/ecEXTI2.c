@@ -24,7 +24,7 @@ void EXTI_init(PinName_t pinName, uint32_t trig_type,uint32_t priority){
 	ecPinmap(pinName,&Port,&pin);
 	
 	// Enable EXTI Clock with SYSCFG controller clock 	
-	RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN;		
+	RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN;			
 	
 
 	// Connect EXTI to the GPIO Port_y Pin_x

@@ -50,7 +50,7 @@ Description      : USART2  library
 // **********************************************************
 
 
-/*================ EXERCISE ================*/
+/*================ EXERCISE Functions ================*/
 /*================ General Configuration ================*/
 // General configuration
 void USART_init(USART_TypeDef* USARTx, PinName_t pin_GPIO_TX, PinName_t pin_GPIO_RX, uint32_t baud);	// copy of USART_setting
@@ -61,7 +61,7 @@ void USART1_baud(uint32_t baud);
 void USART2_baud(uint32_t baud);
 
 
-/*================ PROVIDED  ================*/
+/*================ PROVIDED Functions ================*/
 /*================ Configuration for each USART ================*/
 // Configuration UART 1, 2 using default settings
 void USART1_init(void);
@@ -88,6 +88,3 @@ void USART_delay(uint32_t us);
 								
 
 #endif // __EC_USART2_STUDENT_H
-
-
-

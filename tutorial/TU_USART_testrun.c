@@ -21,10 +21,10 @@ void setup(void)
 int main(void) {
 	// Initialiization --------------------------------------------------------
 	setup();
-  USART2_write(PC_string, sizeof(PC_string));
+    USART2_write(PC_string, sizeof(PC_string));
 	
-  uint32_t lineNumber = 0;
-  // Inifinite Loop ----------------------------------------------------------
+    uint32_t lineNumber = 0;
+    // Inifinite Loop ----------------------------------------------------------
 	while (1){
         printf("Line %lu >>\r\n", lineNumber);
         delay_ms(2000);

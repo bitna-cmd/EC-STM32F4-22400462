@@ -13,7 +13,7 @@ Description      : USART2 Example Code 1,2 in Problem 1
 //              EX1: Character comm               //
 ////////////////////////////////////////////////////
 
-#include "ecSTM32F4v2.h"// this should include #include "ecUART2.h" 
+#include "ecSTM32F4v2.h"
 //#include "ecUART2.h" 
 
 static volatile uint8_t PC_Data = 0;        // store one character from PC
@@ -66,7 +66,7 @@ void USART1_IRQHandler(){          	// USART2 RX Interrupt
 //                EX2: String comm                //
 ////////////////////////////////////////////////////
 
-#include "ecSTM32F4v2.h"  // this should include #include "ecUART2.h"
+#include "ecSTM32F4v2.h"
 
 #define MAX_BUF 10          // maximum size of buffer
 #define END_CHAR 13         // this means enter. ASCII 13: \r

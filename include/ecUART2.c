@@ -58,28 +58,27 @@ int _read(int file, char* data, int len)
 #endif
 
 
-/*----------------------------------------------------------------\
-        EXERCISE: Implement the following functions
-/----------------------------------------------------------------*/
 /*================ General Configuration ================*/
+// Initialize the selected USART configuration of TX, RX, and baud rate
+// (baud: BAUD_xxxx)
 void USART_init(USART_TypeDef* USARTx, PinName_t pin_GPIO_TX, PinName_t pin_GPIO_RX, uint32_t baud){
-//1. GPIO Pin for TX and RX
+    //1. GPIO Pin for TX and RX
 	USART_pins(USARTx, pin_GPIO_TX, pin_GPIO_RX);
 
-//2. USARTx (x=2,1,6) configuration
+	//2. USARTx (x=2,1,6) configuration
 	USART_clock_enable(USARTx);
 
 	// Disable USARTx.
 	USARTx->CR1 &= ~USART_CR1_UE; 	// USART disable
 
 	// No Parity / 8-bit word length / Oversampling x16 / Stop bit =1
-    // [YOUR CODE HERE] 
 	USARTx->CR1 &= ~(1UL<<10);		// No parity
 	USARTx->CR1 &= ~(1UL<<12);		// 8-bit word length
 	USARTx->CR1 &= ~(1UL<<15);		// Oversampling x16
 	USARTx->CR2 &= ~(3UL<<12);		// Stop bit = 1
 
-	// Set Baudrate using APB frequency (42MHz)
+	// Set baud rate using the corresponding APB clock
+	// USART1/6: APB2 (84 MHz), USART2: APB1 (42 MHz)
 	// If oversampling by 16, Tx/Rx baud = f_CK / (16*USARTDIV),
 	// If oversampling by 8,  Tx/Rx baud = f_CK / (8*USARTDIV)
 	USART_baud(USARTx, baud);
@@ -88,24 +87,24 @@ void USART_init(USART_TypeDef* USARTx, PinName_t pin_GPIO_TX, PinName_t pin_GPIO
 	USARTx->CR1 |= (USART_CR1_RE | USART_CR1_TE);   	// Transmitter and Receiver enable
 	USARTx->CR1 |= USART_CR1_UE; 						          // USART enable
 
-// 3. RX interrupt (data ready to be read)
+	// 3. RX interrupt (data ready to be read)
     // Enable RXNE interrupt
 	USARTx->CR1 |= USART_CR1_RXNEIE;
     // USART_IRQn
 	uint32_t USART_IRQ = USART2_IRQn;
     // Set the priority and enable interrupt
-    // [YOUR CODE HERE] 
 	if(USARTx == USART1)
 		USART_IRQ = USART1_IRQn;
 	else if(USARTx == USART6)
 		USART_IRQ = USART6_IRQn;
 	
+	// Give the RX interrupt priority and enable it
 	NVIC_SetPriority(USART_IRQ, 1);
 	NVIC_EnableIRQ(USART_IRQ);
 
 }
 
-
+// Set the baud rate of USARTx (baud: BAUD_xxxx)
 void USART_baud(USART_TypeDef* USARTx, uint32_t baud){
 	// Disable USARTx.
 	USARTx->CR1  &= ~USART_CR1_UE; 						// USART disable
@@ -120,7 +119,6 @@ void USART_baud(USART_TypeDef* USARTx, uint32_t baud){
 	// Method 1 : build the two BRR fields explicitly
 	//   BRR[15:4] = DIV_Mantissa (integer part of USARTDIV)
 	//   BRR[3:0]  = DIV_Fraction (counts 1/16 steps -> multiply the fraction by 16)
-    // [YOUR CODE HERE]
 	USARTx->BRR |= ((uint32_t)USARTDIV<<4);			// mastissa
 	USARTx->BRR |= (uint32_t)round((USARTDIV-(uint32_t)USARTDIV) * 16);	// fraction
   
@@ -140,7 +138,6 @@ void USART_pins(USART_TypeDef* USARTx, PinName_t pin_GPIO_TX, PinName_t pin_GPIO
 	ecPinmap(pin_GPIO_RX, &GPIO_RX, &pinRX);
 
 	// Alternate Function, Push-Pull, No Pull-up/down, High speed
-	// [YOUR CODE HERE]
 	GPIO_init(pin_GPIO_TX, AF);
 	GPIO_otype(pin_GPIO_TX, PUSH_PULL);
 	GPIO_pupd(pin_GPIO_TX, NO_PUPD);
@@ -164,21 +161,20 @@ void USART_pins(USART_TypeDef* USARTx, PinName_t pin_GPIO_TX, PinName_t pin_GPIO
 	}
 	
  	if (pinRX < 8) {
-    	// [YOUR CODE HERE] 
 		GPIO_RX->AFR[0] &= ~(15UL<<(pinRX*4));
 		GPIO_RX->AFR[0] |= (AF_num<<(pinRX*4));
     } else {
-    	// [YOUR CODE HERE] 
 		GPIO_RX->AFR[1] &= ~(15UL<<((pinRX-8)*4));
 		GPIO_RX->AFR[1] |= (AF_num<<((pinRX-8)*4));
     }
 
 }
 
-
+// Set baud rate of USART1 (baud: BAUD_xxxx)
 void USART1_baud(uint32_t baud){
 	USART_baud(USART1, baud);
 }
+// Set baud rate of USART2 (baud: BAUD_xxxx)
 void USART2_baud(uint32_t baud){
 	USART_baud(USART2, baud);
 }
@@ -371,29 +367,34 @@ void USART2_init(void){
 }
 
 
-
+// Send data through USART1
 void USART1_write(uint8_t* buffer, uint32_t nBytes){
 	USART_write(USART1, buffer, nBytes);
 }
+// Send data through USART2
 void USART2_write(uint8_t* buffer, uint32_t nBytes){
 	USART_write(USART2, buffer, nBytes);
 }
+// Read one received character from USART1
 uint8_t USART1_read(void){
 	return USART_read(USART1);
 }
+// Read one received character from USART2
 uint8_t USART2_read(void){
 	return USART_read(USART2);
 }
-
+// Check whether new data has been received through USART1
 uint32_t is_USART1_RXNE(void){
 	return is_USART_RXNE(USART1);
 }
+// Check whether new data has been received through USART2
 uint32_t is_USART2_RXNE(void){
 	return is_USART_RXNE(USART2);
 }
 
 
 /*================ General Configuration ================*/
+// Enable the peripheral clock for the selected USART
 void USART_clock_enable(USART_TypeDef* USARTx){
 	if (USARTx == USART1)
 		RCC->APB2ENR |= RCC_APB2ENR_USART1EN; 	// Enable USART 1 clock (APB2 clock: AHB clock = 84MHz)
@@ -403,6 +404,7 @@ void USART_clock_enable(USART_TypeDef* USARTx){
 		RCC->APB2ENR |= RCC_APB2ENR_USART6EN;  	// Enable USART 6 clock (APB2 clock: AHB clock = 84MHz)
 }
 
+// Send multiple characters through the selected USART using polling
 void USART_write(USART_TypeDef * USARTx, uint8_t *buffer, uint32_t nBytes) {
 	// TXE is set by hardware when the content of the TDR
 	// register has been transferred into the shift register.
@@ -420,6 +422,7 @@ void USART_write(USART_TypeDef * USARTx, uint8_t *buffer, uint32_t nBytes) {
 	USARTx->SR &= ~USART_SR_TC;
 }
 
+// Read a character received from the selected USART
 uint8_t USART_read(USART_TypeDef * USARTx){
 	// Wait until RXNE (RX not empty) bit is set by HW -->Read to read
 	while (is_USART_RXNE(USARTx) == 0);
@@ -427,10 +430,12 @@ uint8_t USART_read(USART_TypeDef * USARTx){
 	return ((uint8_t)(USARTx->DR & 0xFF));
 }
 
+// Check whether new data has been received
 uint32_t is_USART_RXNE(USART_TypeDef * USARTx){
 	return (USARTx->SR & USART_SR_RXNE) != 0;
 }
 
+// Generate an approximate delay using a busy-wait loop
 void USART_delay(uint32_t us) {
    uint32_t time = 100*us/7;
    while(--time);

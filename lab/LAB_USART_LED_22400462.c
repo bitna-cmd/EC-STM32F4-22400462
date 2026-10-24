@@ -8,7 +8,7 @@ Language/ver     : C in VS Code
 Description      : USART2 Problem 1
 /----------------------------------------------------------------*/
 
-#include "ecSTM32F4v2.h"  // this should include #include "ecUART2.h"
+#include "ecSTM32F4v2.h"
 
 #define MAX_BUF 32          // maximum size of buffer
 #define END_CHAR 13         // this means enter. ASCII 13: \r
@@ -39,14 +39,18 @@ int main(void){
     setup();
     printf("MCU Initialized\r\n");
 
+	// Print string only after recieved "enter"
     while(1){
         if (bReceive == 1){
             printf("PC_string: %s\r\n", PC_string);
-            bReceive = 0;
+            bReceive = 0;		// Clear the flag for the next string
         }
     }
 }
 
+
+// Handle characters typed on PC through USART2
+// The character is echoed to PC and the other MCU
 void USART2_IRQHandler(){       // USART2 RX Interrupt
     if(is_USART2_RXNE()){
         PC_data = USART2_read();     // RX from UART2 (PC)
@@ -79,7 +83,8 @@ void USART2_IRQHandler(){       // USART2 RX Interrupt
     }
 }
 
-// Added: receive a string from the other MCU through PA9/PA10.
+// Receive a string from the other MCU through PA9/PA10
+// Handle characters sent by the other MCU through USART1
 void USART1_IRQHandler(){
     if(is_USART1_RXNE()){
         PC_data = USART1_read();
@@ -91,19 +96,17 @@ void USART1_IRQHandler(){
 		else if (PC_data == 'L')
 			GPIO_write(PA_5, LOW);
 
-		// get string
-        if(PC_data != END_CHAR && (idx < MAX_BUF)){
+		// Collect other MCU's characters into a string until recieve "enter"
+        if (PC_data != END_CHAR && (idx < MAX_BUF)) {
             buffer[idx] = PC_data;
             idx++;
-        }
-        else if (PC_data == END_CHAR){
-            bReceive = 1;
+        } else if (PC_data == END_CHAR) {
+            bReceive = 1;		// completed string
             memset(PC_string, 0, sizeof(char) * MAX_BUF);
             memcpy(PC_string, buffer, sizeof(char) * idx);
             memset(buffer, 0, sizeof(char) * MAX_BUF);
             idx = 0;
-        }
-        else{
+        } else {	// Discard an overlength string and reset the temporary buffer.
             idx = 0;
             memset(PC_string, 0, sizeof(char) * MAX_BUF);
             memset(buffer, 0, sizeof(char) * MAX_BUF);
