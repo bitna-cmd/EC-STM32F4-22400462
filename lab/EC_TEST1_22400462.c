@@ -43,13 +43,14 @@ PinName_t pinFND_test[8] = {PB_0, PB_1, PB_2, PB_3, PB_4, PB_5, PB_6, PB_7};
 // YOUR CODE GOES HERE
 PinName_t selectFND_test[4] = {PA_10, PA_11, PC_4, PC_3};
 
-PinName_t pinStepper_test[4] = {PB_10,PB_4,PB_5,PB_3};
+PinName_t pinStepper_test[4] = {PC_5,PC_6,PC_7,PC_8};
 
 // Global Variables
 // use   volatile uint32_t   instead of uint32_t if used in Interrupt ISR
-volatile uint32_t motor_mode   = 1;	
+volatile uint32_t motor_mode   = 0;	
 volatile uint32_t motor_dir    = 0;	
-volatile uint32_t motor_speed  = 5;	
+volatile uint32_t motor_speed  = 0;	
+volatile uint32_t dummy_speed  = 0;	
 // YOUR CODE GOES HERE
 // YOUR CODE GOES HERE
 // YOUR CODE GOES HERE
@@ -109,6 +110,7 @@ void setup(void){
 	// YOUR CODE GOES HERE
 	stepper_init(motor_mode, pinStepper_test); 				// Stepper GPIO pin initialization
 	stepper_speed(MOTOR_RPM_TEST, DELAY_UNIT_TEST);                          	//  set stepper motor speed (rpm)
+
 }
 
 
@@ -129,6 +131,18 @@ int main(void){
 		// Check PAUSE/RESUME 
 		// YOUR CODE GOES HERE
 		// YOUR CODE GOES HERE
+
+
+		// stepper_speed(motor_speed, MS);
+		// if(led_flag == 1)
+		// 	stepper_stop();
+		// else
+		// 	stepper_step(1, motor_dir, MS);
+
+		// while(led_flag == 1)
+		// 	stepper_stop()
+
+
 		if((msTicks%2000) == 0){
 			if(led_flag == 1)
 				led_flag = 0;
@@ -136,8 +150,10 @@ int main(void){
 				led_flag = 1;
 			if(GPIO_read(PHOTO_TEST) == 1 && (msTicks%2000) == 0)	
 				GPIO_write(LED0_TEST, HIGH);
+				
 			else if (GPIO_read(PHOTO_TEST) == 0 && (msTicks%2000) == 0){
 				GPIO_write(LED0_TEST, led_flag);
+				stepper_stop();
 			}
 			if((msTicks%2000) == 0){
 			printf("Mode=%lu Speed=%lu DIR=%lu\r\n", motor_mode, motor_speed, motor_dir);
@@ -150,10 +166,41 @@ int main(void){
 		// // YOUR CODE GOES HERE
 		// // YOUR CODE GOES HERE
 		// // YOUR CODE GOES HERE
-		if(motor_speed>=0){
-			stepper_speed(motor_speed, MS);
+
+		// if(led_flag == 0){
+		// 	dummy_speed = motor_speed;
+		// 	motor_speed = 0;
+		// }
+		
+		// dummy_speed = motor_speed;
+
+
+		// if(led_flag == 0){
+		// 	stepper_stop();
+		// 	// dummy_speed = motor_speed;
+		// 	// motor_speed = 0;
+		// }
+		// else{
+		// 	if(motor_speed>=0){
+		// 		stepper_step(1, motor_dir, MS);
+		// 	}
+		// }
+		
+		if(GPIO_read(PHOTO_TEST) == 0){
+			dummy_speed = motor_speed;
+			motor_speed = 0;
 		}
+
+
+
+		stepper_speed(motor_speed, MS);
 		stepper_step(1, motor_dir, MS);
+
+
+		if(dummy_speed != 0){
+			motor_speed = dummy_speed;
+			dummy_speed = 0;
+		}
 
 		// Print to the serial monitor every 2 sec
 		// PAUSE, blink at 2 sec
@@ -179,13 +226,51 @@ int main(void){
 	// YOUR CODE GOES HERE
 void EXTI2_IRQHandler(void) {
     if (is_pending_EXTI(SW1_TEST)) {   // Check SW1 interrupt
-		motor_speed++;
-    }
+		if(GPIO_read(PHOTO_TEST) != 0){
+			if(motor_speed == 0){
+				motor_speed = 2;
+				motor_mode = 1;
+			}
+			else if(motor_speed == 2){
+				motor_speed = 6;
+				motor_mode = 2;
+			}
+			else if(motor_speed == 6){
+				motor_speed = 10;
+				motor_mode = 3;
+			}
+			else if(motor_speed = 10){
+				motor_speed = 10;
+				motor_mode = 3;
+			}
+    	}
+		clear_pending_EXTI(SW1_TEST);
+	}
 }
+
+
 void EXTI4_IRQHandler(void) {
     if (is_pending_EXTI(SW2_TEST)) {   // Check SW2 interrupt
-		motor_speed--;
-    }
+		if(GPIO_read(PHOTO_TEST) != 0){
+			if(motor_speed == 10){
+				motor_speed = 6;
+				motor_mode = 2;
+			}
+			else if(motor_speed == 6){
+				motor_speed = 2;
+				motor_mode = 1;
+			}
+			else if(motor_speed == 2){
+				motor_speed = 0;
+				motor_mode = 0;
+			}
+			else if(motor_speed == 0){
+				motor_speed = 0;
+				motor_mode = 0;
+			}
+    	}
+		clear_pending_EXTI(SW2_TEST);
+	}
 }
 
 void SysTick_Handler(void){
@@ -195,11 +280,29 @@ void SysTick_Handler(void){
     if(msTicks == 2001){
         msTicks = 0;                  // Reset tick count for next 1 second
     }
+
+	
 	if(motor_dir == 0)
 		FND_select(0);
 	else
 		FND_select(1);
-    FND_display(motor_dir);               // Display current count number
+
+	if(motor_mode == 0){
+		FND_display(0);
+		motor_mode = 0;
+	}
+	else if(motor_mode == 1){
+		FND_display(1);
+		motor_mode = 1;
+	}
+	else if(motor_mode == 2){
+		FND_display(2);
+		motor_mode = 2;
+	}
+	else if(motor_mode == 3){
+		FND_display(3);
+		motor_mode = 3;
+	}
 }
 
 //==================================================================

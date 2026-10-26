@@ -21,7 +21,7 @@ Description      : Source Code. Stepper Motor Control with FSM
 #define MOTOR_RPM		10			// 1rpm
 
 // ( A, B,  AN,  BN)
-PinName_t pinStepper[4]    = {PB_10,PB_4,PB_5,PB_3};
+//PinName_t pinStep[4]    = {PC_10,PC_4,PC_5,PC_3};
 
 // Initialiization 
 void setup(void){	
@@ -51,10 +51,10 @@ int main(void) {
 	}
 }
 
-// stop the stepper motor when BUTTON is pressed
-void EXTI15_10_IRQHandler(void) {  
-	if (is_pending_EXTI(BUTTON_PIN)) {
-		stepper_stop();
-		clear_pending_EXTI(BUTTON_PIN); // cleared by writing '1'
-	}
-}
+// // stop the stepper motor when BUTTON is pressed
+// void EXTI15_10_IRQHandler(void) {  
+// 	if (is_pending_EXTI(BUTTON_PIN)) {
+// 		stepper_stop();
+// 		clear_pending_EXTI(BUTTON_PIN); // cleared by writing '1'
+// 	}
+// }
