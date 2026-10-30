@@ -12,3 +12,7 @@ submitted_files/reports_including_video/report_USART/Prob0_USART_baud_57600.mp4
 submitted_files/reports_including_video/report_USART/Prob2_Stepper_Motor.mp4
 submitted_files/reports_including_video/report_USART/Prob1_Communicate.mp4
 submitted_files/reports_including_video/report_USART/Prob0_USART_baud_9600.mp4
+/submitted_files.zip
+/submitted_files/*.zip
+~$*.docx
+~WRL*.tmp
