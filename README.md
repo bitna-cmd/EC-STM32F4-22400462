@@ -44,7 +44,7 @@ MCU: STM32F411RE, Nucleo-64
 
 #### Header File
 
-`#include "ecGPIO.h"`
+`#include "ecGPIO2.h"`
 
 ```c++
 // MODER
@@ -1530,11 +1530,11 @@ val = SysTick_val;
 
 ***
 
-### eUART2
+### ecTIM2
 
 #### Header File
 
-`#include "ecUART2.h"`
+`#include "ecTIM2.h"`
 
 
 #### USART_init()
@@ -2238,3 +2238,732 @@ void USART_delay(uint32_t us) {
 USART_delay(300);
 ```
 
+
+***
+
+### ecUART2
+
+#### Header File
+
+`#include "ecUART2.h"`
+
+
+
+#### TIM_UI_init()
+
+Initializes a timer with a millisecond period, enables its update interrupt, and sets the NVIC priority to 2.
+
+```c
+void TIM_UI_init(TIM_TypeDef* TIMx, uint32_t msec){
+    // 1. Initialize Timer
+    TIM_init(TIMx,msec);
+
+    // 2. Enable Update Interrupt
+    TIM_UI_enable(TIMx);
+
+    // 3. NVIC Setting
+    uint32_t IRQn_reg = get_TIM_IRQn(TIMx);
+    NVIC_EnableIRQ(IRQn_reg);
+    NVIC_SetPriority(IRQn_reg,2);
+}
+```
+
+**Parameters**
+
+- **TIMx**: Timer peripheral (e.g., TIM2).
+- **msec**: Timer period in milliseconds.
+
+**Example Code**
+
+```c
+TIM_UI_init(TIM2, 1000); // TIM2 update interrupt every 1 s
+```
+
+
+#### TIM_UI_init_us()
+
+Initializes a timer with a microsecond period and enables its update interrupt with NVIC priority 2.
+
+```c
+void TIM_UI_init_us(TIM_TypeDef* TIMx, uint32_t usec){
+    // 1. Initialize Timer
+    TIM_init_us(TIMx,usec);
+
+    // 2. Enable Update Interrupt
+    TIM_UI_enable(TIMx);
+
+    // 3. NVIC Setting
+    uint32_t IRQn_reg = get_TIM_IRQn(TIMx);
+    NVIC_EnableIRQ(IRQn_reg);
+    NVIC_SetPriority(IRQn_reg,2);
+}
+```
+
+**Parameters**
+
+- **TIMx**: Timer peripheral (e.g., TIM2).
+- **usec**: Timer period in microseconds.
+
+**Example Code**
+
+```c
+TIM_UI_init_us(TIM2, 10000); // 10 ms timer update period
+```
+
+
+#### TIM_UI_enable()
+
+Clears the timer update interrupt flag and enables update interrupt generation (UIE).
+
+```c
+void TIM_UI_enable(TIM_TypeDef* TIMx){
+    TIMx->SR = ~TIM_SR_UIF;
+    TIMx->DIER |= TIM_DIER_UIE;
+}
+```
+
+**Parameters**
+
+- **TIMx**: Timer peripheral to enable the update interrupt for.
+
+**Example Code**
+
+```c
+TIM_UI_enable(TIM2);
+```
+
+#### TIM_UI_disable()
+
+Disables update interrupt generation (UIE) for the selected timer.
+
+```c
+void TIM_UI_disable(TIM_TypeDef* TIMx){
+    TIMx->DIER &= ~(TIM_DIER_UIE);
+}
+```
+
+**Parameters**
+
+- **TIMx**: Timer peripheral whose update interrupt is disabled.
+
+**Example Code**
+
+```c
+TIM_UI_disable(TIM2);
+```
+
+#### is_UIF()
+
+Checks the timer update interrupt flag (UIF) in the status register.
+
+```c
+uint32_t is_UIF(TIM_TypeDef *TIMx){
+    return TIMx->SR & TIM_SR_UIF;
+}
+```
+
+**Parameters**
+
+- **TIMx**: Timer peripheral to check.
+
+**Returns**
+
+Nonzero if UIF is set, otherwise 0.
+
+**Example Code**
+
+```c
+if (is_UIF(TIM2)) {
+    clear_UIF(TIM2);
+}
+```
+
+#### clear_UIF()
+
+Clears the timer update interrupt flag (UIF).
+
+```c
+void clear_UIF(TIM_TypeDef *TIMx){
+    TIMx->SR &= ~TIM_SR_UIF;
+}
+```
+
+**Parameters**
+
+- **TIMx**: Timer peripheral whose update flag is cleared.
+
+**Example Code**
+
+```c
+clear_UIF(TIM2);
+```
+
+#### TIM_init()
+
+Enables and starts an up-counting timer with a period specified in milliseconds; the code uses a 10 kHz counter clock.
+
+```c
+void TIM_init(TIM_TypeDef* TIMx, uint32_t msec){
+    // 1. Enable Timer CLOCK
+    TIM_clock_enable(TIMx);
+
+    // 2. Set CNT period
+    TIM_period(TIMx, msec);
+
+    // 3. COUNTER Direction: Up-Counter
+    TIMx->CR1 &= ~TIM_CR1_DIR;
+
+    // 4. Enable Timer Counter
+    TIMx->CR1 |= TIM_CR1_CEN;
+}
+```
+
+**Parameters**
+
+- **TIMx**: Timer peripheral to initialize.
+- **msec**: Counter period in milliseconds.
+
+**Example Code**
+
+```c
+TIM_init(TIM2, 1000); // Timer period = 1 s
+```
+
+#### TIM_init_us()
+
+Enables and starts an up-counting timer with a period specified in microseconds; the code uses a 1 MHz counter clock.
+
+```c
+void TIM_init_us(TIM_TypeDef* TIMx, uint32_t usec){
+    // 1. Enable Timer CLOCK
+    TIM_clock_enable(TIMx);
+
+    // 2. Set CNT period
+    TIM_period_us(TIMx, usec);
+
+    // 3. CNT Direction: up-counter
+    TIMx->CR1 &= ~TIM_CR1_DIR;
+
+    // 4. Enable Timer Counter
+    TIMx->CR1 |= TIM_CR1_CEN;
+}
+```
+
+**Parameters**
+
+- **TIMx**: Timer peripheral to initialize.
+- **usec**: Counter period in microseconds.
+
+**Example Code**
+
+```c
+TIM_init_us(TIM2, 10000); // Timer period = 10 ms
+```
+
+#### TIM_period()
+
+Configures the prescaler (PSC) and auto-reload register (ARR) for a millisecond timer period.
+
+```c
+void TIM_period(TIM_TypeDef* TIMx, uint32_t msec){
+    uint32_t Sys_CLK = EC_SYSCLK;  // 84MHz (PLL) or 16MHz (HSI)
+
+    // Counter Frequency (f_cnt)
+    uint32_t f_cnt = 10000UL;      // 10 kHz
+
+    // Prescaler: 84MHz / 10kHz = 8400; register PSC = 8399
+    uint32_t PSCval = Sys_CLK / f_cnt;
+    TIMx->PSC = PSCval - 1;
+
+    // Reload Value (ARR) for msec unit
+    uint32_t ARRval = (f_cnt / 1000UL) * msec;
+    TIMx->ARR = ARRval - 1;
+}
+```
+
+**Parameters**
+
+- **TIMx**: Timer peripheral to configure.
+- **msec**: Requested period in milliseconds.
+
+**Example Code**
+
+```c
+TIM_clock_enable(TIM2);
+TIM_period(TIM2, 10); // Configure period; counter not started here
+```
+
+#### TIM_period_us()
+
+Configures PSC and ARR for a microsecond timer period.
+
+```c
+void TIM_period_us(TIM_TypeDef* TIMx, uint32_t usec){
+    uint32_t Sys_CLK = EC_SYSCLK;  // 84MHz (PLL) or 16MHz (HSI)
+    uint32_t ARRval = 0;
+
+    // Counter Frequency (f_cnt)
+    uint32_t f_cnt = 1000000UL;    // 1 MHz
+
+    // Prescaler: 84MHz / 1MHz = 84; register PSC = 83
+    uint32_t PSCval = Sys_CLK / f_cnt;
+    TIMx->PSC = PSCval - 1;
+
+    // Reload Value (ARR) for usec unit
+    ARRval = (f_cnt / 1000000UL) * usec;
+    TIMx->ARR = ARRval - 1;
+}
+```
+
+**Parameters**
+
+- **TIMx**: Timer peripheral to configure.
+- **usec**: Requested period in microseconds.
+
+**Example Code**
+
+```c
+TIM_clock_enable(TIM2);
+TIM_period_us(TIM2, 10000); // Configure 10 ms period
+```
+
+#### TIM_clock_enable()
+
+Enables the peripheral clock for the selected timer using the RCC APB register.
+
+```c
+void TIM_clock_enable(TIM_TypeDef* TIMx){
+    if(TIMx == TIM1) RCC->APB2ENR |= RCC_APB2ENR_TIM1EN;
+    else if(TIMx == TIM2) RCC->APB1ENR |= RCC_APB1ENR_TIM2EN;
+    else if(TIMx == TIM3) RCC->APB1ENR |= RCC_APB1ENR_TIM3EN;
+    else if(TIMx == TIM4) RCC->APB1ENR |= RCC_APB1ENR_TIM4EN;
+    else if(TIMx == TIM5) RCC->APB1ENR |= RCC_APB1ENR_TIM5EN;
+    else if(TIMx == TIM9) RCC->APB2ENR |= RCC_APB2ENR_TIM9EN;
+    else if(TIMx == TIM10) RCC->APB2ENR |= RCC_APB2ENR_TIM10EN;
+    else if(TIMx == TIM11) RCC->APB2ENR |= RCC_APB2ENR_TIM11EN;
+}
+```
+
+**Parameters**
+
+- **TIMx**: Timer peripheral (TIM1–TIM5, TIM9–TIM11 supported in code).
+
+**Example Code**
+
+```c
+TIM_clock_enable(TIM2);
+```
+
+#### get_TIM_IRQn()
+
+Returns the corresponding timer interrupt number for NVIC configuration.
+
+```c
+uint32_t get_TIM_IRQn(TIM_TypeDef* TIMx){
+    uint32_t IRQn_reg = 0x00000000;
+    if(TIMx == TIM1) IRQn_reg = TIM1_UP_TIM10_IRQn;
+    else if(TIMx == TIM2) IRQn_reg = TIM2_IRQn;
+    else if(TIMx == TIM3) IRQn_reg = TIM3_IRQn;
+    else if(TIMx == TIM4) IRQn_reg = TIM4_IRQn;
+    else if(TIMx == TIM5) IRQn_reg = TIM5_IRQn;
+    else if(TIMx == TIM9) IRQn_reg = TIM1_BRK_TIM9_IRQn;
+    else if(TIMx == TIM10) IRQn_reg = TIM1_UP_TIM10_IRQn;
+    else if(TIMx == TIM11) IRQn_reg = TIM1_TRG_COM_TIM11_IRQn;
+    return IRQn_reg;
+}
+```
+
+**Parameters**
+
+- **TIMx**: Timer peripheral.
+
+**Returns**
+
+Corresponding timer IRQ number (e.g., TIM2_IRQn for TIM2).
+
+**Example Code**
+
+```c
+uint32_t timerIRQ = get_TIM_IRQn(TIM2);
+NVIC_SetPriority(timerIRQ, 2);
+```
+
+
+***
+
+### ecPWM2
+
+Pulse-width modulation (PWM) driver library for STM32F411RE, including timer/channel configuration, duty cycle, and pulse-width control.
+
+#### Header File
+
+`#include "ecPWM2.h"`
+
+
+
+#### PWM_init_config()
+
+Maps the pin to a timer/channel, configures the GPIO alternate function, initializes the timer and enables PWM mode 1.
+
+```c
+void PWM_init_config(PinName_t pinName, uint32_t usec){
+	// 0. Match TIMx from given Port_y and Pin_x
+	GPIO_TypeDef *port;
+	unsigned int pin;
+	ecPinmap(pinName, &port, &pin);
+	TIM_TypeDef *TIMx;
+	int chN;
+	PWM_pinmap(pinName, &TIMx, &chN);
+
+	// 1. Initialize GPIO port and pin as AF
+	GPIO_init(pinName, AF);  
+
+	// 2. Configure GPIO AFR by Pin x num.
+	//  AFR[0] holds pin 0~7, AFR[1] holds pin 8~15 : 4 bits per pin
+	uint32_t afrIdx   = pin >> 3;				// same as (pin/8)
+	uint32_t afrShift = 4 * (pin % 8);
+	uint32_t afNum    = 0;
+
+	//  AF1 for TIM1,TIM2     AF2 for TIM3,TIM4
+	if((TIMx == TIM1)||(TIMx == TIM2))		afNum = 1;	// AF1
+	else if(TIMx== TIM3 || TIMx == TIM4)	afNum = 2;	// AF2
+	// You can add more  for TIM5 to TIM11, if necessary!	
+
+
+	// Set AFR register for the pin
+	port->AFR[afrIdx] &= ~(0xFUL << afrShift);	// 4 bits per pin	
+	port->AFR[afrIdx] |= (afNum <<afrShift);
+
+
+	// 3. Initialize Timer : select CLK_CNT according to PWM period 
+	//   TIM2/TIM5 			(32-bit ARR) : 1 < usec < 2^32 usec 	-> TIM_init_us() 
+	//   TIM1/TIM3/TIM4    	(16-bit ARR) : 1 < usec <=65,536 usec 	-> TIM_init_us() 
+	//                            			65 < msec <65,536 msec	-> TIM_init() 
+	if((TIMx == TIM2) || (TIMx == TIM5) || (usec <= 65536)){
+		TIM_init_us(TIMx, usec);					
+	}
+	else {
+		uint32_t msec = usec / 1000;
+		if(msec > 6553) msec = 6553;			// 16-bit ARR has limit of 6.5sec
+		TIM_init(TIMx, msec);					// 65 < msec <65,536 msec	-> TIM_init() 	
+	}
+	// 4. Configure Timer Output mode as PWM
+	// Default: PWM Mode 1, active high, duty ratio = 50%
+	PWM_mode_config(TIMx, chN, EC_PWM_MODE1);
+
+	// 5. Enable Timer Counter
+	// For TIM1 ONLY
+	if(TIMx == TIM1) TIMx->BDTR |= TIM_BDTR_MOE;					// Main output enable (MOE): 0 = Disable, 1 = Enable		
+	// All Timer: First, Clear the counter and Clear UI Flag
+	TIMx->EGR |= TIM_EGR_UG;					
+	TIMx->SR   = ~TIM_SR_UIF;					
+	// Enable timers
+	TIMx->CR1  |= TIM_CR1_CEN;  	
+}
+```
+
+**Parameters**
+
+- **pinName**: PWM output pin, such as PA_5 (TIM2_CH1).
+- **usec**: PWM period in microseconds.
+
+**Example Code**
+
+```c
+PWM_init_config(PA_5, 10000); // TIM2_CH1, 100 Hz
+```
+
+#### PWM_duty()
+
+Clamps duty ratio to 0.0–1.0 and converts it to the appropriate timer CCR value.
+
+```c
+void PWM_duty(PinName_t pinName, float duty){
+// 0. Match TIMx from  Port and Pin
+	GPIO_TypeDef *port;
+	unsigned int pin;
+	ecPinmap(pinName, &port, &pin);
+	TIM_TypeDef *TIMx;
+	int chN;
+	PWM_pinmap(pinName, &TIMx, &chN);
+
+// 1. Check the duty ratio range from 0.0 to 1.0
+	if (duty < 0.0f)	duty = 0.0f;
+	if (duty > 1.0f)	duty = 1.0f;
+
+// 2. Duty ratio -> CCR counts.  Assume PWM mode 1 :
+	uint32_t CCvalue = (TIMx->ARR + 1) * duty;
+	
+	if(chN == 1)      { TIMx->CCR1 = CCvalue; }	//set channel
+	else if(chN == 2) { TIMx->CCR2 = CCvalue; }
+	else if(chN == 3) { TIMx->CCR3 = CCvalue; }
+	else if(chN == 4) { TIMx->CCR4 = CCvalue; }
+}
+```
+
+**Parameters**
+
+- **pinName**: PWM output pin.
+- **duty**: Duty ratio from 0.0 (0%) to 1.0 (100%).
+
+**Example Code**
+
+```c
+PWM_init(PA_5, 10);
+PWM_duty(PA_5, 0.2f); // 20% duty ratio
+```
+
+#### PWM_init()
+
+Initializes a PWM output using a period in milliseconds, with PWM mode 1 and approximately 50% default duty.
+
+```c
+void PWM_init(PinName_t pinName, uint32_t msec){
+	if(msec == 0) msec = 1;		// minimum 1 msec
+	PWM_init_config(pinName, msec * 1000);		
+}
+```
+
+**Parameters**
+
+- **pinName**: PWM output pin.
+- **msec**: PWM period in milliseconds (minimum 1 ms in this function).
+
+**Example Code**
+
+```c
+PWM_init(PA_5, 10); // 10 ms period, 100 Hz
+```
+
+#### PWM_init_us()
+
+Initializes PWM using a period in microseconds; a requested period below 10 µs is raised to 10 µs.
+
+```c
+void PWM_init_us(PinName_t pinName, uint32_t usec){	
+	if(usec < 10) usec = 10;  // Minimum 10us (100kHz) 
+	PWM_init_config(pinName, usec);
+}
+```
+
+**Parameters**
+
+- **pinName**: PWM output pin.
+- **usec**: PWM period in microseconds.
+
+**Example Code**
+
+```c
+PWM_init_us(PA_5, 1000); // 1 kHz PWM
+```
+
+#### PWM_pulsewidth()
+
+Converts a requested pulse width (milliseconds) into duty ratio and updates the timer CCR register.
+
+```c
+void PWM_pulsewidth(PinName_t pinName, uint32_t pulse_width_ms){
+// 0. Match TIMx from  Port and Pin 	
+	GPIO_TypeDef *port;
+	unsigned int pin;	
+	ecPinmap(pinName, &port, &pin);	
+	TIM_TypeDef *TIMx;
+	int chN;		
+	PWM_pinmap(pinName, &TIMx, &chN);
+
+	float duty=0.0f;
+	uint32_t f_cnt =0;
+
+	
+// 1. Counter clock : CK_CNT = EC_SYSCLK / (PSC+1)
+	f_cnt = (uint32_t)EC_SYSCLK / (TIMx->PSC + 1);		// [Hz]
+
+// 2. Convert Pulse_width [msec] -> duty ratio (0~1.0) 
+	uint32_t counts = (uint32_t)(((uint64_t)f_cnt * pulse_width_ms) / 1000UL);
+	duty = (float)counts / (float)(TIMx->ARR + 1);
+
+// 3. Set duty ratio
+	PWM_duty(pinName, duty);
+}
+```
+
+**Parameters**
+
+- **pinName**: PWM output pin, initialized beforehand.
+- **pulse_width_ms**: Desired pulse width in milliseconds.
+
+**Example Code**
+
+```c
+PWM_init(PA_5, 10);
+PWM_pulsewidth(PA_5, 2); // 2 ms pulse, 20% duty
+```
+
+#### PWM_pulsewidth_us()
+
+Converts a requested pulse width (microseconds) into duty ratio and updates the timer CCR register.
+
+```c
+void PWM_pulsewidth_us(PinName_t pinName, uint32_t pulse_width_us){
+// 0. Match TIMx from  Port and Pin 	
+	GPIO_TypeDef *port;
+	unsigned int pin;	
+	ecPinmap(pinName, &port, &pin);	
+	TIM_TypeDef *TIMx;
+	int chN;		
+	PWM_pinmap(pinName, &TIMx, &chN);
+	
+	float duty=0.0f;
+	
+// 1. Counter clock : CK_CNT = EC_SYSCLK / (PSC+1)
+	uint32_t f_cnt = (uint32_t)EC_SYSCLK / (TIMx->PSC + 1);		// [Hz]
+
+// 2. Convert Pulse_width [usec] -> duty ratio (0~1.0) 
+	uint32_t counts = (uint32_t)(((uint64_t)f_cnt * pulse_width_us) / 1000000UL);
+	duty = (float)counts / (float)(TIMx->ARR + 1);
+
+// 3. Set duty ratio
+	PWM_duty(pinName, duty);
+}
+```
+
+**Parameters**
+
+- **pinName**: PWM output pin, initialized beforehand.
+- **pulse_width_us**: Desired pulse width in microseconds.
+
+**Example Code**
+
+```c
+PWM_init_us(PA_5, 1000);
+PWM_pulsewidth_us(PA_5, 200); // 200 us pulse, 20% duty
+```
+
+#### PWM_mode_config()
+
+Configures the selected timer output channel as PWM mode 1 or 2, enables its preload and channel output, and sets an initial compare value.
+
+```c
+void PWM_mode_config(TIM_TypeDef *TIMx, int chN, uint32_t PWMmode){
+	
+	int mode=0x6; // default value for PWM mode 1
+	if (PWMmode == EC_PWM_MODE2)	mode=0x7;  
+	
+	uint32_t ccVal = TIMx->ARR/2;  // default value  CC=ARR/2
+	if(chN == 1){
+		TIMx->CCMR1 &= ~TIM_CCMR1_OC1M;                     // Clear ouput compare mode bits for channel 1
+		TIMx->CCMR1 |= ((mode << TIM_CCMR1_OC1M_Pos) & TIM_CCMR1_OC1M);   // OCxM = 110 (PWM1) / 111 (PWM2) on ch1
+		TIMx->CCMR1	|= TIM_CCMR1_OC1PE;                     // Output 1 preload enable (make CCR1 value changable)
+		TIMx->CCR1  = ccVal; 								// Output Compare Register for channel 1 (default duty ratio = 50%)		
+		TIMx->CCER &= ~TIM_CCER_CC1P;                       // select output polarity: active high	
+		TIMx->CCER  |= TIM_CCER_CC1E;						// Enable output for ch1
+	}
+	else if(chN == 2){
+		TIMx->CCMR1 &= ~TIM_CCMR1_OC2M;                     // Clear ouput compare mode bits for channel 2
+		TIMx->CCMR1 |= ((mode << TIM_CCMR1_OC2M_Pos) & TIM_CCMR1_OC2M);   // OCxM = 110 (PWM1) / 111 (PWM2) on ch2
+		TIMx->CCMR1	|= TIM_CCMR1_OC2PE;                     // Output 1 preload enable (make CCR1 value changable)	
+		TIMx->CCR2  = ccVal; 								// Output Compare Register for channel 2 (default duty ratio = 50%)		
+		TIMx->CCER &= ~TIM_CCER_CC2P;                       // select output polarity: active high	
+		TIMx->CCER |= TIM_CCER_CC2E;						// Enable output for ch2
+	}
+	else if(chN == 3){
+		TIMx->CCMR2 &= ~TIM_CCMR2_OC3M;                     // Clear ouput compare mode bits for channel 3
+		TIMx->CCMR2 |= ((mode << TIM_CCMR2_OC3M_Pos) & TIM_CCMR2_OC3M);   // OCxM = 110 (PWM1) / 111 (PWM2) on ch3
+		TIMx->CCMR2	|= TIM_CCMR2_OC3PE;                     // Output 1 preload enable (make CCR1 value changable)	
+		TIMx->CCR3  = ccVal; 								// Output Compare Register for channel 3 (default duty ratio = 50%)		
+		TIMx->CCER &= ~TIM_CCER_CC3P;                       // select output polarity: active high	
+		TIMx->CCER  |= TIM_CCER_CC3E;						// Enable output for ch3
+	}
+	else if(chN == 4){
+		TIMx->CCMR2 &= ~TIM_CCMR2_OC4M;                     // Clear ouput compare mode bits for channel 4
+		TIMx->CCMR2 |= ((mode << TIM_CCMR2_OC4M_Pos) & TIM_CCMR2_OC4M);   // OCxM = 110 (PWM1) / 111 (PWM2) on ch4
+		TIMx->CCMR2	|= TIM_CCMR2_OC4PE;                     // Output 1 preload enable (make CCR1 value changable)
+		TIMx->CCR4  = ccVal;			 					// Output Compare Register for channel 4 (default duty ratio = 50%)				
+		TIMx->CCER &= ~TIM_CCER_CC4P;                       // select output polarity: active high	
+		TIMx->CCER  |= TIM_CCER_CC4E;						// Enable output for ch4
+	}	
+}
+```
+
+**Parameters**
+
+- **TIMx**: Timer peripheral.
+- **chN**: Timer channel (1–4).
+- **PWMmode**: EC_PWM_MODE1 or EC_PWM_MODE2.
+
+**Example Code**
+
+```c
+// After the timer is configured
+PWM_mode_config(TIM2, 1, EC_PWM_MODE1);
+```
+
+#### PWM_pinmap()
+
+Looks up the timer peripheral and channel for a supported GPIO PWM pin.
+
+```c
+void PWM_pinmap(PinName_t pinName, TIM_TypeDef **TIMx, int *chN)
+{
+	GPIO_TypeDef *port;
+	unsigned int pin;
+	ecPinmap(pinName, &port, &pin);
+
+  	// Only  TIM1 to TIM4 are defined.
+	// TIM5, 9 to 11 needs to be added, if necessary
+  if(port == GPIOA) {
+      switch(pin){
+         case 0 : *TIMx = TIM2; *chN	= 1; break;
+         case 1 : *TIMx = TIM2; *chN = 2; break;
+         case 5 : *TIMx = TIM2; *chN = 1; break;
+         case 6 : *TIMx = TIM3; *chN = 1; break;
+         //case 7: TIMx = TIM1; *chN = 1N; break;
+         case 8 : *TIMx = TIM1; *chN = 1; break;
+         case 9 : *TIMx = TIM1; *chN = 2; break;
+         case 10: *TIMx = TIM1; *chN = 3; break;
+         case 15: *TIMx = TIM2; *chN = 1; break;
+         default: break;
+      }
+   }
+   else if(port == GPIOB) {
+      switch(pin){
+         //case 0: TIMx = TIM1; *chN = 2N; break;
+         //case 1: TIMx = TIM1; *chN = 3N; break;
+         case 3 : *TIMx = TIM2; *chN = 2; break;
+         case 4 : *TIMx = TIM3; *chN = 1; break;
+         case 5 : *TIMx = TIM3; *chN = 2; break;
+         case 6 : *TIMx = TIM4; *chN = 1; break;
+         case 7 : *TIMx = TIM4; *chN = 2; break;
+         case 8 : *TIMx = TIM4; *chN = 3; break;
+         case 9 : *TIMx = TIM4; *chN = 4; break;
+         case 10: *TIMx = TIM2; *chN = 3; break;
+         default: break;
+      }
+   }
+   else if(port == GPIOC) {
+      switch(pin){
+         case 6 : *TIMx = TIM3; *chN = 1; break;
+         case 7 : *TIMx = TIM3; *chN = 2; break;
+         case 8 : *TIMx = TIM3; *chN = 3; break;
+         case 9 : *TIMx = TIM3; *chN = 4; break;
+         default: break;
+      }
+   }
+	// TIM5, 9, 11 needs to be added, if used.
+	// if necessary
+}
+```
+
+**Parameters**
+
+- **pinName**: Pin name (such as PA_5).
+- **TIMx**: Output pointer receiving the selected timer peripheral.
+- **chN**: Output pointer receiving the channel number.
+
+**Example Code**
+
+```c
+TIM_TypeDef *timer;
+int channel;
+PWM_pinmap(PA_5, &timer, &channel); // TIM2, channel 1
+```

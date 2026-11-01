@@ -46,7 +46,6 @@ void PWM_init_config(PinName_t pinName, uint32_t usec){
 
 	// Set AFR register for the pin
 	port->AFR[afrIdx] &= ~(0xFUL << afrShift);	// 4 bits per pin	
-	// port->AFR[afrIdx] ____________________  ; 
 	port->AFR[afrIdx] |= (afNum <<afrShift);
 
 
@@ -92,12 +91,10 @@ void PWM_duty(PinName_t pinName, float duty){
 	if (duty > 1.0f)	duty = 1.0f;
 
 // 2. Duty ratio -> CCR counts.  Assume PWM mode 1 :
-	// uint32_t CCvalue = ____________________;	// (ARR+1) * duty
 	uint32_t CCvalue = (TIMx->ARR + 1) * duty;
 	
 	if(chN == 1)      { TIMx->CCR1 = CCvalue; }	//set channel
 	else if(chN == 2) { TIMx->CCR2 = CCvalue; }
-	// REPEAT for CHn= 3, 4
 	else if(chN == 3) { TIMx->CCR3 = CCvalue; }
 	else if(chN == 4) { TIMx->CCR4 = CCvalue; }
 }

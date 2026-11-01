@@ -92,7 +92,6 @@ void TIM_init(TIM_TypeDef* TIMx, uint32_t msec){
 
 // 3. COUNTER Direction
 	// Up-Counter	
-	// TIMx->CR1 _________________;	
 	TIMx->CR1 &= ~TIM_CR1_DIR;  // ~(0x1UL<<4);
 	
 	// Down-Counter
@@ -147,11 +146,9 @@ void TIM_period_us(TIM_TypeDef* TIMx, uint32_t usec){
 	
 	// Prescaler Value
 	uint32_t PSCval = Sys_CLK / f_cnt;				// 84MHz -> 1 MHz (PSC=84)
-	// TIMx->PSC = _______________;					
 	TIMx->PSC = PSCval - 1;
 
-	// Reload Value (ARR) for msec unit
-	// uint32_t ARRval = ___________________;			
+	// Reload Value (ARR) for usec unit
 	ARRval = (f_cnt / 1000000UL) * usec;
 	TIMx->ARR = ARRval - 1;
 }
