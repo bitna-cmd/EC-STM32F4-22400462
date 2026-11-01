@@ -1530,11 +1530,38 @@ val = SysTick_val;
 
 ***
 
-### ecTIM2
+### ecUART2
 
 #### Header File
 
-`#include "ecTIM2.h"`
+`#include "ecUART2.h"`
+
+
+```c
+// USART configuration and baud rate
+void USART_init(USART_TypeDef* USARTx, PinName_t pin_GPIO_TX, PinName_t pin_GPIO_RX, uint32_t baud);
+void USART_baud(USART_TypeDef* USARTx, uint32_t baud);
+void USART_pins(USART_TypeDef* USARTx, PinName_t pin_GPIO_TX, PinName_t pin_GPIO_RX);
+void USART1_baud(uint32_t baud);
+void USART2_baud(uint32_t baud);
+void USART1_init(void);
+void USART2_init(void);
+
+// Data transmission and reception
+void USART1_write(uint8_t* buffer, uint32_t nBytes);
+void USART2_write(uint8_t* buffer, uint32_t nBytes);
+uint8_t USART1_read(void);
+uint8_t USART2_read(void);
+uint32_t is_USART1_RXNE(void);
+uint32_t is_USART2_RXNE(void);
+
+// Internal/helper functions
+void USART_clock_enable(USART_TypeDef* USARTx);
+void USART_write(USART_TypeDef* USARTx, uint8_t* buffer, uint32_t nBytes);
+uint8_t USART_read(USART_TypeDef* USARTx);
+uint32_t is_USART_RXNE(USART_TypeDef* USARTx);
+void USART_delay(uint32_t us);
+```
 
 
 #### USART_init()
@@ -2241,11 +2268,30 @@ USART_delay(300);
 
 ***
 
-### ecUART2
+### ecTIM2
 
 #### Header File
 
-`#include "ecUART2.h"`
+`#include "ecTIM2.h"`
+
+
+```c
+// Timer update interrupt
+void TIM_UI_init(TIM_TypeDef* TIMx, uint32_t msec);
+void TIM_UI_init_us(TIM_TypeDef* TIMx, uint32_t usec);
+void TIM_UI_enable(TIM_TypeDef* TIMx);
+void TIM_UI_disable(TIM_TypeDef* TIMx);
+uint32_t is_UIF(TIM_TypeDef* TIMx);
+void clear_UIF(TIM_TypeDef* TIMx);
+
+// Timer counter and peripheral clock
+void TIM_init(TIM_TypeDef* TIMx, uint32_t msec);
+void TIM_init_us(TIM_TypeDef* TIMx, uint32_t usec);
+void TIM_period(TIM_TypeDef* TIMx, uint32_t msec);
+void TIM_period_us(TIM_TypeDef* TIMx, uint32_t usec);
+void TIM_clock_enable(TIM_TypeDef* TIMx);
+uint32_t get_TIM_IRQn(TIM_TypeDef* TIMx);
+```
 
 
 
@@ -2598,6 +2644,24 @@ Pulse-width modulation (PWM) driver library for STM32F411RE, including timer/cha
 #### Header File
 
 `#include "ecPWM2.h"`
+
+
+
+```c
+// PWM initialization and duty ratio
+void PWM_init_config(PinName_t pinName, uint32_t usec);
+void PWM_duty(PinName_t pinName, float duty);
+void PWM_init(PinName_t pinName, uint32_t msec);
+void PWM_init_us(PinName_t pinName, uint32_t usec);
+
+// Pulse width control
+void PWM_pulsewidth(PinName_t pinName, uint32_t pulse_width_ms);
+void PWM_pulsewidth_us(PinName_t pinName, uint32_t pulse_width_us);
+
+// Internal helper functions
+void PWM_mode_config(TIM_TypeDef* TIMx, int chN, uint32_t PWMmode);
+void PWM_pinmap(PinName_t pinName, TIM_TypeDef** TIMx, int* chN);
+```
 
 
 
