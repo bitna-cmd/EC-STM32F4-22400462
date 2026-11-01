@@ -38,7 +38,10 @@ MCU: STM32F411RE, Nucleo-64
 * [EXTI](/ec/ec-course/tutorial.md#gpio-digital-inout)
   * [Header File](/ec/ec-course/tutorial.md#header-file)
 
-***
+
+
+---
+
 
 ### ecGPIO2
 
@@ -46,471 +49,454 @@ MCU: STM32F411RE, Nucleo-64
 
 `#include "ecGPIO2.h"`
 
-```c++
-// MODER
-#define INPUT  		0x00
-#define OUTPUT 		0x01
-#define AF     		0x02
-#define ANALOG 		0x03
+```c
+// GPIO modes (MODER)
+#define INPUT       0x00
+#define OUTPUT      0x01
+#define AF          0x02
+#define ANALOG      0x03
 
-// IDR & ODR
-#define HIGH 		1
-#define LOW  		0
+// Input and output levels (IDR / ODR)
+#define HIGH        1
+#define LOW         0
 
-// OSPEED
-#define LOW_SPEED		0x00
-#define MID_SPEED		0x01
-#define FAST_SPEED		0x02
-#define HIGH_SPEED		0x03
+// Output speed (OSPEEDR)
+#define LOW_SPEED   0x00
+#define MIDEUM_SPEED   0x01
+#define FAST_SPEED  0x02
+#define HIGH_SPEED  0x03
 
-// OTYPER
-#define PUSH_PULL 		0	// Push-pull
-#define OPEN_DRAIN 		1 	// Open-Drain
+// Output type (OTYPER)
+#define PUSH_PULL   0
+#define OPEN_DRAIN  1
 
-// PUDR
-#define NO_PUPD			0x00 	// No pull-up, pull-down
-#define PULL_UP			0x01 	// Pull-up
-#define PULL_DOWN 		0x02 	// Pull-down	
-#define RESERVED 		0x03 	// Reserved
+// Pull-up / pull-down (PUPDR)
+#define NO_PUPD     0x00
+#define PULL_UP     0x01
+#define PULL_DOWN   0x02
+#define RESERVED    0x03
 
-// PIN
-#define LED_PIN 		5
-#define BUTTON_PIN 		13
-	 
-void GPIO_init(PinName_t pinName, uint32_t mode);     
+// Pin numbers
+#define LED_PIN     5
+#define BUTTON_PIN  13
+
+// GPIO digital input/output
+void GPIO_init(PinName_t pinName, uint32_t mode);
 void GPIO_mode(PinName_t pinName, uint32_t mode);
 void GPIO_ospeed(PinName_t pinName, uint32_t speed);
 void GPIO_otype(PinName_t pinName, uint32_t type);
 void GPIO_pupd(PinName_t pinName, uint32_t pupd);
 void GPIO_write(PinName_t pinName, uint32_t Output);
-uint32_t  GPIO_read(PinName_t pinName);
+uint32_t GPIO_read(PinName_t pinName);
 void GPIO_init_all(PinName_t pinName, uint32_t mode, uint32_t speed, uint32_t type, uint32_t pupd);
 
-// ARDUINO Syntax  (Optional)
+// Arduino-style API (optional)
 void pinMode(PinName_t pin, uint32_t mode);
 void digitalWrite(PinName_t pin, uint32_t value);
-uint32_t  digitalRead(PinName_t pin);
+uint32_t digitalRead(PinName_t pin);
 
-// FND for JKIT board 
+// FND (7-segment display) for JKIT board
 extern int numberFND[12][8];
 void FND_init(PinName_t *pinFND);
 void FND_select_init(PinName_t *selectFND);
 void FND_display(uint8_t num);
 void FND_select(uint8_t digit);
 
+// Toggle GPIO output
 void led_toggle(PinName_t pinName);
-
 ```
 
-#### GPIO_init
+#### GPIO_init()
 
-Initializes GPIO pins with default setting and Enables GPIO Clock. Mode: In/Out/AF/Analog
+Initializes a GPIO pin with the selected mode and enables the corresponding GPIO port clock.
 
-```
-void GPIO_init(GPIO_TypeDef *Port, int pin, int mode);
+```c
+void GPIO_init(PinName_t pinName, uint32_t mode);
 ```
 
 **Parameters**
 
-* **Port:** Port Number, GPIOA\~GPIOH
-* **pin**: pin number (int) 0\~15
-* **mode**: INPUT(0), OUTPUT(1), AF(02), ANALOG (03)
+* **pinName**: GPIO pin name (e.g., PA_5, PC_13).
+* **mode**: GPIO mode: INPUT(0), OUTPUT(1), AF(2), ANALOG(3).
 
-**Example code**
+**Example Code**
 
 ```c
-GPIO_init(GPIOA, 5, OUTPUT);
-GPIO_init(GPIOC, 13, INPUT); //GPIO_init(GPIOC, 13, 0);
+GPIO_init(PA_5, OUTPUT); // PA5 as output
+GPIO_init(PC_13, INPUT); // PC13 as input
 ```
 
-#### GPIO\_mode
+#### GPIO_mode()
 
-Configures GPIO pin modes: In/Out/AF/Analog
-
-```c
-void GPIO_init(GPIO_TypeDef *Port, int pin, int mode);
-```
-
-**Parameters**
-
-* **Port:** Port Number, GPIOA\~GPIOH
-* **pin**: pin number (int) 0\~15
-* **mode**: INPUT (0), OUTPUT (1), AF(02), ANALOG (03)
-
-**Example code**
+Changes the operating mode of a GPIO pin to input, output, alternate function, or analog.
 
 ```c
-GPIO_mode(GPIOA, 5, OUTPUT);
-```
-
-#### GPIO_write
-
-Write the data to GPIO pin: High, Low
-
-```c
-write(GPIO_TypeDef *Port, int pin, int output);
+void GPIO_mode(PinName_t pinName, uint32_t mode);
 ```
 
 **Parameters**
 
-* **Port:** Port Number, GPIOA\~GPIOH
-* **pin**: pin number (int) 0\~15
-* **output**: LOW(0), HIGH(1)
+* **pinName**: GPIO pin name (e.g., PA_5).
+* **mode**: GPIO mode: INPUT(0), OUTPUT(1), AF(2), ANALOG(3).
 
-**Example code**
+**Example Code**
 
 ```c
-GPIO_write(GPIOA, 5, 1);  // 1: High
+GPIO_init(PA_5, OUTPUT);
+GPIO_mode(PA_5, AF); // Change PA5 to alternate-function mode
 ```
 
-#### GPIO\_read()
+#### GPIO_ospeed()
 
-Read the data from GPIO pin
-
-```c
-int  GPIO_read(GPIO_TypeDef *Port, int pin);
-```
-
-**Parameters**
-
-* **Port:** Port Number, GPIOA\~GPIOH
-* **pin**: pin number (int) 0\~15
-
-**Example code**
+Sets the GPIO output speed through the OSPEEDR register.
 
 ```c
-GPIO_read(GPIOC, 13);
-```
-
-#### GPIO\_ospeed()
-
-Configures output speed of GPIO pin : Low, Mid, Fast, High
-
-```c
-void GPIO_ospeed(GPIO_TypeDef* Port, int pin, int speed);
+void GPIO_ospeed(PinName_t pinName, uint32_t speed);
 ```
 
 **Parameters**
 
-* **Port:** Port Number, GPIOA\~GPIOH
-* **pin**: pin number (int) 0\~15
-* **speed**: LOW\_SPEED(0), MID\_SPEED(1), FAST\_SPEED(2) , HIGH\_SPEED(3)
+* **pinName**: GPIO pin name.
+* **speed**: LOW_SPEED(0), MID_SPEED(1), FAST_SPEED(2), or HIGH_SPEED(3).
 
-**Example code**
+**Example Code**
 
 ```c
-GPIO_ospeed(GPIOA, 5, 2);  // 2: FAST_SPEED
+GPIO_init(PA_5, OUTPUT);
+GPIO_ospeed(PA_5, FAST_SPEED);
 ```
 
-#### GPIO\_otype()
+#### GPIO_otype()
 
-Configures output type of GPIO pin: Push-Pull / Open-Drain
-
-```c
-void GPIO_otype(GPIO_TypeDef* Port, int pin, int type);
-```
-
-**Parameters**
-
-* **Port:** Port Number, GPIOA\~GPIOH
-* **pin**: pin number (int) 0\~15
-* **type**: PUSH\_PULL(0), OPEN\_DRAIN(1)
-
-**Example code**
+Sets the GPIO output type to push-pull or open-drain.
 
 ```c
-GPIO_otype(GPIOA, 5, 0);  // 0: Push-Pull
-```
-
-#### GPIO\_pupd()
-
-Configures Pull-up/Pull-down mode of GPIO pin: No Pull-up, Pull-down/ Pull-up/ Pull-down/ Reserved
-
-```c
-void GPIO_pupd(GPIO_TypeDef* Port, int pin, int pupd);
+void GPIO_otype(PinName_t pinName, uint32_t type);
 ```
 
 **Parameters**
 
-* **Port:** Port Number, GPIOA\~GPIOH
-* **pin**: pin number (int) 0\~15
-* **pupd**: NO\_PUPD(0), PULL\_UP(1), PULL\_DOWN(2), RESERVED(3)
+* **pinName**: GPIO pin name.
+* **type**: PUSH_PULL(0) or OPEN_DRAIN(1).
 
-**Example code**
+**Example Code**
 
 ```c
-GPIO_pupd(GPIOA, 5, 0);  // 0: No Pull-up, Pull-down
+GPIO_init(PA_5, OUTPUT);
+GPIO_otype(PA_5, PUSH_PULL);
 ```
 
+#### GPIO_pupd()
+
+Configures the GPIO internal pull-up/pull-down resistors.
+
+```c
+void GPIO_pupd(PinName_t pinName, uint32_t pupd);
+```
+
+**Parameters**
+
+* **pinName**: GPIO pin name.
+* **pupd**: NO_PUPD(0), PULL_UP(1), PULL_DOWN(2), or RESERVED(3).
+
+**Example Code**
+
+```c
+GPIO_init(PC_13, INPUT);
+GPIO_pupd(PC_13, PULL_UP);
+```
 
 #### GPIO_write()
+
+Writes a HIGH or LOW output level to the selected GPIO pin.
 
 ```c
 // Write output on the pin (output: HIGH, LOW)
 void GPIO_write(PinName_t pinName, uint32_t Output){
-	GPIO_TypeDef *port;
-	unsigned int pin;
-	ecPinmap(pinName, &port, &pin);
+    GPIO_TypeDef *port;
+    unsigned int pin;
+    ecPinmap(pinName, &port, &pin);
 
-	if(Output == 1)	
-		port->ODR |= (1UL<<pin);
-	else
-		port->ODR &= ~(1UL<<pin);
+    if(Output == 1)
+        port->ODR |= (1UL << pin);
+    else
+        port->ODR &= ~(1UL << pin);
 }
 ```
 
 **Parameters**
 
-* pinName: pin number (int) 0~15
-* Output: HIGH(1), LOW(0)
+* **pinName**: GPIO pin name (e.g., PA_5).
+* **Output**: HIGH(1) or LOW(0).
 
 **Example Code**
 
 ```c
-GPIO_write(GPIOA, HIGH);
+GPIO_init(PA_5, OUTPUT);
+GPIO_write(PA_5, HIGH);
 ```
 
-
 #### GPIO_read()
+
+Reads and returns the logic level of the selected GPIO input pin.
 
 ```c
 // Read and return the input value through the pin
 uint32_t GPIO_read(PinName_t pinName){
-	GPIO_TypeDef * Port;
-	unsigned int pin;
-	ecPinmap(pinName,&Port,&pin);
+    GPIO_TypeDef *Port;
+    unsigned int pin;
+    ecPinmap(pinName, &Port, &pin);
 
-	uint32_t reVal = (Port->IDR >> pin) & 1UL;
-	return reVal;
+    uint32_t reVal = (Port->IDR >> pin) & 1UL;
+    return reVal;
 }
 ```
 
 **Parameters**
 
-* pinName: pin number (int) 0~15
+* **pinName**: GPIO pin name (e.g., PC_13).
+
+**Returns**
+
+* Current pin logic level: LOW(0) or HIGH(1).
 
 **Example Code**
 
 ```c
-uint32_t val = GPIO_read(GPIOA);
+GPIO_init(PC_13, INPUT);
+uint32_t val = GPIO_read(PC_13);
 ```
-
 
 #### GPIO_init_all()
 
+Configures GPIO mode, output speed, output type, and pull-up/pull-down setting in one call.
+
 ```c
-// Initialize the pin mode, speed, type pupd at once
+// Initialize the pin mode, speed, type and pull-up/down at once
 // mode: INPUT, OUTPUT, AF, ANALOG
-// speed: MEDIUM_SPEED, FAST_SPEED, LOW_SPEED, HIGH_SPEED
+// speed: LOW_SPEED, MID_SPEED, FAST_SPEED, HIGH_SPEED
 // type: OPEN_DRAIN, PUSH_PULL
 // pupd: NO_PUPD, PULL_UP, PULL_DOWN, RESERVED
 void GPIO_init_all(PinName_t pinName, uint32_t mode, uint32_t speed, uint32_t type, uint32_t pupd){
-	GPIO_TypeDef * Port;
-	unsigned int pin;
-	ecPinmap(pinName, &Port, &pin);
+    GPIO_TypeDef *Port;
+    unsigned int pin;
+    ecPinmap(pinName, &Port, &pin);
 
-	GPIO_init(pinName, mode);
-	GPIO_ospeed(pinName, speed);
-	GPIO_otype(pinName, type);
-	GPIO_pupd(pinName, pupd);
+    GPIO_init(pinName, mode);
+    GPIO_ospeed(pinName, speed);
+    GPIO_otype(pinName, type);
+    GPIO_pupd(pinName, pupd);
 }
 ```
 
 **Parameters**
 
-* pinName: pin number (int) 0~15
-* mode: INPUT(00), OUTPUT(01), AF(10), ANALOG(11)
-* speed: Low_speed (00), Medium_speed (01), Fast_speed (10), High_speed (11)
-* type: PUSH_PULL(0), OPEN_DRAIN(1)
-* pupd: NO_PUPD(0x00), PULL_UP(0x01), PULL_DOWN(0x10), RESERVED(0x11)
+* **pinName**: GPIO pin name.
+* **mode**: INPUT(0), OUTPUT(1), AF(2), or ANALOG(3).
+* **speed**: LOW_SPEED(0), MID_SPEED(1), FAST_SPEED(2), or HIGH_SPEED(3).
+* **type**: PUSH_PULL(0) or OPEN_DRAIN(1).
+* **pupd**: NO_PUPD(0), PULL_UP(1), PULL_DOWN(2), or RESERVED(3).
 
 **Example Code**
 
 ```c
-GPIO_init_all(GPIOA, OUTPUT, MEDIUM_SPEED, PUSH_PULL, PULL_UP);
+GPIO_init_all(PA_5, OUTPUT, MID_SPEED, PUSH_PULL, NO_PUPD);
 ```
-
 
 #### pinMode()
 
+Arduino-style wrapper for GPIO initialization.
+
 ```c
 void pinMode(PinName_t pin, uint32_t mode){
-	GPIO_init(pin, mode);
+    GPIO_init(pin, mode);
 }
 ```
 
 **Parameters**
 
-* pinName: pin number (int) 0~15
-* mode: INPUT(00), OUTPUT(01), AF(10), ANALOG(11)
+* **pin**: GPIO pin name.
+* **mode**: INPUT(0), OUTPUT(1), AF(2), or ANALOG(3).
 
 **Example Code**
 
 ```c
-pinMode(GPIOA, INPUT);
+pinMode(PA_5, OUTPUT);
 ```
-
 
 #### digitalWrite()
 
+Arduino-style wrapper for writing a GPIO output level.
+
 ```c
 void digitalWrite(PinName_t pin, uint32_t value){
-	GPIO_write(pin, value);
+    GPIO_write(pin, value);
 }
 ```
 
 **Parameters**
 
-* pinName: pin number (int) 0~15
-* mode: HIGH(1), LOW(0)
+* **pin**: GPIO pin name.
+* **value**: HIGH(1) or LOW(0).
 
 **Example Code**
 
 ```c
-digitalWrite(GPIOA, HIGH);
+pinMode(PA_5, OUTPUT);
+digitalWrite(PA_5, HIGH);
 ```
-
 
 #### digitalRead()
 
+Arduino-style wrapper for reading a GPIO input level.
+
 ```c
-uint32_t  digitalRead(PinName_t pin){
-	uint32_t reVal = GPIO_read(pin);
-	return reVal;
+uint32_t digitalRead(PinName_t pin){
+    uint32_t reVal = GPIO_read(pin);
+    return reVal;
 }
 ```
 
 **Parameters**
 
-* pinName: pin number (int) 0~15
+* **pin**: GPIO pin name.
+
+**Returns**
+
+* Current pin logic level: LOW(0) or HIGH(1).
 
 **Example Code**
 
 ```c
-uint32_t val = digitalRead(GPIOA);
+pinMode(PC_13, INPUT);
+uint32_t val = digitalRead(PC_13);
 ```
-
 
 #### FND_init()
 
-```c 
-// Initialize DOUT pins for 7 segment leds
+Initializes the eight GPIO output pins connected to the 7-segment display segments.
+
+```c
+// Initialize DOUT pins for 7-segment LEDs
 void FND_init(PinName_t *pinFND){
-	for (int i=0; i<8; i++){
-		_fndPins[i] = pinFND[i];
-		GPIO_init(_fndPins[i], OUTPUT);
-	}
+    for (int i = 0; i < 8; i++){
+        _fndPins[i] = pinFND[i];
+        GPIO_init(_fndPins[i], OUTPUT);
+    }
 }
 ```
 
 **Parameters**
 
-* **pinFND**: Input pin array for 8 FND segments
-
+* **pinFND**: Array of eight GPIO pin names for FND segments.
 
 **Example Code**
 
 ```c
-FND_init(pinFND);	// PinName_t pinFND[8]    = {PB_0, PB_1, ...};
+// pinFND must contain eight GPIO pin names selected for the board.
+FND_init(pinFND);
 ```
-
 
 #### FND_select_init()
 
+Initializes four GPIO output pins used to select one of the four FND digits.
+
 ```c
-// Initialize select pins (FND0~FND3) as DOUT
-void FND_select_init(PinName_t *selectFND){	
-    // [YOUR CODE GOES HERE]
-	for (int i=0; i<4; i++){
-		_fndSel[i] = selectFND[i];
-		GPIO_init(_fndSel[i], OUTPUT);
-	}
+// Initialize select pins (FND0–FND3) as digital outputs
+void FND_select_init(PinName_t *selectFND){
+    for (int i = 0; i < 4; i++){
+        _fndSel[i] = selectFND[i];
+        GPIO_init(_fndSel[i], OUTPUT);
+    }
 }
 ```
 
 **Parameters**
 
-* **selectFND**: Input pin array for FND selection
+* **selectFND**: Array of four GPIO pin names for FND digit selection.
 
 **Example Code**
 
 ```c
-FND_select_init(selectFND);		// PinName_t selectFND[4] = {PA_10, PA_11, ...};
+// selectFND must contain four GPIO pin names selected for the board.
+FND_select_init(selectFND);
 ```
-
 
 #### FND_display()
 
+Outputs the segment pattern for the given number on the 7-segment display.
+
 ```c
-// Display a number 0 - 9 only on a 7-segment display
+// Display a number 0–9 only on a 7-segment display
 void FND_display(uint8_t num){
-    // [YOUR CODE GOES HERE]    
-    for(int i=0; i<8; i++){
-		GPIO_write(_fndPins[i], numberFND[num][i]);
-	}
+    for(int i = 0; i < 8; i++){
+        GPIO_write(_fndPins[i], numberFND[num][i]);
+    }
 }
 ```
 
 **Parameters**
 
-* **num**: Number to display on FND (0-9)
+* **num**: Number to display (0–9).
 
 **Example Code**
 
 ```c
-FND_display(5);			// display 5 on the display
+FND_display(5); // Display digit 5
 ```
 
-
 #### FND_select()
+
+Selects an FND digit (0–3) by setting its selection pin HIGH and the others LOW.
 
 ```c
 // Select display: FND0 to FND3
 void FND_select(uint8_t digit){
-    // [YOUR CODE GOES HERE]    
-	for(int i=0; i<4; i++){
-		if(i == digit)
-			GPIO_write(_fndSel[i], HIGH);
-		else
-			GPIO_write(_fndSel[i], LOW);
-	}
-
+    for(int i = 0; i < 4; i++){
+        if(i == digit)
+            GPIO_write(_fndSel[i], HIGH);
+        else
+            GPIO_write(_fndSel[i], LOW);
+    }
 }
 ```
 
 **Parameters**
 
-* **digit**: FND digit to select (0~3)
+* **digit**: Index of the FND digit to select (0–3).
 
 **Example Code**
 
 ```c
-FND_select(0);		// select the 0th digit
+FND_select(0); // Select the first digit
 ```
-
 
 #### led_toggle()
 
+Toggles the logic level of the selected GPIO output pin.
+
 ```c
-// toggle the led
+// Toggle the output level
 void led_toggle(PinName_t pinName){
-	GPIO_TypeDef *Port;    
-	unsigned int pin;
-	ecPinmap(pinName,&Port,&pin);
-    
+    GPIO_TypeDef *Port;
+    unsigned int pin;
+    ecPinmap(pinName, &Port, &pin);
+
     Port->ODR ^= (1UL << pin);
 }
 ```
 
 **Parameters**
 
-* **pinName**: pin number (int) 0~15
+* **pinName**: GPIO output pin name.
 
 **Example Code**
 
 ```c
-led_toggle(PA_4);
+GPIO_init(PA_5, OUTPUT);
+led_toggle(PA_5);
 ```
+
 
 
 ***
@@ -1393,7 +1379,7 @@ SysTick_init();
 ```
 
 
-#### SysTick_Handler();
+#### SysTick_Handler()
 
 ```c
 // SysTick_Handler() is called every 1 ms by the SysTick IRQ

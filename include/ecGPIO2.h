@@ -33,16 +33,13 @@ Description      : GPIO Library. Distributed to Students for LAB_GPIO
 
 
 #define LOW_SPEED     0x00
-#define MEDIUM_SPEED  0x02
-#define FAST_SPEED    0x06
-#define HIGH_SPEED    0x10
+#define MEDIUM_SPEED  0x01
+#define FAST_SPEED    0x02
+#define HIGH_SPEED    0x03
 
 // typedef enum{
 //     Push_Pull 0
 // }
-
-//#define LED_PIN 	PA_5
-//#define BUTTON_PIN  PC_13
 
 
 #ifdef __cplusplus
