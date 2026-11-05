@@ -27,7 +27,8 @@ void TIM_period_us(TIM_TypeDef* TIMx, uint32_t usec);
 /* Timer Update Interrupt Configuration     */
 //////////////////////////////////////////////
 
-
+// Initialize timer and enable update interrupt (NVIC priority: 2)
+// TIMx: Timer to use / msec: Interrupt period in millisec
 void TIM_UI_init(TIM_TypeDef* TIMx, uint32_t msec){
 // 1. Initialize Timer	
 	TIM_init(TIMx,msec);
@@ -41,6 +42,8 @@ void TIM_UI_init(TIM_TypeDef* TIMx, uint32_t msec){
 	NVIC_SetPriority(IRQn_reg,2);
 }
 
+// Initialize timer and enable update interrupt (NVIC priority: 2)
+// TIMx: Timer to use / usec: Interrupt period in microsec
 void TIM_UI_init_us(TIM_TypeDef* TIMx, uint32_t usec){
 // 1. Initialize Timer	
 	TIM_init_us(TIMx,usec);
@@ -66,9 +69,13 @@ void TIM_UI_disable(TIM_TypeDef* TIMx){
 	TIMx->DIER &= ~(TIM_DIER_UIE);					
 }
 
+// Check whether the update interrupt flag (UIF) is set.
+// return: non-zero if set, 0 otherwise.
 uint32_t is_UIF(TIM_TypeDef *TIMx){
 	return TIMx->SR & TIM_SR_UIF;
 }
+
+// Clear the update interrupt flag (UIF)
 void clear_UIF(TIM_TypeDef *TIMx){
 	TIMx->SR &= ~TIM_SR_UIF;
 }
@@ -154,8 +161,7 @@ void TIM_period_us(TIM_TypeDef* TIMx, uint32_t usec){
 }
 
 
-
-
+// Enable the peripheral clock for a timer
 void TIM_clock_enable(TIM_TypeDef* TIMx){ 
 	if(TIMx ==TIM1) RCC->APB2ENR |= RCC_APB2ENR_TIM1EN;
 	else if(TIMx ==TIM2) RCC->APB1ENR |= RCC_APB1ENR_TIM2EN;
@@ -167,8 +173,7 @@ void TIM_clock_enable(TIM_TypeDef* TIMx){
 	else if(TIMx ==TIM11) RCC->APB2ENR |= RCC_APB2ENR_TIM11EN;	
 }
 
-
-
+// Get the timer's IRQ number for NVIC configuration
 uint32_t get_TIM_IRQn(TIM_TypeDef* TIMx){
 	uint32_t IRQn_reg = 0x00000000;
 	if(TIMx == TIM1)       IRQn_reg = TIM1_UP_TIM10_IRQn;

@@ -29,6 +29,7 @@ Description      : STM32F411 Library.
 #include "ecStepper2.h"
 //#include "ecADC2.h"
 #include "ecUART2.h"
+#include "ecICAP2.h"
 
 
 

@@ -29,6 +29,35 @@ Description      : PWM library
 #define EC_PWM_MODE2	1	// output active while CNT >= CCR  (inverted)
 
 
+// Stete number of Velocity of motor fan (for duty)
+#define VEL_S0      0.0f
+#define VEL_S1      0.5f
+#define VEL_S2      1.0f
+
+// State number of DC motor Fan
+typedef enum {
+	FAN_S0, FAN_S1, FAN_S2
+} StateFan_e;
+
+// State number of LED
+typedef enum {
+    LED_OFF, LED_ON, LED_BLINK
+} StateLED_e;
+
+// 
+typedef struct {
+    float V;       // Velocity output for PWM duty
+    StateLED_e L;       // LED output for mode
+} OutputFan_t;
+
+// DC motor States of DC motor Fan
+// Input combination (BUTTON,IR) is like : (0,F), (0,T), (1,F), (1,T)
+typedef struct {
+    StateFan_e next[4];  // Next state depanding on inputs
+    OutputFan_t out[4];    // Output signals depanding on inputs
+} StateFan_t;
+
+
 ///////////////////////////////////////////////////
 /* 		        EXERCISE					     */
 ///////////////////////////////////////////////////

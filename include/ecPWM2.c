@@ -14,6 +14,9 @@ Description      : PWM library
 #include "ecPWM2.h"
 
 
+
+
+
 ///////////////////////////////////////////////////
 /* 		        EXERCISE					     */
 ///////////////////////////////////////////////////
@@ -132,6 +135,7 @@ void PWM_init_us(PinName_t pinName, uint32_t usec){
 
 
 // Set Pulse width in msec
+// pulse_width_ms: HIGH duration in millisec
 void PWM_pulsewidth(PinName_t pinName, uint32_t pulse_width_ms){
 // 0. Match TIMx from  Port and Pin 	
 	GPIO_TypeDef *port;
@@ -158,6 +162,7 @@ void PWM_pulsewidth(PinName_t pinName, uint32_t pulse_width_ms){
 
 
 // Set Pulse width in usec
+// pulse_width_us: HIGH duration in microsec
 void PWM_pulsewidth_us(PinName_t pinName, uint32_t pulse_width_us){
 // 0. Match TIMx from  Port and Pin 	
 	GPIO_TypeDef *port;
