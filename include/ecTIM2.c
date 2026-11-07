@@ -20,9 +20,6 @@ void TIM_init_us(TIM_TypeDef* TIMx, uint32_t usec);
 void TIM_period_us(TIM_TypeDef* TIMx, uint32_t usec);
 */
 
-
-
-
 //////////////////////////////////////////////
 /* Timer Update Interrupt Configuration     */
 //////////////////////////////////////////////

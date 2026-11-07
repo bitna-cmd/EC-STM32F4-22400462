@@ -6,15 +6,9 @@ Modified         : 10-29-2026
 Language/ver     : C++ in VS Code
 
 Description      : PWM library
-*          PWM library - exercise version.
-*          in ecPWM2_student.c .  This header needs no editing.
-
 /----------------------------------------------------------------*/
 
 #include "ecPWM2.h"
-
-
-
 
 
 ///////////////////////////////////////////////////
@@ -283,5 +277,3 @@ void PWM_pinmap(PinName_t pinName, TIM_TypeDef **TIMx, int *chN)
 	// TIM5, 9, 11 needs to be added, if used.
 	// if necessary
 }
-
-
