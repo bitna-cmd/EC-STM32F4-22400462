@@ -51,10 +51,10 @@ int main(void) {
 	}
 }
 
-// // stop the stepper motor when BUTTON is pressed
-// void EXTI15_10_IRQHandler(void) {  
-// 	if (is_pending_EXTI(BUTTON_PIN)) {
-// 		stepper_stop();
-// 		clear_pending_EXTI(BUTTON_PIN); // cleared by writing '1'
-// 	}
-// }
+// stop the stepper motor when BUTTON is pressed
+void EXTI15_10_IRQHandler(void) {  
+	if (is_pending_EXTI(BUTTON_PIN)) {
+		stepper_stop();
+		clear_pending_EXTI(BUTTON_PIN); // cleared by writing '1'
+	}
+}

@@ -50,7 +50,8 @@ Description      : STM32F411 Library.
 // // FND selection pins (FND0~FND3)
 // PinName_t selectFND[4] = {PA_10, PA_11, PC_4, PC_3};
 // ( A, B,  AN,  BN)
-PinName_t pinStepper[4]    = {PC_5,PC_6,PC_7,PC_8};
+// PinName_t pinStepper[4]    = {PC_5,PC_6,PC_7,PC_8};
+PinName_t pinStepper[4]    = {PB_10,PB_4,PB_5,PB_3};
 
 // Initialize MCU clock, SysTick, GPIO, FND, EXTI, Stepper motor, and USART
 void MCU_init(void){
