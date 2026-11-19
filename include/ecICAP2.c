@@ -136,7 +136,7 @@ void ICAP_tick(PinName_t pinName, uint32_t usec) {
     TIMx->SR   = ~TIM_SR_UIF;
 }
 
-
+// Read the captured timer counter value from the selected channel
 uint32_t ICAP_read(PinName_t pinName, uint32_t ICn) {
     TIM_TypeDef *TIMx;
 	int CHn;		
@@ -161,11 +161,12 @@ uint32_t ICAP_read(PinName_t pinName, uint32_t ICn) {
 /* Timer Input CC Interrupt Configuration         */
 //////////////////////////////////////////////
 
-
+// Check if a capture event has occurred on the selected channel
 uint32_t is_CCIF(TIM_TypeDef *TIMx, uint32_t ICn) {
     return (TIMx->SR & (0x1UL <<  ICn)) != 0;
 }
 
+// Clear the capture interrupt flag of the selected channel
 void clear_CCIF(TIM_TypeDef *TIMx, uint32_t  ICn) {
     // Clear the UIF  by writing
     TIMx->SR = ~(0x1UL << ICn);
@@ -177,6 +178,8 @@ void clear_CCIF(TIM_TypeDef *TIMx, uint32_t  ICn) {
 //////////////////////////////////////////////
 /* Internal Functions                       */
 //////////////////////////////////////////////
+
+// Configure the input capture filter for the selected channel
 void ICAP_filter(TIM_TypeDef *TIMx, uint32_t ICn, uint16_t filterOpt)
 {
 	// 4 bits per channel: ICnF at bit 4 (ch 1, 3) and bit 12 (ch 2, 4)
@@ -229,7 +232,7 @@ void ICAP_pinmap(PinName_t pinName, TIM_TypeDef **TIMx, int *chN){
 	 ecPinmap(pinName, &port, &pin);	
    
    if(port == GPIOA) {
-      switch(pin){
+      switch(pin){  
          case 0 : *TIMx = TIM2; *chN = 1; break;
          case 1 : *TIMx = TIM2; *chN = 2; break;
          case 5 : *TIMx = TIM2; *chN = 1; break;

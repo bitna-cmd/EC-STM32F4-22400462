@@ -54,9 +54,23 @@ void PWM_init_config(PinName_t pinName, uint32_t usec){
 		TIM_init_us(TIMx, usec);					
 	}
 	else {
-		uint32_t msec = usec / 1000;
-		if(msec > 6553) msec = 6553;			// 16-bit ARR has limit of 6.5sec
-		TIM_init(TIMx, msec);					// 65 < msec <65,536 msec	-> TIM_init() 	
+		// lower resolution
+		// uint32_t msec = usec / 1000;
+		// if(msec > 6553) msec = 6553;			// 16-bit ARR has limit of 6.5sec
+		// TIM_init(TIMx, msec);					// 65 < msec <65,536 msec	-> TIM_init() 	
+		
+		// higher resolution
+    	// 16-bit timer: select tick resolution
+    	if(usec > 6553000UL) usec = 6553000UL;
+
+    	uint32_t tick_us = ((usec - 1) / 65536) + 1;
+
+    	// Initialize timer and configure PSC, ARR
+    	TIM_init(TIMx, usec / 1000);
+
+    	TIMx->PSC = (EC_SYSCLK / 1000000UL) * tick_us - 1;
+    	TIMx->ARR = (usec / tick_us) - 1;
+
 	}
 	// 4. Configure Timer Output mode as PWM
 	// Default: PWM Mode 1, active high, duty ratio = 50%

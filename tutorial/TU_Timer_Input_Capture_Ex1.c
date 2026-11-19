@@ -25,7 +25,7 @@ Description      : Tutorial - Timer Input Capture example 1
 #define PWM_PIN     PA_6        // TIM3_CH1 : TRIG test signal (jumper PA_6 -> PB_6)
 #define LED_PIN     PA_5
 
-uint32_t pwm_period_ms=50;
+uint32_t pwm_period_ms=1000;
 uint32_t uTick=100;
 uint32_t timer_arr  = 65536;    // ticks per counter wrap (ARR+1)
 // uint32_t timer_arr  = TIM4->ARR + 1;    // ticks per counter wrap (ARR+1)
