@@ -2,7 +2,7 @@
 @ Embedded Controller by Young-Keun Kim - Handong Global University
 Author           : Won Bitna / Choi Yerin
 Created          : 05-03-2021
-Modified         : 11-10-2026
+Modified         : 11-19-2026
 Language/ver     : C++ in VS Code
 
 Description      : Project1 Smart Home Management System
@@ -30,12 +30,12 @@ Description      : Project1 Smart Home Management System
 
 // Threshold values
 #define TRSH_TEMP_UPPER   40      // Upper threshold temperature
-#define TRSH_HUMI_UPPER   63      // Upper threshold humidity
+#define TRSH_HUMI_UPPER   55      // Upper threshold humidity
 #define TRSH_TEMP_LOWER   35      // Lower threshold temperature
-#define TRSH_HUMI_LOWER   60      // Lower threshold humidity
+#define TRSH_HUMI_LOWER   50      // Lower threshold humidity
 
 // Serve motor pulse width(HIGH duration) in microsec
-#define SERVO_MID_US  1000      // Neutral Position
+#define SERVO_MID_US  900      // Neutral Position
 #define SERVO_MAX_US  1500      // Maximum Position
 #define SERVO_MAX_ANGLE 50      // Maximum Angle
 #define HOME        0           // mode HOME
@@ -85,16 +85,16 @@ void lighting(void);
 void lcd(void);
 // initialize function
 void setup(void);
+// Send message to display on bluetooth (tera term)
+void send_status(const char *msg);
 
 
 int main(void){
     setup();
 
-
     // Does the LCD answer ?  A module with the wrong address stays blank.
 	err = I2C1_write(LCD_ADDR, LCD_BACKLIGHT);
 	if(err)	printf("LCD NOT found. Check the wiring\r\n");
-	else	printf("LCD found at 0x%02X\r\n", LCD_ADDR);
 
     previous_mode = mode;
     previous_vent = vent_flag;
@@ -233,14 +233,12 @@ void EXTI3_IRQHandler(void){
         if(mode == HOME){
             pir_start_count = current_count;    // for LED displaying time 
             pir_flag = 1;
-            printf("MOTION DETECTED\r\n");
         } else if (mode == AWAY){
             // intrusion should be detected after 5 sec from exit
             if((current_count - exit_count)>=20){
                 intrusion_flag = 1;
                 intrusion_count = current_count;
                 mode = ALARM;
-                printf("WARNING: INTRUSION\r\n");
             }
         }
     }
@@ -455,8 +453,5 @@ void lcd(void){
 void send_status(const char *msg){
     // Bluetooth
     USART_write(USART6, (uint8_t*)msg, strlen(msg));
-
-    // PC TeraTerm
-    printf("%s", msg);
 }
 

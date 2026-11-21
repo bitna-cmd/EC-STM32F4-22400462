@@ -8,7 +8,7 @@ Date: 2026-11-10
 
 ##### Overview
 
-Design an STM32-based smart home system that provides motion-based lighting, temperature and humidity ventilation, and away-mode intrusion detection![](img/img_1.png)
+Design an STM32-based smart home system that provides motion-based lighting, temperature and humidity ventilation, and away-mode intrusion detection![Smart Home Concept Illustration](img/img_1.png)
 
 *Figure 1. Smart home concept illustration.*
 
@@ -42,7 +42,7 @@ Design an STM32-based smart home system that provides motion-based lighting, tem
 
 - IDE: VS Code
 
-- Complier: PlatformIO `framework=cmsis`
+- Compiler: PlatformIO `framework=cmsis`
 
 - Library: EC-STM32F4
 
@@ -58,11 +58,11 @@ Design an STM32-based smart home system that provides motion-based lighting, tem
 
 The purpose of this project is building a smart home system that controls the lighting, ventilation and alarms under the following conditions.
 
-| State     | Condition                  | Behavior                                                                                                                     |
-| --------- | -------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| **HOME**  | `mode == HOME`             | Provided motion-based lighting and run ventilation as needed. Motion is not an intrusion.                                    |
-| **AWAY**  | `mode == AWAY`             | Suspended the motion-based lighting and monitor motion as intrusion. Ventilation keeps working.                              |
-| **ALARM** | `alarm == INTRUSION_ALARM` | Showed the warning and perform the matching response. Clearing the alarm returns to previous mode, HOME or AWAY as selected. |
+| State     | Condition                  | Required behavior                                            |
+| :-------- | :------------------------- | :----------------------------------------------------------- |
+| **HOME**  | `mode == HOME`             | Provide motion-based lighting and run ventilation as needed. Motion is not an intrusion. |
+| **AWAY**  | `mode == AWAY`             | Suspend the motion-based lighting and monitor motion as intrusion. |
+| **ALARM** | `alarm == INTRUSION_ALARM` | Show the warning and perform the matching response. Clearing the alarm returns to previous mode, HOME or AWAY as selected. |
 
 The push-button selects HOME/AWAY. AWAY starts a **5 s exit delay** before intrusion monitoring, so the user can leave. And showed the countdown on the LCD.
 
@@ -80,17 +80,17 @@ The push-button selects HOME/AWAY. AWAY starts a **5 s exit delay** before intru
 >
 > - Potentio: around 2760
 >
-> - Temperature(upper): 40 [deg/C]
+> - Temperature(upper): 30 [deg*C]
 >
-> - Temperature(lower): 35 [deg/C]
+> - Temperature(lower): 28 [deg*C]
 >
-> - Humidity(upper): 63 (%)
+> - Humidity(upper): 55 (%)
 >
-> - Humidity(lower): 60 (%)
+> - Humidity(lower): 50 (%)
 
 ##### Light and Display Response
 
-The RBG LED is driven as **three digital outputs**, one per color.
+The RGB LED is driven as **three digital outputs**, one per color.
 
 - Away Intrusion: **Red,** blinking every 0.5s
 
@@ -152,7 +152,7 @@ Using the bluetooth, send a message and display on laptop's monitor whenever a c
 | Control loop    | TIM1 (update interrupt)                         | none                             | 250 ms                   |
 | Light sensor    | ADC1 injected, result in JDR1                   | PA_0 (A0)                        | TIM5 TRGO of 125 ms      |
 | Potentiometer   | ADC1 injected, result in JDR2                   | PC_1 (A4)                        | TIM5 TRGO of 125 ms      |
-| DHT11           | GPIO, bit-banged (SysTick µs timing, `ecDHT11`) | PA_6 (D12)                       | one read per 2 s         |
+| DHT11           | GPIO, bit-banged (SysTick µs timing, `ecDHT11`) | PA_6 (D12)                       | one read per 2.5 s       |
 | Push button     | GPIO + EXTI10                                   | PA_10 (D2)                       | interrupt on press       |
 | PIR motion      | GPIO + EXTI3                                    | PB_3 (D3)                        | interrupt on rising edge |
 | I2C LCD         | I2C1                                            | PB_8 (D21, SCL), PB_9 (D20, SDA) | —                        |
@@ -162,13 +162,15 @@ Using the bluetooth, send a message and display on laptop's monitor whenever a c
 
 ##### Circuit Diagram
 
-![](img/Circuit_Diagram.png)
+![pin connection](img/Circuit_Diagram.png)
 
 ### IV. Algorithm
 
 ----
 
-##### Logic Design
+##### Logic Design (Flow Chart)
+
+![Flow Chart](img/Flow_Chart.png)
 
 ###### 1. Macros
 
@@ -188,18 +190,18 @@ Using the bluetooth, send a message and display on laptop's monitor whenever a c
 
 **Threshold macros**
 
-| Macro             | Value | Description                                                                                         |
-| ----------------- | ----- | --------------------------------------------------------------------------------------------------- |
-| `TRSH_TEMP_UPPER` | 30 °C | Ventilation starts if temperature reaches this value                                                |
-| `TRSH_HUMI_UPPER` | 55 %  | Ventilation starts if humidity reaches this value                                                   |
+| Macro             | Value | Description                                                  |
+| ----------------- | ----- | ------------------------------------------------------------ |
+| `TRSH_TEMP_UPPER` | 30 °C | Ventilation starts if temperature reaches this value         |
+| `TRSH_HUMI_UPPER` | 55 %  | Ventilation starts if humidity reaches this value            |
 | `TRSH_TEMP_LOWER` | 28 °C | Ventilation stops only if temperature is below this value and humidity is below its lower threshold |
-| `TRSH_HUMI_LOWER` | 52 %  | Ventilation stops only if humidity is below this value and temperature is below its lower threshold |
+| `TRSH_HUMI_LOWER` | 50 %  | Ventilation stops only if humidity is below this value and temperature is below its lower threshold |
 
 **Servo and mode macros**
 
 | Macro             | Value   | Description                                      |
 | ----------------- | ------- | ------------------------------------------------ |
-| `SERVO_MID_US`    | 1000 µs | Pulse width for the closed window (0°)           |
+| `SERVO_MID_US`    | 900 µs  | Pulse width for the closed window (0°)           |
 | `SERVO_MAX_US`    | 1500 µs | Pulse width for the fully open window            |
 | `SERVO_MAX_ANGLE` | 50°     | Maximum window opening angle                     |
 | `HOME`            | 0       | Mode when user is at home                        |
@@ -302,7 +304,7 @@ Yerin Choi: https://github.com/choie2022/EC-STM32F4-22400741/blob/main/README.md
 
 **void setup(void)**
 
-This function initializes the sensor and output devices need for the system. Fan an servo motor are controlled with OWM, and the photo sensor and potentiometer are measured using the JADC functions. EXTI is used for the button and their PIR sensor. USART2 was used to show messages in the STM window of Terma Term so that we could check the system status, and USART6 was initialized for Bluetooth communication. TIM1 was set to a 250 ms period and used as the base timer for the control loop.
+This function initializes the sensor and output devices need for the system. Fan and servo motor are controlled with PWM, and the photo sensor and potentiometer are measured using the JADC functions. EXTI is used for the button and their PIR sensor. USART2 was used to show messages in the STM window of Tera Term so that we could check the system status, and USART6 was initialized for Bluetooth communication. TIM1 was set to a 250 ms period and used as the base timer for the control loop.
 
 
 
@@ -388,11 +390,9 @@ The main function checks for changes in the mode and the ventilation state and s
 int main(void){
     setup();
 
-
     // Does the LCD answer ?  A module with the wrong address stays blank.
 	err = I2C1_write(LCD_ADDR, LCD_BACKLIGHT);
 	if(err)	printf("LCD NOT found. Check the wiring\r\n");
-	else	printf("LCD found at 0x%02X\r\n", LCD_ADDR);
 
     previous_mode = mode;
     previous_vent = vent_flag;
@@ -450,6 +450,8 @@ int main(void){
                 printf("Temperature=%d, Humidity=%d, potentio: %f \r\n", temp, humi, pot_value);
             } else {
                 printf("DHT READING ERROR\r\n");
+                dht_error_count++;
+                printf("DHT ERROR COUNT: %lu\r\n", dht_error_count);
             } 
         }
     }
@@ -495,14 +497,12 @@ void EXTI3_IRQHandler(void){
         if(mode == HOME){
             pir_start_count = current_count;    // for LED displaying time 
             pir_flag = 1;
-            printf("MOTION DETECTED\r\n");
         } else if (mode == AWAY){
             // intrusion should be detected after 5 sec from exit
             if((current_count - exit_count)>=20){
                 intrusion_flag = 1;
                 intrusion_count = current_count;
                 mode = ALARM;
-                printf("WARNING: INTRUSION\r\n");
             }
         }
     }
@@ -528,22 +528,22 @@ void ADC_IRQHandler(void){
 
 When the temperature or humidity reaches the upper threshold, the fan starts and vent_flag is set to 1. After that, even if the values drop below the upper threshold, the ventilation stays on until both values fall below the lower threshold. 
 
-The upper thresholds are 30°C for temperature and 55% for humidity, and the lower thresholds are 28°C and 52%.
+The upper thresholds are 30°C for temperature and 55% for humidity, and the lower thresholds are 28°C and 50%.
 
 ```c
 // TIM4 fan control
 // The current temparature and humidity are above upper threshold
-    if(temp>=TRSH_TEMP_UPPER || humi>=TRSH_HUMI_UPPER){
-        PWM_duty(FAN, 0.5f);
-        vent_flag = 1;
-    // The current temparature and humidity are above lower threshold
-    } else if ((temp>=TRSH_TEMP_LOWER || humi>=TRSH_HUMI_LOWER) && vent_flag == 1) {
-        PWM_duty(FAN, 0.5f);
-    // The current temparature and humidity are below lower threshold
-    } else {
-        PWM_duty(FAN, 0.0f);    // turn off fan
-        vent_flag = 0;
-    }
+if(temp>=TRSH_TEMP_UPPER || humi>=TRSH_HUMI_UPPER){
+    PWM_duty(FAN, 0.5f);
+    vent_flag = 1;
+// The current temparature and humidity are above lower threshold
+} else if ((temp>=TRSH_TEMP_LOWER || humi>=TRSH_HUMI_LOWER) && vent_flag == 1) {
+    PWM_duty(FAN, 0.5f);
+// The current temparature and humidity are below lower threshold
+} else {
+    PWM_duty(FAN, 0.0f);    // turn off fan
+    vent_flag = 0;
+}
 ```
 
 The servo motor opens and closes the window using the PWM signal from TIM3. In the control loop that runs every 250 ms, the angle changes by 10° every 3 counts, and the PWM pulse width for that angle is calculated. In AWAY and ALARM mode, the fan stops and the window closes.
@@ -578,26 +578,33 @@ The RGB LED shows different colors depending on the system state. Since several 
 
 ```c
 if(mode == HOME){
+    // Temperature and humidity detected
     if(vent_flag == 1){
         all_led_off();
-
+        // blink green LED every 1 sec
         if((current_count/4)%2 == 0){
             GPIO_write(LED_G, HIGH);
         } else {
             GPIO_write(LED_G, LOW);
         }
     }
+    // PIR motion detected
     else if(pir_flag == 1){
         GPIO_write(LED_R, HIGH);
         GPIO_write(LED_G, HIGH);
         GPIO_write(LED_B, LOW);
+        // turn off all led after 3sec
+        if((current_count - pir_start_count) >= 12){
+            pir_flag = 0;   // clear pir detected flag
+            all_led_off();
+        }
     }
-    else if(light_value >= pot_value){
+    // Darkness detected
+    else if(light_value>=pot_value){
         GPIO_write(LED_R, HIGH);
         GPIO_write(LED_G, HIGH);
         GPIO_write(LED_B, HIGH);
-    }
-    else{
+    } else {
         all_led_off();
     }
 }
@@ -606,23 +613,29 @@ if(mode == HOME){
 Right after switching to AWAY mode, the yellow LED turns on for 3 seconds, and if an intrusion happens after that, the red LED blinks. The starting time of each action is saved separately and compared with the current count to control how long each action lasts.
 
 ```c
-// AWAY / ALARM mode
-if(exit_flag == 1){
-    GPIO_write(LED_R, HIGH);
-    GPIO_write(LED_G, HIGH);
-    GPIO_write(LED_B, LOW);
-
-    if((current_count - exit_count) >= 12){
-        exit_flag = 0;
-        all_led_off();
+else if (mode == AWAY || mode == ALARM){
+    // PIR motion detected
+    if(exit_flag == 1){
+        GPIO_write(LED_R, HIGH);
+        GPIO_write(LED_G, HIGH);
+        GPIO_write(LED_B, LOW);
+        // turn off all LED after 3sec
+        if((current_count - exit_count) >= 12){
+            exit_flag = 0;  // clear exit flag
+            all_led_off();
+        }
     }
-}
-else if(intrusion_flag == 1){
-    GPIO_write(LED_G, LOW);
-    GPIO_write(LED_B, LOW);
-
-    if(current_count%2 == 0){
-        led_toggle(LED_R);
+    // If intrusion occurs, blink red LED
+    else if(intrusion_flag == 1){
+        GPIO_write(LED_G, LOW);
+        GPIO_write(LED_B, LOW);
+        // toggle red LED every 0.5sec
+        if(current_count%2 == 0){
+            led_toggle(LED_R);
+        }
+    } else {
+        GPIO_write(LED_R, LOW);
+        all_led_off();
     }
 }
 ```
@@ -700,16 +713,13 @@ void USART6_IRQHandler(void){
 
 **void send_status(void)**
 
-The send_status() function was written to send status change messages to both Bluetooth and the PC terminal at the same time. It sends the message to Bluetooth through USART6, and it also uses printf() so that the same message can be checked on the PC connected through USART2. This function is called in the state change detection part of main() to report information such as mode changes and when ventilation starts and stops.
+The send_status() function sends status change messages to Bluetooth through USART6. This function is called in the state change detection part of main() to report information such as mode changes and when ventilation starts and stops.
 
 ```c
 // Send message to display on bluetooth (tera term)
 void send_status(const char *msg){
     // Bluetooth
     USART_write(USART6, (uint8_t*)msg, strlen(msg));
-
-    // PC TeraTerm
-    printf("%s", msg);
 }
 ```
 
@@ -737,33 +747,95 @@ The whole system runs based on the 250 ms TIM1 interrupt. Each function is contr
 
 ##### Results
 
-**Demo Video Link: []()**
+|                                                   |                                                          |
+| :-----------------------------------------------: | :------------------------------------------------------: |
+| <img src="./img/Initial_cleared.png" width="250"> | <img src="./img/Light_Yellow_by_Motion.png" width="250"> |
+|        (a) Initial HOME state with LED off        |        (b) Yellow LED during PIR motion detection        |
+| <img src="./img/Light_White_OFF.png" width="250"> |     <img src="./img/Light_White_ON.png" width="250">     |
+|    (c) White LED off under sufficient lighting    |        (d) White LED on when darkness is detected        |
 
-Show important result images to explain your output for key processes.
+<p align="center">Figure 5. HOME mode lighting responses</p>
 
-Add a circuit diagram or results image in the project report.
+|                                                              |                                                              |
+| :----------------------------------------------------------: | :----------------------------------------------------------: |
+| <img src="./img/Light_Green_Over_TRSH_UPPER.png" width="250"> | <img src="./img/Light_Green_Over_TRSH_LOWER.png" width="250"> |
+|      (a) Green LED activated above the upper threshold       |     (b) Ventilation maintained above the lower threshold     |
+| <img src="./img/Light_Green_Under_TRSH_LOWER.png" width="250"> |       <img src="./img/Window_Closed.png" width="250">        |
+|         (c) Green LED off below the lower thresholds         |       (d) Servo window closed after ventilation stops        |
+| <img src="./img/Vent_Fan_ON_Over_TRSH_UPPER.png" width="250"> | <img src="./img/Vent_Fan_ON_Over_TRSH_LOWER.png" width="250"> |
+| (e) Ventilation ON above the upper threshold. | (f) Ventilation remains ON above the lower threshold. |
+| <img src="./img/Vent_Fan_OFF_Under_TRSH_LOWER.png" width="250"> | |
+| (g) Ventilation OFF below the lower thresholds. | |
+
+<p align="center">Figure 6. Ventilation control</p>
+
+|                                                              |                                                              |
+| :----------------------------------------------------------: | :----------------------------------------------------------: |
+| <img src="./img/Light_Yellow_by_Exit_N_Count5.png" width="250"> | <img src="./img/Light_Yellow_by_Exit_N_Count4.png" width="250"> |
+|          (a) AWAY countdown at 5 s with yellow LED           |          (b) AWAY countdown at 4 s with yellow LED           |
+| <img src="./img/Light_Yellow_by_Exit_N_Count3.png" width="250"> | <img src="./img/Light_Yellow_OFF_N_After_Exit_Count2.png" width="250"> |
+|          (c) AWAY countdown at 3 s with yellow LED           |        (d) AWAY countdown at 2 s with yellow LED off         |
+|     <img src="./img/After_Exit_Count1.png" width="250">      |    <img src="./img/ALARM_Intrusion_OFF.png" width="250">     |
+|                  (e) AWAY countdown at 1 s                   |       (f) AWAY mode without an active intrusion alarm        |
+
+<p align="center">Figure 7. AWAY mode countdown and exit delay</p>
+
+|                                                              |                                                             |
+| :----------------------------------------------------------: | :---------------------------------------------------------: |
+|  <img src="./img/ALARM_Intrusion_Blink_ON.png" width="250">  | <img src="./img/ALARM_Intrusion_Blink_OFF.png" width="250"> |
+|         (a) Red LED on during the intrusion warning          |          (b) Red LED off during the blinking cycle          |
+| <img src="./img/ALARM_OFF_by_Switch_to_HOME.png" width="250"> |     <img src="./img/BT_ALARM_TO_HOME.png" width="250">      |
+|           (c) ALARM cleared by pressing the button           |    (d) Serial message after switching from ALARM to HOME    |
+
+<p align="center">Figure 8. Intrusion alarm indication and return to HOME.</p>
+
+|                                           |                                                     |
+| :---------------------------------------: | :-------------------------------------------------: |
+| <img src="./img/BT_VENT.png" width="250"> |  <img src="./img/BT_ALARM_CLEAR.png" width="250">   |
+|  (a) Ventilation ON/OFF status messages.  | (b) Alarm cleared with the Bluetooth 'O/o' command. |
+
+<p align="center">Figure 9. Bluetooth status and alarm cleared messages.</p>
+
+**Demo Video: [[EC26] Project1 SmartHOME](https://youtu.be/4G_vAPCNfbs)**
 
 ##### Analysis
 
-| Function    | Condition                    | Expected                                | Observed                                                                                 |
-| ----------- | ---------------------------- | --------------------------------------- | ---------------------------------------------------------------------------------------- |
+| Function    | Condition                    | Expected                                | Observed                                                     |
+| ----------- | ---------------------------- | --------------------------------------- | ------------------------------------------------------------ |
 | Lighting    | HOME, motion at entrance     | Yellow LED for 3 s                      | Motion detected more sensitive than expected, therefore light turned on more frequently. |
-|             | HOME, dark                   | White LED on                            | Yellow light was turned on during testing because of PIR sensor in the beginning.        |
-|             | Ventilation running          | Green LED blinks every 1 s              | Same as expected.                                                                        |
-|             | ALARM                        | Red LED blinks every 0.5 s              | Same as expected.                                                                        |
-| Ventilation | Temp ≥ 30 °C or humi ≥ 55 %  | Fan on, window opens                    | Same as expected.                                                                        |
-|             | Temp < 28 °C and humi < 52 % | Fan off, window closes                  | Same as expected.                                                                        |
-|             | Between thresholds           | Keeps previous state                    | Same as expected.                                                                        |
-| Button      | Pressed in HOME              | Changes to AWAY, 5 s countdown          | Same as expected.                                                                        |
-|             | Pressed in AWAY / ALARM      | Changes to HOME                         | Same as expected.                                                                        |
-| Intrusion   | Motion during countdown      | Ignored                                 | Same as expected.                                                                        |
-|             | Motion after countdown       | ALARM                                   | Same as expected.                                                                        |
-| Bluetooth   | `o` sent in ALARM            | Returns to AWAY                         | Same as expected.                                                                        |
-|             | Mode or vent changes         | Status message on terminal              | Same as expected.                                                                        |
-| LCD         | HOME                         | Temp, humi, `MODE: HOME` (`VENT` if on) | Same as expected.                                                                        |
-|             | AWAY                         | `MODE: AWAY` + countdown                | Same as expected.                                                                        |
-|             | ALARM                        | `MODE: ALARM`, `INTRUDER` blinking      | Had display problems due to counter setting and lcd condition in the beginning.          |
-| DHT11       | Sensor disconnected          | Error message, last value kept          | Same as expected.                                                                        |
+|             | HOME, dark                   | White LED on                            | Yellow light was turned on during testing because of PIR sensor in the beginning. |
+|             | Ventilation running          | Green LED blinks every 1 s              | Same as expected.                                            |
+|             | ALARM                        | Red LED blinks every 0.5 s              | Same as expected.                                            |
+| Ventilation | Temp ≥ 30 °C or humi ≥ 55 %  | Fan on, window opens                    | Same as expected.                                            |
+|             | Temp < 28 °C and humi < 50 % | Fan off, window closes                  | Same as expected.                                            |
+|             | Between thresholds           | Keeps previous state                    | Same as expected.                                            |
+| Button      | Pressed in HOME              | Changes to AWAY, 5 s countdown          | Same as expected.                                            |
+|             | Pressed in AWAY / ALARM      | Changes to HOME                         | Same as expected.                                            |
+| Intrusion   | Motion during countdown      | Ignored                                 | Same as expected.                                            |
+|             | Motion after countdown       | ALARM                                   | Same as expected.                                            |
+| Bluetooth   | `o` sent in ALARM            | Returns to AWAY                         | Same as expected.                                            |
+|             | Mode or vent changes         | Status message on terminal              | Same as expected.                                            |
+| LCD         | HOME                         | Temp, humi, `MODE: HOME` (`VENT` if on) | Same as expected.                                            |
+|             | AWAY                         | `MODE: AWAY` + countdown                | Same as expected.                                            |
+|             | ALARM                        | `MODE: ALARM`, `INTRUDER` blinking      | Had display problems due to counter setting and lcd condition in the beginning. |
+| DHT11       | Sensor disconnected          | Error message, last value kept          | Same as expected.                                            |
+
+##### Discussions
+
+1. Lighting priority: The system has only one RGB LED, so different conditions can ask for different colors at the same time. To prevent conflicts, we decided on a fixed priority order. In the code, this order is set by the sequence of the if - else chain inside the lighting() function, so only one color can be chosen in each control cycle.
+2. Trouble - shooting
+    1) Upload failure
+    The code built successfully, but the upload failed with the error `unable to connect to the target`. The old program kept running on the board, and the motor was still spinning. The ST-Link debugger could not connect to the microcontroller while it was running. According to our professor, this may have been caused by a voltage difference between the connected boards. We turned off the power, unplugged all the cables, and reconnected them. We also uploaded the code while holding down the RESET button on the expansion board.
+
+  2) Printing stopped and interrupts repeated endlessly (Bluetooth not connected)
+   The `printf` output appeared once or twice and then stopped completely. When we connected the Bluetooth module, printing worked normally again. Without the Bluetooth module, the USART6 receive pin was left floating. Electrical noise or an overrun error probably caused the USART6 interrupt to trigger again and again. Since the processor kept running the interrupt handler, the main loop never got a chance to run, so `printf` was never reached. We connected the Bluetooth module so that the receive line stayed in a stable idle state. We learned that when an interrupt is enabled for a peripheral, we also need to pay attention to the state of its input pins and its error flags.
+
+  3) Overlapping timers due to a shared counter
+   Timed actions, such as the 3 second yellow light, the 5 second exit delay, and the alarm blinking, overlapped with each other and did not behave as expected. Several events used the same starting count. In addition, the PIR interrupt saved the starting time and then immediately checked how much time had passed, so the result was always zero. We gave each event its own starting count (`pir_start_count`, `exit_count`, and `intrusion_count`). We also moved the starting point of the exit delay to the moment the button is pressed. We learned that "When to start counting" and "how much time has passed" must be tracked separately for each event. We also learned that clearing the interrupt pending flag is essential. If it is not cleared, the interrupt handler runs again immediately and never stops.
+
+3. Takeaways
+- Using timers: We learned how to use a timer interrupt. TIM1 creates an interrupt every 250 ms, and each time it does, `current_count` increases by one. By subtracting a starting count from the current count, we can measure how much time has passed. For example, 12 ticks x 250 ms = 3 seconds. This let us handle several timed actions at once without using `delay()`, which would have stopped the whole program while waiting.
+- Reading header files: Even when we were not familiar with a library, we could still use it by reading its header file. The header file shows each function's name, its inputs, and what it returns.
 
 ### VI. Reference
 
@@ -781,9 +853,10 @@ Add a circuit diagram or results image in the project report.
 
 - [Example Code for DHT](https://github.com/ykkimhgu/EC-student/blob/main/tutorial/tutorial-student/TU_DHT11.c)
 - `DHT11_read()` blocks for about 25 ms, of which roughly 5 ms runs with interrupts off.
-- Did not call it from inside an interrupt handler.
-- Treated `DHT11_ERR_CHECKSUM` and `DHT11_ERR_NO_REPLY` as invalid reading: held the last valid values, reported the fault, and counted the failures.
+- `DHT11_read()` was called from `main()`, not from an interrupt handler.
+- The system treats `DHT11_ERR_CHECKSUM` and `DHT11_ERR_NO_REPLY` as invalid readings. When an error occurs, the system keeps the last valid temperature and humidity values, reports the error, and increments the `dht_error_count` variable.
+- During normal operation, no DHT11 reading errors were observed (error count: 0). However, when the DHT11 sensor was intentionally disconnected, an error message was displayed, and the error count increased and was printed.
 
-**I2C API:** `ecI2C.h`
+**I2C2 API:** `ecI2C2.h`
 
 - [Example Code for I2C LCD](https://github.com/ykkimhgu/EC-student/blob/main/tutorial/tutorial-student/TU_I2C_LCD.c)

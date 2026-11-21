@@ -8,8 +8,6 @@
 
 [See Tutorial: Documentation with Markdown](https://ykkim.gitbook.io/ec/numerical-programming/ta-tutorial/tutorial-documentation-with-markdown#preparation)
 
-You must submit your API documentation before the last day of class
-
 ### Embedded Controller - STM32F411 Driver Library
 
 Written by: Won Bitna
@@ -24,21 +22,167 @@ MCU: STM32F411RE, Nucleo-64
 
 **Table of Contents**
 
-* [GPIO Digital In/Out](#gpio-digital-inout)
+* [ecGPIO2](#ecgpio2)
   * [Header File](#header-file)
-  * [GPIO\_init()](#gpio_init)
-  * [GPIO\_mode()](#gpio_mode)
-  * [GPIO\_write()](#gpio_write)
-  * [GPIO\_read()](#gpio_read)
-  * [GPIO\_ospeed()](#gpio_ospeed)
-  * [GPIO\_otype()](#gpio_otype)
-  * [GPIO\_pupdr()](#gpio_pupdr)
-* [GPIO 7segment Display]()
-  * [Header File]()
-* [EXTI](/ec/ec-course/tutorial.md#gpio-digital-inout)
-  * [Header File](/ec/ec-course/tutorial.md#header-file)
-
-
+  * [GPIO_init()](#gpio_init)
+  * [GPIO_mode()](#gpio_mode)
+  * [GPIO_ospeed()](#gpio_ospeed)
+  * [GPIO_otype()](#gpio_otype)
+  * [GPIO_pupd()](#gpio_pupd)
+  * [GPIO_write()](#gpio_write)
+  * [GPIO_read()](#gpio_read)
+  * [GPIO_init_all()](#gpio_init_all)
+  * [pinMode()](#pinmode)
+  * [digitalWrite()](#digitalwrite)
+  * [digitalRead()](#digitalread)
+  * [FND_init()](#fnd_init)
+  * [FND_select_init()](#fnd_select_init)
+  * [FND_display()](#fnd_display)
+  * [FND_select()](#fnd_select)
+  * [led_toggle()](#led_toggle)
+* [ecRCC2](#ecrcc2)
+  * [Header File](#header-file-1)
+  * [delay_ms_HSI()](#delay_ms_hsi)
+  * [RCC_HSI_init()](#rcc_hsi_init)
+  * [RCC_PLL_init()](#rcc_pll_init)
+  * [RCC_GPIOA_enable()](#rcc_gpioa_enable)
+  * [RCC_GPIOB_enable()](#rcc_gpiob_enable)
+  * [RCC_GPIOC_enable()](#rcc_gpioc_enable)
+  * [RCC_GPIOD_enable()](#rcc_gpiod_enable)
+  * [RCC_GPIOE_enable()](#rcc_gpioe_enable)
+  * [RCC_GPIOH_enable()](#rcc_gpioh_enable)
+* [ecPinNames](#ecpinnames)
+  * [Header File](#header-file-2)
+  * [ecPinmap()](#ecpinmap)
+* [ecEXTI2](#ecexti2)
+  * [Header File](#header-file-3)
+  * [EXTI_init()](#exti_init)
+  * [EXTI_disable()](#exti_disable)
+  * [is_pending_EXTI()](#is_pending_exti)
+  * [clear_pending_EXTI](#clear_pending_exti)
+* [ecStepper2](#ecstepper2)
+  * [Header File](#header-file-4)
+  * [stepper_init()](#stepper_init)
+  * [stepper_speed()](#stepper_speed)
+  * [stepper_step()](#stepper_step)
+  * [stepper_out()](#stepper_out)
+  * [stepper_stop()](#stepper_stop)
+* [ecSysTick2](#ecsystick2)
+  * [Header File](#header-file-5)
+  * [SysTick_init()](#systick_init)
+  * [SysTick_Handler()](#systick_handler)
+  * [SysTick_counter()](#systick_counter)
+  * [delay_ms()](#delay_ms)
+  * [delay_us](#delay_us)
+  * [SysTick_reset()](#systick_reset)
+  * [SysTick_val()](#systick_val)
+* [ecUART2](#ecuart2)
+  * [Header File](#header-file-6)
+  * [USART_init()](#usart_init)
+  * [USART_baud()](#usart_baud)
+  * [USART_pins()](#usart_pins)
+  * [USART1_baud()](#usart1_baud)
+  * [USART2_baud()](#usart2_baud)
+  * [USART1_init()](#usart1_init)
+  * [USART2_init()](#usart2_init)
+  * [USART1_write()](#usart1_write)
+  * [USART2_write()](#usart2_write)
+  * [USART1_read()](#usart1_read)
+  * [USART2_read()](#usart2_read)
+  * [is_USART1_RXNE()](#is_usart1_rxne)
+  * [is_USART2_RXNE()](#is_usart2_rxne)
+  * [USART_clock_enable()](#usart_clock_enable)
+  * [USART_write()](#usart_write)
+  * [USART_read()](#usart_read)
+  * [is_USART_RXNE()](#is_usart_rxne)
+  * [USART_delay()](#usart_delay)
+* [ecTIM2](#ectim2)
+  * [Header File](#header-file-7)
+  * [TIM_UI_init()](#tim_ui_init)
+  * [TIM_UI_init_us()](#tim_ui_init_us)
+  * [TIM_UI_enable()](#tim_ui_enable)
+  * [TIM_UI_disable()](#tim_ui_disable)
+  * [is_UIF()](#is_uif)
+  * [clear_UIF()](#clear_uif)
+  * [TIM_init()](#tim_init)
+  * [TIM_init_us()](#tim_init_us)
+  * [TIM_period()](#tim_period)
+  * [TIM_period_us()](#tim_period_us)
+  * [TIM_clock_enable()](#tim_clock_enable)
+  * [get_TIM_IRQn()](#get_tim_irqn)
+* [ecPWM2](#ecpwm2)
+  * [Header File](#header-file-8)
+  * [PWM_init_config()](#pwm_init_config)
+  * [PWM_duty()](#pwm_duty)
+  * [PWM_init()](#pwm_init)
+  * [PWM_init_us()](#pwm_init_us)
+  * [PWM_pulsewidth()](#pwm_pulsewidth)
+  * [PWM_pulsewidth_us()](#pwm_pulsewidth_us)
+  * [PWM_mode_config()](#pwm_mode_config)
+  * [PWM_pinmap()](#pwm_pinmap)
+* [ecADC2](#ecadc2)
+  * [Header File](#header-file-9)
+  * [ADC_init()](#adc_init)
+  * [ADC_read_poll()](#adc_read_poll)
+  * [ADC_read()](#adc_read)
+  * [ADC_trigger_init()](#adc_trigger_init)
+  * [JADC_init()](#jadc_init)
+  * [JADC_read_poll()](#jadc_read_poll)
+  * [JADC_read()](#jadc_read)
+  * [JADC_trigger_init()](#jadc_trigger_init)
+  * [ADC_EOC_enable()](#adc_eoc_enable)
+  * [ADC_EOC_disable()](#adc_eoc_disable)
+  * [ADC_start()](#adc_start)
+  * [ADC_stop()](#adc_stop)
+  * [ADC_sequence()](#adc_sequence)
+  * [ADC_conversion()](#adc_conversion)
+  * [is_ADC_EOC()](#is_adc_eoc)
+  * [clear_ADC_EOC()](#clear_adc_eoc)
+  * [is_ADC_OVR()](#is_adc_ovr)
+  * [clear_ADC_OVR()](#clear_adc_ovr)
+  * [JADC_JEOC_enable()](#jadc_jeoc_enable)
+  * [JADC_JEOC_disable()](#jadc_jeoc_disable)
+  * [JADC_start()](#jadc_start)
+  * [JADC_sequence()](#jadc_sequence)
+  * [is_ADC_JEOC()](#is_adc_jeoc)
+  * [clear_ADC_JEOC()](#clear_adc_jeoc)
+  * [ADC_pinmap()](#adc_pinmap)
+* [ecICAP2](#ecicap2)
+  * [Header File](#header-file-10)
+  * [ICAP_init()](#icap_init)
+  * [ICAP_ICn_init()](#icap_icn_init)
+  * [ICAP_tick()](#icap_tick)
+  * [ICAP_read()](#icap_read)
+  * [is_CCIF()](#is_ccif)
+  * [clear_CCIF()](#clear_ccif)
+  * [ICAP_pinmap()](#icap_pinmap)
+  * [ICAP_filter()](#icap_filter)
+  * [ICAP_ICn_select()](#icap_icn_select)
+* [ecI2C2](#eci2c2)
+  * [Header File](#header-file-11)
+  * [I2C1_init()](#i2c1_init)
+  * [I2C2_init()](#i2c2_init)
+  * [I2C3_init()](#i2c3_init)
+  * [I2C1_write()](#i2c1_write)
+  * [I2C2_write()](#i2c2_write)
+  * [I2C3_write()](#i2c3_write)
+  * [I2C1_read()](#i2c1_read)
+  * [I2C2_read()](#i2c2_read)
+  * [I2C3_read()](#i2c3_read)
+  * [LCD_init()](#lcd_init)
+  * [LCD_command()](#lcd_command)
+  * [LCD_data()](#lcd_data)
+  * [LCD_print()](#lcd_print)
+  * [LCD_setCursor()](#lcd_setcursor)
+* [ecDHT11](#ecdht11)
+  * [Header File](#header-file-12)
+  * [DHT11_init()](#dht11_init)
+  * [DHT11_read()](#dht11_read)
+  * [DHT11_temperature()](#dht11_temperature)
+  * [DHT11_humidity()](#dht11_humidity)
+* [ecSTM32F4v2](#ecstm32f4v2)
+  * [Header File](#header-file-13)
+  * [MCU_init()](#mcu_init)
 
 ---
 
@@ -3017,3 +3161,2103 @@ TIM_TypeDef *timer;
 int channel;
 PWM_pinmap(PA_5, &timer, &channel); // TIM2, channel 1
 ```
+
+***
+
+### ecADC2
+
+ADC1 regular/injected conversion, polling, sequences, and timer-triggered interrupts.
+
+#### Header File
+
+`#include "ecADC2.h"`
+
+```c
+#define ADC_RISE		1
+#define ADC_FALL		2
+#define ADC_BOTH		3
+#define ADC_SINGLE		0		// one conversion per trigger
+#define ADC_CONT		1		// keep converting after the first trigger
+
+void ADC_init(PinName_t pinName);
+uint32_t ADC_read_poll(void);
+uint32_t ADC_read(void);
+int ADC_trigger_init(TIM_TypeDef *TIMx, uint32_t msec, uint32_t edge);
+void JADC_init(PinName_t pinName);
+uint32_t JADC_read_poll(void);
+uint32_t JADC_read(uint32_t JDRn);
+int JADC_trigger_init(TIM_TypeDef *TIMx, uint32_t msec, uint32_t edge);
+void ADC_EOC_enable(void);
+void ADC_EOC_disable(void);
+void ADC_start(void);
+void ADC_stop(void);
+void ADC_sequence(PinName_t *seqCHn, uint32_t seqCHnums);
+void ADC_conversion(uint32_t convMode);
+uint32_t is_ADC_EOC(void);
+void clear_ADC_EOC(void);
+uint32_t is_ADC_OVR(void);
+void clear_ADC_OVR(void);
+void JADC_JEOC_enable(void);
+void JADC_JEOC_disable(void);
+void JADC_start(void);
+void JADC_sequence(PinName_t *seqCHn, uint32_t seqCHnums);
+uint32_t is_ADC_JEOC(void);
+void clear_ADC_JEOC(void);
+void ADC_pinmap(PinName_t pinName, uint32_t *chN);
+```
+
+
+#### ADC_init()
+
+Configures the selected analog pin and ADC1 for a 12-bit, single-channel, software-triggered regular conversion.
+
+```c
+void ADC_init(PinName_t pinName){
+	uint32_t chN;
+	ADC_pinmap(pinName, &chN);
+
+// 1. GPIO as ANALOG, no pull-up / pull-down
+	GPIO_init(pinName, ANALOG);				// ANALOG = 3
+	GPIO_pupd(pinName, NO_PUPD);
+
+// 2. ADC clock, prescaler, resolution
+	RCC->APB2ENR |= RCC_APB2ENR_ADC1EN;
+	ADC->CCR     &= ~ADC_CCR_ADCPRE;		// 00 : PCLK2 / 2 = 42 MHz
+	ADC1->CR1    &= ~ADC_CR1_RES;			// 00 : 12-bit
+
+// 3. Channel sampling time : 84 ADC cycles = 2 usec at 42 MHz
+	if(chN < 10){
+		ADC1->SMPR2 &= ~(7UL << (3 * chN));
+		ADC1->SMPR2 |=  (4UL << (3 * chN));
+	}
+	else{
+		ADC1->SMPR1 &= ~(7UL << (3 * (chN - 10)));
+		ADC1->SMPR1 |=  (4UL << (3 * (chN - 10)));
+	}
+
+// 4. Default: Regular Group, One-channel sequence
+	ADC1->CR1  &= ~ADC_CR1_SCAN;			// 0 : one-channel mode
+	ADC1->SQR1 &= ~ADC_SQR1_L;				// 0000 : sequence length 1
+	ADC1->SQR3 &= ~ADC_SQR3_SQ1;
+	ADC1->SQR3 |= (chN & ADC_SQR3_SQ1);		// SQ1 = this channel
+
+// 5. EOC after EVERY conversion, so one sample can be polled or read per EOC.
+//    EOCS = 1 also switches overrun detection on - see clear_ADC_OVR().
+	ADC1->CR2 |= ADC_CR2_EOCS;
+
+// 6. Default : software trigger, ONE conversion, NO interrupt
+	ADC1->CR2 &= ~ADC_CR2_EXTEN;			// no hardware trigger
+	ADC1->CR2 &= ~ADC_CR2_CONT;				// single conversion
+	ADC1->CR1 &= ~ADC_CR1_EOCIE;
+	ADC1->CR1 &= ~ADC_CR1_OVRIE;
+
+// 7. Enable ADC
+	ADC1->SR   = 0;							// flags are cleared by writing 0
+	ADC1->CR2 |= ADC_CR2_ADON;
+}
+```
+
+**Parameters**
+
+* **pinName**: ADC-capable analog GPIO pin (e.g., PA_0 or PC_1).
+
+**Example Code**
+
+```c
+ADC_init(PA_0);
+```
+
+
+#### ADC_read_poll()
+
+Starts one regular conversion, waits for end-of-conversion (EOC), and returns the result.
+
+```c
+uint32_t ADC_read_poll(void){
+	ADC1->CR2 &= ~ADC_CR2_CONT;				// one conversion only
+	ADC_start();							// clears a latched OVR, then SWSTART
+
+	while(!is_ADC_EOC()){;}					// 12-bit + 84 cycles = about 2.5 usec
+
+	return ADC_read();						// reading DR clears EOC
+}
+```
+
+**Parameters**
+
+None
+
+**Returns**
+
+12-bit regular conversion value (0–4095).
+
+**Example Code**
+
+```c
+ADC_init(PA_0);
+uint32_t value = ADC_read_poll();
+```
+
+
+#### ADC_read()
+
+Reads ADC1 regular data register; reading DR clears the EOC flag.
+
+```c
+uint32_t ADC_read(void){
+	return ADC1->DR;
+}
+```
+
+**Parameters**
+
+None
+
+**Returns**
+
+Regular ADC1 conversion result read from DR.
+
+**Example Code**
+
+```c
+if (is_ADC_EOC()) {
+    uint32_t value = ADC_read();
+    // Process value inside ADC_IRQHandler().
+}
+```
+
+
+#### ADC_trigger_init()
+
+Selects TIM2 or TIM3 update events (TRGO) as the regular ADC trigger and enables EOC interrupts.
+
+```c
+int ADC_trigger_init(TIM_TypeDef *TIMx, uint32_t msec, uint32_t edge){
+	uint32_t extsel;
+
+	// Allowed : TIM2, TIM3 ONLY
+	if     (TIMx == TIM2)	extsel = 0x6;	// 0110 : TIM2 TRGO
+	else if(TIMx == TIM3)	extsel = 0x8;	// 1000 : TIM3 TRGO
+	else					return -1;
+
+// 1. TIMx Update Event : one TRGO pulse per update event, every msec.
+	TIM_init(TIMx, msec);					// clock on, 10 kHz tick, ARR, CEN
+	TIMx->CR2 &= ~TIM_CR2_MMS;
+	TIMx->CR2 |= TIM_CR2_MMS_1;				// 010 : Update event as TRGO
+
+// 2. ADC HW Trigger Select : trigger source and edge
+	ADC1->CR2 &= ~ADC_CR2_EXTSEL;
+	ADC1->CR2 |= (extsel << ADC_CR2_EXTSEL_Pos);
+
+	ADC1->CR2 &= ~ADC_CR2_EXTEN;
+	if     (edge == ADC_RISE)	ADC1->CR2 |= ADC_CR2_EXTEN_0;	// 01 rising
+	else if(edge == ADC_FALL)	ADC1->CR2 |= ADC_CR2_EXTEN_1;	// 10 falling
+	else if(edge == ADC_BOTH)	ADC1->CR2 |= ADC_CR2_EXTEN;		// 11 both
+
+// 3. Arm the EOC interrupt - without it, a triggered conversion that nothing
+//    reads in time just gets overwritten by the next one (see ecADC2.h).
+	ADC_EOC_enable();
+
+	return 0;
+}
+```
+
+**Parameters**
+
+* **TIMx**: TIM2 or TIM3 timer peripheral.
+* **msec**: Update/trigger period in milliseconds.
+* **edge**: Hardware ADC trigger edge: ADC_RISE(1), ADC_FALL(2), or ADC_BOTH(3).
+
+**Returns**
+
+`0` on success, `-1` if the chosen timer cannot trigger the regular ADC group.
+
+**Note**
+
+Call `ADC_init()` first and handle `ADC_IRQHandler()` to read each EOC result and avoid overrun. Only TIM2 and TIM3 are supported for the regular group.
+
+**Example Code**
+
+```c
+ADC_init(PA_0);
+int status = ADC_trigger_init(TIM3, 100, ADC_RISE);
+```
+
+
+#### JADC_init()
+
+Configures an analog pin as a single-channel injected ADC sequence, initially software-triggered.
+
+```c
+void JADC_init(PinName_t pinName){
+	uint32_t chN;
+	ADC_pinmap(pinName, &chN);
+
+// 1. GPIO as ANALOG, no pull-up / pull-down
+	GPIO_init(pinName, ANALOG);
+	GPIO_pupd(pinName, NO_PUPD);
+
+// 2. ADC clock, prescaler, resolution, alignment
+	RCC->APB2ENR |= RCC_APB2ENR_ADC1EN;
+	ADC->CCR     &= ~ADC_CCR_ADCPRE;		// 00 : PCLK2 / 2 = 42 MHz
+	ADC1->CR1    &= ~ADC_CR1_RES;			// 00 : 12-bit
+	ADC1->CR2    &= ~ADC_CR2_ALIGN;			// 0  : right alignment
+
+// 3. Channel sampling time : 84 ADC cycles = 2 usec at 42 MHz
+	if(chN < 10){
+		ADC1->SMPR2 &= ~(7UL << (3 * chN));
+		ADC1->SMPR2 |=  (4UL << (3 * chN));
+	}
+	else{
+		ADC1->SMPR1 &= ~(7UL << (3 * (chN - 10)));
+		ADC1->SMPR1 |=  (4UL << (3 * (chN - 10)));
+	}
+
+// 4. One-channel injected sequence.
+//    The injected sequence is RIGHT-aligned : with JL = 0 the single channel
+//    belongs in JSQ4, not JSQ1, and its result lands in JDR1.
+	ADC1->CR1  |= ADC_CR1_SCAN;				// JSQR drives the sequence
+	ADC1->JSQR &= ~ADC_JSQR_JL;				// 00 : one injected conversion
+	ADC1->JSQR &= ~ADC_JSQR_JSQ4;
+	ADC1->JSQR |= (chN << ADC_JSQR_JSQ4_Pos);
+
+// 5. Idle defaults : software trigger, no interrupt.
+//    RM0383 11.3.5 : "Injected channels cannot be converted continuously",
+//    the only exception being JAUTO, so CONT stays 0 here.
+	ADC1->CR2 &= ~ADC_CR2_JEXTEN;
+	ADC1->CR2 &= ~ADC_CR2_CONT;
+	ADC1->CR1 &= ~ADC_CR1_JEOCIE;
+
+// 6. Power on. Nothing converts until JADC_read_poll() or a trigger arrives.
+	ADC1->SR   = 0;
+	ADC1->CR2 |= ADC_CR2_ADON;
+}
+```
+
+**Parameters**
+
+* **pinName**: ADC-capable analog GPIO pin (e.g., PA_0 or PC_1).
+
+**Example Code**
+
+```c
+JADC_init(PC_1);
+```
+
+
+#### JADC_read_poll()
+
+Starts one injected software conversion, waits for JEOC, reads JDR1, and clears JEOC.
+
+```c
+uint32_t JADC_read_poll(void){
+	ADC1->CR2 |= ADC_CR2_JSWSTART;
+
+	while(!is_ADC_JEOC()){;}
+
+	uint32_t jvalue = JADC_read(1);		// conversion 1 of the sequence
+	clear_ADC_JEOC();			// JEOC is cleared by SOFTWARE only - unlike EOC,
+	return jvalue;				// reading JDRx does not clear it (RM0383)
+}
+```
+
+**Parameters**
+
+None
+
+**Returns**
+
+12-bit injected conversion value read from JDR1.
+
+**Example Code**
+
+```c
+JADC_init(PC_1);
+uint32_t value = JADC_read_poll();
+```
+
+
+#### JADC_read()
+
+Reads one injected data register (JDR1 to JDR4). Reading does not clear JEOC.
+
+```c
+uint32_t JADC_read(uint32_t JDRn){
+	switch(JDRn){
+		case 1:	return ADC1->JDR1;
+		case 2:	return ADC1->JDR2;
+		case 3:	return ADC1->JDR3;
+		case 4:	return ADC1->JDR4;
+		default: return 0;
+	}
+}
+```
+
+**Parameters**
+
+* **JDRn**: Injected data register index (1–4).
+
+**Returns**
+
+Value in the selected JDR1–JDR4; `0` for an invalid JDR index.
+
+**Example Code**
+
+```c
+if (is_ADC_JEOC()) {
+    uint32_t value = JADC_read(1);
+    clear_ADC_JEOC();
+}
+```
+
+
+#### JADC_trigger_init()
+
+Configures TIM1, TIM2, TIM4, or TIM5 update events (TRGO) to trigger injected conversions and enables JEOC interrupts.
+
+```c
+int JADC_trigger_init(TIM_TypeDef *TIMx, uint32_t msec, uint32_t edge){
+	uint32_t jextsel;
+
+	if     (TIMx == TIM1)	jextsel = 0x1;
+	else if(TIMx == TIM2)	jextsel = 0x3;
+	else if(TIMx == TIM4)	jextsel = 0x9;
+	else if(TIMx == TIM5)	jextsel = 0xB;
+	else					return -1;
+
+// 1. TIMx as the master : one TRGO pulse per update event, every msec.
+//    No compare channel of TIMx is consumed.
+	TIM_init(TIMx, msec);
+	TIMx->CR2 &= ~TIM_CR2_MMS;
+	TIMx->CR2 |= TIM_CR2_MMS_1;				// 010 : Update event as TRGO
+
+// 2. ADC side : trigger source and edge
+	ADC1->CR2 &= ~ADC_CR2_JEXTSEL;
+	ADC1->CR2 |= (jextsel << ADC_CR2_JEXTSEL_Pos);
+
+	ADC1->CR2 &= ~ADC_CR2_JEXTEN;
+	if     (edge == ADC_RISE)	ADC1->CR2 |= ADC_CR2_JEXTEN_0;	// 01 rising
+	else if(edge == ADC_FALL)	ADC1->CR2 |= ADC_CR2_JEXTEN_1;	// 10 falling
+	else if(edge == ADC_BOTH)	ADC1->CR2 |= ADC_CR2_JEXTEN;	// 11 both
+
+// 3. Arm the JEOC interrupt - same reason as ADC_trigger_init().
+	JADC_JEOC_enable();
+
+	return 0;
+}
+```
+
+**Parameters**
+
+* **TIMx**: TIM1, TIM2, TIM4, or TIM5 timer peripheral.
+* **msec**: Update/trigger period in milliseconds.
+* **edge**: Hardware ADC trigger edge: ADC_RISE(1), ADC_FALL(2), or ADC_BOTH(3).
+
+**Returns**
+
+`0` on success, `-1` if the chosen timer cannot trigger the injected ADC group.
+
+**Note**
+
+Call `JADC_init()` first; a JEOC interrupt handler must read JDR data and clear JEOC. The supported timers are TIM1, TIM2, TIM4, and TIM5.
+
+**Example Code**
+
+```c
+JADC_init(PC_1);
+int status = JADC_trigger_init(TIM5, 125, ADC_RISE);
+```
+
+
+#### ADC_EOC_enable()
+
+Enables regular end-of-conversion interrupts and configures the shared ADC NVIC interrupt.
+
+```c
+void ADC_EOC_enable(void){
+	ADC1->SR = 0;							// do not enter the ISR on a stale flag
+	ADC1->CR1 |= ADC_CR1_EOCIE;
+	NVIC_SetPriority(ADC_IRQn, 2);
+	NVIC_EnableIRQ(ADC_IRQn);
+}
+```
+
+**Parameters**
+
+None
+
+**Example Code**
+
+```c
+ADC_init(PA_0);
+ADC_EOC_enable();
+```
+
+
+#### ADC_EOC_disable()
+
+Disables the regular EOC interrupt and disables the shared ADC NVIC IRQ.
+
+```c
+void ADC_EOC_disable(void){
+	ADC1->CR1 &= ~ADC_CR1_EOCIE;
+	NVIC_DisableIRQ(ADC_IRQn);
+}
+```
+
+**Parameters**
+
+None
+
+**Note**
+
+The implementation disables the shared `ADC_IRQn` even if injected JEOC interrupts are enabled; coordinate both modes when using them together.
+
+**Example Code**
+
+```c
+ADC_EOC_disable();
+```
+
+
+#### ADC_start()
+
+Ensures ADC1 is enabled, clears the overrun flag, and requests a software-started regular conversion.
+
+```c
+void ADC_start(void){
+	clear_ADC_OVR();						// a latched OVR blocks every start
+	ADC1->CR2 |= ADC_CR2_ADON;
+	ADC1->CR2 |= ADC_CR2_SWSTART;
+}
+```
+
+**Parameters**
+
+None
+
+**Example Code**
+
+```c
+ADC_init(PA_0);
+ADC_start();
+```
+
+
+#### ADC_stop()
+
+Clears ADC1 ADON to stop conversions until it is enabled again.
+
+```c
+void ADC_stop(void){						// clears ADON : the trigger stops converting
+	ADC1->CR2 &= ~ADC_CR2_ADON;
+}
+```
+
+**Parameters**
+
+None
+
+**Example Code**
+
+```c
+ADC_stop();
+```
+
+
+#### ADC_sequence()
+
+Configures the order and length of the regular ADC channel sequence and scan mode.
+
+```c
+void ADC_sequence(PinName_t *seqCHn, uint32_t seqCHnums){
+	if(seqCHnums < 1)	return;
+
+	ADC1->CR2 &= ~ADC_CR2_ADON;				// SQRx must not change while running
+
+	if(seqCHnums > 1)	ADC1->CR1 |= ADC_CR1_SCAN;		// multi-channel scan
+	else				ADC1->CR1 &= ~ADC_CR1_SCAN;
+
+	ADC1->SQR1 &= ~ADC_SQR1_L;
+	ADC1->SQR1 |= ((seqCHnums - 1) << ADC_SQR1_L_Pos);
+
+	for(uint32_t i = 0; i < seqCHnums; i++){
+		uint32_t chN;
+		ADC_pinmap(seqCHn[i], &chN);
+
+		if(i < 6){
+			ADC1->SQR3 &= ~(0x1FUL << (i * 5));
+			ADC1->SQR3 |=  (chN    << (i * 5));
+		}
+		else if(i < 12){
+			ADC1->SQR2 &= ~(0x1FUL << ((i - 6) * 5));
+			ADC1->SQR2 |=  (chN    << ((i - 6) * 5));
+		}
+		else{
+			ADC1->SQR1 &= ~(0x1FUL << ((i - 12) * 5));
+			ADC1->SQR1 |=  (chN    << ((i - 12) * 5));
+		}
+	}
+
+	ADC1->CR2 |= ADC_CR2_ADON;
+}
+```
+
+**Parameters**
+
+* **seqCHn**: Array of analog GPIO pins in desired conversion order.
+* **seqCHnums**: Number of channels in the sequence.
+
+**Note**
+
+Initialize all required GPIO pins in analog mode separately when using more than one input.
+
+**Example Code**
+
+```c
+PinName_t channels[] = {PA_0, PC_1};
+ADC_init(PA_0);
+ADC_sequence(channels, 2);
+```
+
+
+#### ADC_conversion()
+
+Selects single or continuous conversion mode for the regular ADC group.
+
+```c
+void ADC_conversion(uint32_t convMode){		// ADC_SINGLE / ADC_CONT
+	if(convMode == ADC_CONT)	ADC1->CR2 |=  ADC_CR2_CONT;
+	else						ADC1->CR2 &= ~ADC_CR2_CONT;
+}
+```
+
+**Parameters**
+
+* **convMode**: ADC_SINGLE(0) or ADC_CONT(1).
+
+**Example Code**
+
+```c
+ADC_conversion(ADC_SINGLE);
+```
+
+
+#### is_ADC_EOC()
+
+Checks whether ADC1 regular end-of-conversion has occurred.
+
+```c
+uint32_t is_ADC_EOC(void){
+	return (ADC1->SR & ADC_SR_EOC) == ADC_SR_EOC;
+}
+```
+
+**Parameters**
+
+None
+
+**Returns**
+
+`1` if EOC is set, otherwise `0`.
+
+**Example Code**
+
+```c
+if (is_ADC_EOC()) {
+    uint32_t value = ADC_read();
+}
+```
+
+
+#### clear_ADC_EOC()
+
+Clears the ADC1 regular EOC status flag.
+
+```c
+void clear_ADC_EOC(void){
+	ADC1->SR &= ~ADC_SR_EOC;
+}
+```
+
+**Parameters**
+
+None
+
+**Example Code**
+
+```c
+clear_ADC_EOC();
+```
+
+
+#### is_ADC_OVR()
+
+Checks whether ADC1 regular conversion data was overwritten before the previous result was read.
+
+```c
+uint32_t is_ADC_OVR(void){
+	return (ADC1->SR & ADC_SR_OVR) == ADC_SR_OVR;
+}
+```
+
+**Parameters**
+
+None
+
+**Returns**
+
+`1` if OVR is set, otherwise `0`.
+
+**Example Code**
+
+```c
+if (is_ADC_OVR()) {
+    clear_ADC_OVR();
+}
+```
+
+
+#### clear_ADC_OVR()
+
+Clears the ADC1 overrun (OVR) status flag.
+
+```c
+void clear_ADC_OVR(void){
+	ADC1->SR &= ~ADC_SR_OVR;
+}
+```
+
+**Parameters**
+
+None
+
+**Example Code**
+
+```c
+clear_ADC_OVR();
+```
+
+
+#### JADC_JEOC_enable()
+
+Enables the injected end-of-conversion interrupt using the shared ADC NVIC line.
+
+```c
+void JADC_JEOC_enable(void){
+	ADC1->SR = 0;
+	ADC1->CR1 |= ADC_CR1_JEOCIE;
+	NVIC_SetPriority(ADC_IRQn, 2);
+	NVIC_EnableIRQ(ADC_IRQn);
+}
+```
+
+**Parameters**
+
+None
+
+**Example Code**
+
+```c
+JADC_init(PC_1);
+JADC_JEOC_enable();
+```
+
+
+#### JADC_JEOC_disable()
+
+Disables injected JEOC interrupts; disables the shared NVIC IRQ only if regular EOC interrupts are also off.
+
+```c
+void JADC_JEOC_disable(void){
+	ADC1->CR1 &= ~ADC_CR1_JEOCIE;
+	// ADC_IRQn is SHARED with the regular group, so the NVIC line is only
+	// released once neither group wants it.
+	if((ADC1->CR1 & ADC_CR1_EOCIE) == 0)	NVIC_DisableIRQ(ADC_IRQn);
+}
+```
+
+**Parameters**
+
+None
+
+**Example Code**
+
+```c
+JADC_JEOC_disable();
+```
+
+
+#### JADC_start()
+
+Starts an injected conversion by setting ADON and JSWSTART.
+
+```c
+void JADC_start(void){
+	ADC1->CR2 |= ADC_CR2_ADON;
+	ADC1->CR2 |= ADC_CR2_JSWSTART;
+}
+```
+
+**Parameters**
+
+None
+
+**Example Code**
+
+```c
+JADC_init(PC_1);
+JADC_start();
+```
+
+
+#### JADC_sequence()
+
+Configures a 1- to 4-channel injected conversion sequence, storing results in successive JDR registers.
+
+```c
+void JADC_sequence(PinName_t *seqCHn, uint32_t seqCHnums){
+	if(seqCHnums < 1 || seqCHnums > 4)	return;
+
+	ADC1->CR2 &= ~ADC_CR2_ADON;				// JSQR must not change while running
+	ADC1->CR1 |= ADC_CR1_SCAN;
+
+	ADC1->JSQR &= ~ADC_JSQR_JL;
+	ADC1->JSQR |= ((seqCHnums - 1) << ADC_JSQR_JL_Pos);
+
+	// RIGHT-aligned sequence : the i-th conversion of n sits at
+	// JSQ(4 - (n-1-i)), i.e. bit 15 - 5*(n-1-i). Its result lands in JDR(i+1).
+	for(uint32_t i = 0; i < seqCHnums; i++){
+		uint32_t chN;
+		ADC_pinmap(seqCHn[i], &chN);
+		uint32_t shift = 15 - 5 * (seqCHnums - 1 - i);
+		ADC1->JSQR &= ~(0x1FUL << shift);
+		ADC1->JSQR |=  (chN    << shift);
+	}
+
+	ADC1->CR2 |= ADC_CR2_ADON;
+}
+```
+
+**Parameters**
+
+* **seqCHn**: Array of analog GPIO pins in desired conversion order.
+* **seqCHnums**: Number of injected channels (1–4).
+
+**Note**
+
+Only 1–4 channels are accepted. Initialize all required GPIO pins in analog mode separately.
+
+**Example Code**
+
+```c
+PinName_t channels[] = {PA_0, PC_1};
+JADC_init(PA_0);
+JADC_sequence(channels, 2);
+```
+
+
+#### is_ADC_JEOC()
+
+Checks whether the injected ADC conversion sequence has finished.
+
+```c
+uint32_t is_ADC_JEOC(void){
+	return (ADC1->SR & ADC_SR_JEOC) == ADC_SR_JEOC;
+}
+```
+
+**Parameters**
+
+None
+
+**Returns**
+
+`1` if JEOC is set, otherwise `0`.
+
+**Example Code**
+
+```c
+if (is_ADC_JEOC()) {
+    uint32_t value = JADC_read(1);
+    clear_ADC_JEOC();
+}
+```
+
+
+#### clear_ADC_JEOC()
+
+Clears the injected end-of-conversion (JEOC) status flag.
+
+```c
+void clear_ADC_JEOC(void){
+	ADC1->SR &= ~ADC_SR_JEOC;
+}
+```
+
+**Parameters**
+
+None
+
+**Example Code**
+
+```c
+clear_ADC_JEOC();
+```
+
+
+#### ADC_pinmap()
+
+Maps a supported STM32F411 analog GPIO pin to its ADC1 channel number.
+
+```c
+void ADC_pinmap(PinName_t pinName, uint32_t *chN){
+	GPIO_TypeDef *port;
+	unsigned int pin;
+	ecPinmap(pinName, &port, &pin);
+
+	*chN = 0;
+
+	if(port == GPIOA){
+		switch(pin){
+			case 0 : *chN =  0; break;
+			case 1 : *chN =  1; break;
+			case 4 : *chN =  4; break;
+			case 5 : *chN =  5; break;
+			case 6 : *chN =  6; break;
+			case 7 : *chN =  7; break;
+			default: break;
+		}
+	}
+	else if(port == GPIOB){
+		switch(pin){
+			case 0 : *chN =  8; break;
+			case 1 : *chN =  9; break;
+			default: break;
+		}
+	}
+	else if(port == GPIOC){
+		switch(pin){
+			case 0 : *chN = 10; break;
+			case 1 : *chN = 11; break;
+			case 2 : *chN = 12; break;
+			case 3 : *chN = 13; break;
+			case 4 : *chN = 14; break;
+			case 5 : *chN = 15; break;
+			default: break;
+		}
+	}
+}
+```
+
+**Parameters**
+
+* **pinName**: ADC-capable analog GPIO pin (e.g., PA_0 or PC_1).
+* **chN**: Output pointer receiving the ADC1 channel index.
+
+**Example Code**
+
+```c
+uint32_t channel;
+ADC_pinmap(PC_1, &channel); // ADC1 channel 11
+```
+
+
+***
+
+### ecICAP2
+
+Timer input-capture configuration, capture/compare interrupts, and counter tick control.
+
+#### Header File
+
+`#include "ecICAP2.h"`
+
+```c
+#define IC_RISE 0
+#define IC_FALL 1
+#define IC_BOTH 2
+#define IC_1 1
+#define IC_2 2
+#define IC_3 3
+#define IC_4 4
+#define IC_FILTER_0		0		// no filter, transition sampled at fDTS
+#define IC_FILTER_1		1		// N = 2 samples at fCK_INT
+#define IC_FILTER_2		2		// N = 4 samples at fCK_INT
+#define IC_FILTER_3		3		// N = 8 samples at fCK_INT
+
+void ICAP_init(PinName_t pinName, uint32_t edge_type);
+void ICAP_ICn_init(PinName_t pinName, uint32_t edge_type, uint32_t ICn);
+void ICAP_tick(PinName_t pinName, uint32_t usec);
+uint32_t ICAP_read(PinName_t pinName, uint32_t ICn);
+uint32_t is_CCIF(TIM_TypeDef *TIMx, uint32_t  ICn);
+void clear_CCIF(TIM_TypeDef *TIMx, uint32_t  ICn);
+void ICAP_pinmap(PinName_t pinName, TIM_TypeDef **TIMx, int *chN);
+void ICAP_filter(TIM_TypeDef *TIMx, uint32_t ICn, uint16_t filterOpt);
+void ICAP_ICn_select(TIM_TypeDef *TIMx, uint32_t TIn, uint32_t ICn);
+```
+
+
+#### ICAP_init()
+
+Initializes the timer channel associated with the given pin for input capture at a default 1 us timer tick.
+
+```c
+void ICAP_init(PinName_t pinName, uint32_t edge_type) {
+    TIM_TypeDef *TIMx;
+    int TIn;
+    ICAP_pinmap(pinName, &TIMx, &TIn);
+
+    ICAP_ICn_init(pinName, edge_type, TIn);		// ICn = TIn
+}
+```
+
+**Parameters**
+
+* **pinName**: GPIO pin mapped to a supported timer input (e.g., PA_0).
+* **edge_type**: Input-capture edge: IC_RISE(0), IC_FALL(1), or IC_BOTH(2).
+
+**Example Code**
+
+```c
+ICAP_init(PA_0, IC_RISE); // TIM2_CH1
+```
+
+
+#### ICAP_ICn_init()
+
+Configures a selected input-capture channel with the GPIO alternate function, filter, polarity, and capture interrupts.
+
+```c
+void ICAP_ICn_init(PinName_t pinName, uint32_t edge_type, uint32_t ICn) {
+// 0. Match Input Capture Port and Pin for TIMx
+    GPIO_TypeDef *port;
+    unsigned int pin;
+    ecPinmap(pinName, &port, &pin);
+    TIM_TypeDef *TIMx;
+    int TIn;
+    ICAP_pinmap(pinName, &TIMx, &TIn);
+
+// GPIO configuration
+// ---------------------------------------------------------------------
+// 1. Initialize GPIO port and pin as AF
+    GPIO_init(pinName, AF);         // AF=2
+    GPIO_pupd(pinName,NO_PUPD);
+    GPIO_ospeed(pinName, HIGH_SPEED);  // speed VHIGH=3
+
+// 2. Configure GPIO AFR by Pin num.
+    // AFR[0] holds pin 0~7, AFR[1] holds pin 8~15 
+	uint32_t afrIdx   = pin >> 3;	// same as (pin/8)
+	uint32_t afrShift = 4 * (pin % 8);
+	uint32_t afNum    = 0;
+	
+	//  AF1 for TIM1,TIM2     AF2 for TIM3,TIM4
+	if((TIMx == TIM1)||(TIMx == TIM2))		afNum = 1;	// AF1
+	else if(TIMx== TIM3 || TIMx == TIM4 || TIMx == TIM5)	afNum = 2;	// AF2
+    else if (TIMx == TIM9 || TIMx == TIM10 || TIMx == TIM11) afNum = 3;// AF3
+	
+	// Set AFR register for the pin
+	port->AFR[afrIdx] &= ~(0xFUL << afrShift);	// 4 bits per pin
+	port->AFR[afrIdx] |=  (afNum << afrShift);
+
+
+// TIMER configuration (shared by all four channels)
+// ---------------------------------------------------------------------
+// 1. Timer clock, Update Interrupt and NVIC
+    TIM_UI_init_us(TIMx, 1);        // TIMx Interrupt initialize at 1us=1MHz
+
+// 2. Default tick = 1 usec, ARR at maximum
+    ICAP_tick(pinName, 1);
+
+// 3. Disable Counter during configuration
+    TIMx->CR1 &= ~TIM_CR1_CEN;   
+
+
+// Input Capture configuration (this channel only)
+// ---------------------------------------------------------------------
+// 1. Select Timer channel(TIx) for Input Capture channel(ICx)            
+    ICAP_ICn_select(TIMx, TIn, ICn);
+
+// 2. Filter Duration for THIS channel. Writing all four channels would
+//    corrupt any channel of this timer that is used as an output: in CCMRx
+//    the ICxF bits are the OCxM bits of an output channel.
+    ICAP_filter(TIMx, ICn, IC_FILTER_3);    // N = 8 samples at fCK_INT
+    
+// 3. IC Prescaler (use default)
+
+// 4. Activation Edge: CCyNP/CCyP        
+    TIMx->CCER  &= ~(0b1010 << 4*(ICn - 1));  			// Clear CCnNP/CCnP bits
+	switch(edge_type){
+		case IC_RISE: TIMx->CCER &= ~(0b1010 << 4*(ICn - 1)); break; //rising:  00
+		case IC_FALL: TIMx->CCER |= 0b0010 << 4*(ICn - 1); 	 break; //falling: 01
+		case IC_BOTH: TIMx->CCER |= 0b1010 << 4*(ICn - 1); 	 break; //both:    11
+	}
+
+// 5.	Enable CCy Capture, Capture/Compare interrupt
+    TIMx->CCER |= 1 << (4 * (ICn - 1));  // CCn(ICn) Capture Enable
+
+// 6.	Enable Interrupt of CC(CCyIE), Update (UIE) per ICn
+    TIMx->DIER |= 1 << ICn;      // Capture/Compare Interrupt Enable
+    TIMx->DIER |= TIM_DIER_UIE;  // Update Interrupt enable
+
+// 7.	Enable Counter
+    TIMx->CR1 |= TIM_CR1_CEN;  // Counter enable
+}
+```
+
+**Parameters**
+
+* **pinName**: GPIO pin mapped to a supported timer input (e.g., PA_0).
+* **edge_type**: Input-capture edge: IC_RISE(0), IC_FALL(1), or IC_BOTH(2).
+* **ICn**: Input-capture channel number (IC_1 to IC_4).
+
+**Note**
+
+The selected IC channel must correspond to a supported direct or indirect input pairing for that timer.
+
+**Example Code**
+
+```c
+ICAP_init(PA_0, IC_RISE);
+ICAP_ICn_init(PA_0, IC_FALL, IC_2);
+```
+
+
+#### ICAP_tick()
+
+Sets the input-capture timer tick interval in microseconds, using the timer prescaler and maximum ARR.
+
+```c
+void ICAP_tick(PinName_t pinName, uint32_t usec) {
+    // 0. Match Input Capture Port and Pin for TIMx
+    TIM_TypeDef *TIMx;
+    int CHn;
+    ICAP_pinmap(pinName, &TIMx, &CHn);
+
+    if(usec == 0)	usec = 1;			// usec is unsigned : 0 would give PSC = -1
+    
+    // 1. Prescaler for the requested tick. PSC is 16-bit, < 65536
+    uint32_t presc = (uint32_t)(((uint64_t)usec * (uint32_t)EC_SYSCLK) / 1000000UL);
+    if(presc < 1)		presc = 1;
+    if(presc > 65536)	presc = 65536;			// clamp, PSC = presc - 1
+    TIMx->PSC = presc - 1;
+
+    // 2. Configure ARR to be Maximum 
+    TIMx->ARR = 0xFFFF;  // Set auto reload register to maximum (count up to 65535)
+    if((TIMx == TIM2)||(TIMx == TIM5))		TIMx->ARR = 0xFFFFFFFF;
+
+    // 3. Clear the UIF 
+    TIMx->EGR |= TIM_EGR_UG;
+    TIMx->SR   = ~TIM_SR_UIF;
+}
+```
+
+**Parameters**
+
+* **pinName**: GPIO pin mapped to a supported timer input (e.g., PA_0).
+* **usec**: Timer tick duration in microseconds (clamped to supported prescaler range).
+
+**Note**
+
+Call after all input-capture channel initialization if a custom tick period is required.
+
+**Example Code**
+
+```c
+ICAP_init(PA_0, IC_RISE);
+ICAP_tick(PA_0, 10); // 10 us per count
+```
+
+
+#### ICAP_read()
+
+Returns the captured counter value from the requested input-capture channel.
+
+```c
+uint32_t ICAP_read(PinName_t pinName, uint32_t ICn) {
+    TIM_TypeDef *TIMx;
+	int CHn;		
+	ICAP_pinmap(pinName, &TIMx, &CHn);
+    
+    uint32_t capture_Value;
+
+    if (ICn == 1)
+        capture_Value = TIMx->CCR1;
+    else if (ICn == 2)
+        capture_Value = TIMx->CCR2;
+    else if (ICn == 3)
+        capture_Value = TIMx->CCR3;
+    else
+        capture_Value = TIMx->CCR4;
+
+    return capture_Value;
+}
+```
+
+**Parameters**
+
+* **pinName**: GPIO pin mapped to a supported timer input (e.g., PA_0).
+* **ICn**: Input-capture channel number (IC_1 to IC_4).
+
+**Returns**
+
+Captured timer counter value from the selected CCR register.
+
+**Note**
+
+Read in the relevant timer IRQ handler or after a capture event, and check/clear the channel interrupt flag.
+
+**Example Code**
+
+```c
+uint32_t captured = ICAP_read(PA_0, IC_1);
+```
+
+
+#### is_CCIF()
+
+Checks the capture/compare interrupt status flag for a given timer channel.
+
+```c
+uint32_t is_CCIF(TIM_TypeDef *TIMx, uint32_t ICn) {
+    return (TIMx->SR & (0x1UL <<  ICn)) != 0;
+}
+```
+
+**Parameters**
+
+* **TIMx**: Target timer peripheral.
+* **ICn**: Input-capture channel number (IC_1 to IC_4).
+
+**Returns**
+
+Nonzero if the selected CC interrupt flag is set, otherwise `0`.
+
+**Example Code**
+
+```c
+if (is_CCIF(TIM2, IC_1)) {
+    uint32_t count = ICAP_read(PA_0, IC_1);
+    clear_CCIF(TIM2, IC_1);
+}
+```
+
+
+#### clear_CCIF()
+
+Clears the capture/compare interrupt flag for the selected timer channel.
+
+```c
+void clear_CCIF(TIM_TypeDef *TIMx, uint32_t  ICn) {
+    // Clear the UIF  by writing
+    TIMx->SR = ~(0x1UL << ICn);
+}
+```
+
+**Parameters**
+
+* **TIMx**: Target timer peripheral.
+* **ICn**: Input-capture channel number (IC_1 to IC_4).
+
+**Example Code**
+
+```c
+clear_CCIF(TIM2, IC_1);
+```
+
+
+#### ICAP_pinmap()
+
+Maps a supported GPIO pin to its timer peripheral and associated timer input channel.
+
+```c
+void ICAP_pinmap(PinName_t pinName, TIM_TypeDef **TIMx, int *chN){
+	 GPIO_TypeDef *port;
+	 unsigned int pin;		
+	 ecPinmap(pinName, &port, &pin);	
+   
+   if(port == GPIOA) {
+      switch(pin){  
+         case 0 : *TIMx = TIM2; *chN = 1; break;
+         case 1 : *TIMx = TIM2; *chN = 2; break;
+         case 5 : *TIMx = TIM2; *chN = 1; break;
+         case 6 : *TIMx = TIM3; *chN = 1; break;
+         //case 7: *TIMx = TIM1; *chN = 1N; break;
+         case 8 : *TIMx = TIM1; *chN = 1; break;
+         case 9 : *TIMx = TIM1; *chN = 2; break;
+         case 10: *TIMx = TIM1; *chN = 3; break;
+         case 15: *TIMx = TIM2; *chN = 1; break;
+         default: break;
+      }         
+   }
+   else if(port == GPIOB) {
+      switch(pin){
+         //case 0: *TIMx = TIM1; *chN = 2N; break;
+         //case 1: *TIMx = TIM1; *chN = 3N; break;
+         case 3 : *TIMx = TIM2; *chN = 2; break;
+         case 4 : *TIMx = TIM3; *chN = 1; break;
+         case 5 : *TIMx = TIM3; *chN = 2; break;
+         case 6 : *TIMx = TIM4; *chN = 1; break;
+         case 7 : *TIMx = TIM4; *chN = 2; break;
+         case 8 : *TIMx = TIM4; *chN = 3; break;
+         case 9 : *TIMx = TIM4; *chN = 4; break;
+         case 10: *TIMx = TIM2; *chN = 3; break;
+         
+         default: break;
+      }
+   }
+   else if(port == GPIOC) {
+      switch(pin){
+         case 6 : *TIMx = TIM3; *chN = 1; break;
+         case 7 : *TIMx = TIM3; *chN = 2; break;
+         case 8 : *TIMx = TIM3; *chN = 3; break;
+         case 9 : *TIMx = TIM3; *chN = 4; break;
+         
+         default: break;
+      }
+   }
+}
+```
+
+**Parameters**
+
+* **pinName**: GPIO pin mapped to a supported timer input (e.g., PA_0).
+* **TIMx**: Output pointer receiving the selected timer peripheral.
+* **chN**: Output pointer receiving the mapped timer input channel number.
+
+**Example Code**
+
+```c
+TIM_TypeDef *timer;
+int channel;
+ICAP_pinmap(PA_0, &timer, &channel); // TIM2, CH1
+```
+
+
+#### ICAP_filter()
+
+Sets the digital filter option for one timer input-capture channel.
+
+```c
+void ICAP_filter(TIM_TypeDef *TIMx, uint32_t ICn, uint16_t filterOpt)
+{
+	// 4 bits per channel: ICnF at bit 4 (ch 1, 3) and bit 12 (ch 2, 4)
+	uint32_t shift = (ICn % 2) ? 4 : 12;			// odd channel -> 4, even -> 12
+
+	if(ICn == 1 || ICn == 2){
+		TIMx->CCMR1 &= ~(0xFUL  << shift);
+		TIMx->CCMR1 |=  (filterOpt << shift);
+	}
+	else{
+		TIMx->CCMR2 &= ~(0xFUL  << shift);
+		TIMx->CCMR2 |=  (filterOpt << shift);
+	}
+}
+```
+
+**Parameters**
+
+* **TIMx**: Target timer peripheral.
+* **ICn**: Input-capture channel number (IC_1 to IC_4).
+* **filterOpt**: Capture digital filter setting (IC_FILTER_0 to IC_FILTER_3).
+
+**Example Code**
+
+```c
+ICAP_filter(TIM2, IC_1, IC_FILTER_3);
+```
+
+
+#### ICAP_ICn_select()
+
+Selects whether an input capture channel receives its direct or indirect timer input.
+
+```c
+void ICAP_ICn_select(TIM_TypeDef *TIMx, uint32_t TIn, uint32_t ICn){
+// 2. Configure  IC number(user selected) with given IC pin(TIMx_CHn)
+	switch(ICn){
+			case 1:
+					TIMx->CCMR1 &= ~TIM_CCMR1_CC1S;						//reset   CC1S
+					if (ICn==TIn) TIMx->CCMR1 |= 	TIM_CCMR1_CC1S_0;   //01<<0   CC1S    Tx_Ch1=IC1
+					else TIMx->CCMR1 |= 	TIM_CCMR1_CC1S_1;      		//10<<0   CC1S    Tx_Ch2=IC1
+					break;
+			case 2:
+					TIMx->CCMR1 &= ~TIM_CCMR1_CC2S;						//reset   CC2S
+					if (ICn==TIn) TIMx->CCMR1 |= 	TIM_CCMR1_CC2S_0;   //01<<0   CC2S    Tx_Ch2=IC2
+					else TIMx->CCMR1 |= 	TIM_CCMR1_CC2S_1;      		//10<<0   CC2S    Tx_Ch1=IC2
+					break;
+			case 3:
+					TIMx->CCMR2 &= ~TIM_CCMR2_CC3S;						//reset   CC3S
+					if (ICn==TIn) TIMx->CCMR2 |= 	TIM_CCMR2_CC3S_0;   //01<<0   CC3S    Tx_Ch3=IC3
+					else TIMx->CCMR2 |= 	TIM_CCMR2_CC3S_1;      		//10<<0   CC3S    Tx_Ch4=IC3
+					break;
+			case 4:
+					TIMx->CCMR2 &= ~TIM_CCMR2_CC4S;						//reset   CC4S
+					if (ICn==TIn) TIMx->CCMR2 |= 	TIM_CCMR2_CC4S_0;   //01<<0   CC4S    Tx_Ch4=IC4
+					else TIMx->CCMR2 |= 	TIM_CCMR2_CC4S_1;      		//10<<0   CC4S    Tx_Ch3=IC4
+					break;
+			default: break;
+		}
+
+}
+```
+
+**Parameters**
+
+* **TIMx**: Target timer peripheral.
+* **TIn**: Physical timer input channel number.
+* **ICn**: Input-capture channel number (IC_1 to IC_4).
+
+**Example Code**
+
+```c
+ICAP_ICn_select(TIM2, 1, IC_1);
+```
+
+
+***
+
+### ecI2C2
+
+I2C1/I2C2/I2C3 master communication and character LCD control over I2C1.
+
+#### Header File
+
+`#include "ecI2C2.h"`
+
+```c
+#define LM75_ADDR      0x4C
+#define LM75_REG_TEMP  0x00
+#define LM75_REG_CONF  0x01
+#define LCD_ADDR       0x27
+#define LCD_BACKLIGHT  0x08
+#define LCD_ENABLE_BIT 0x04
+#define LCD_CMD        0x00
+#define LCD_DATA       0x01
+
+void I2C1_init(void);
+void I2C2_init(void);
+void I2C3_init(void);
+int I2C1_write(uint8_t devAddr, uint8_t data);
+int I2C2_write(uint8_t devAddr, uint8_t data);
+int I2C3_write(uint8_t devAddr, uint8_t data);
+int I2C1_read(uint8_t devAddr, uint8_t *buf, uint32_t len);
+int I2C2_read(uint8_t devAddr, uint8_t *buf, uint32_t len);
+int I2C3_read(uint8_t devAddr, uint8_t *buf, uint32_t len);
+void LCD_init(void);
+void LCD_command(uint8_t cmd);
+void LCD_data(uint8_t data);
+void LCD_print(char *str);
+void LCD_setCursor(uint8_t col, uint8_t row);
+```
+
+
+#### I2C1_init()
+
+Initializes I2C1 on PB8 (SCL, AF4) and PB9 (SDA, AF4), with standard-mode 100 kHz timing.
+
+```c
+void I2C1_init(void){
+	I2C_pin_init(I2C1, PB_8, PB_9);
+	I2C_timing_init(I2C1);
+}
+```
+
+**Parameters**
+
+None
+
+**Note**
+
+External SCL/SDA pull-up resistors are required for the open-drain bus.
+
+**Example Code**
+
+```c
+I2C1_init();
+```
+
+
+#### I2C2_init()
+
+Initializes I2C2 on PB10 (SCL, AF4) and PB3 (SDA, AF9), with standard-mode 100 kHz timing.
+
+```c
+void I2C2_init(void){
+	I2C_pin_init(I2C2, PB_10, PB_3);
+	I2C_timing_init(I2C2);
+}
+```
+
+**Parameters**
+
+None
+
+**Note**
+
+External pull-ups are required. PB11 is unavailable on the target Nucleo-F411RE package.
+
+**Example Code**
+
+```c
+I2C2_init();
+```
+
+
+#### I2C3_init()
+
+Initializes I2C3 on PA8 (SCL, AF4) and PC9 (SDA, AF4), with standard-mode 100 kHz timing.
+
+```c
+void I2C3_init(void){
+	I2C_pin_init(I2C3, PA_8, PC_9);
+	I2C_timing_init(I2C3);
+}
+```
+
+**Parameters**
+
+None
+
+**Note**
+
+External SCL/SDA pull-up resistors are required for the open-drain bus.
+
+**Example Code**
+
+```c
+I2C3_init();
+```
+
+
+#### I2C1_write()
+
+Sends one data byte to a 7-bit I2C device address over I2C1.
+
+```c
+int I2C1_write(uint8_t devAddr, uint8_t data){
+	return I2C_write_byte(I2C1, devAddr, data);
+}
+```
+
+**Parameters**
+
+* **devAddr**: 7-bit I2C slave address (unshifted, without the read/write bit).
+* **data**: One byte to transmit.
+
+**Returns**
+
+`0` on success; `-1` on timeout/NACK/error.
+
+**Example Code**
+
+```c
+I2C1_init();
+int status = I2C1_write(LM75_ADDR, LM75_REG_TEMP);
+```
+
+
+#### I2C2_write()
+
+Sends one data byte to a 7-bit I2C device address over I2C2.
+
+```c
+int I2C2_write(uint8_t devAddr, uint8_t data){
+	return I2C_write_byte(I2C2, devAddr, data);
+}
+```
+
+**Parameters**
+
+* **devAddr**: 7-bit I2C slave address (unshifted, without the read/write bit).
+* **data**: One byte to transmit.
+
+**Returns**
+
+`0` on success; `-1` on timeout/NACK/error.
+
+**Example Code**
+
+```c
+I2C2_init();
+int status = I2C2_write(LM75_ADDR, LM75_REG_TEMP);
+```
+
+
+#### I2C3_write()
+
+Sends one data byte to a 7-bit I2C device address over I2C3.
+
+```c
+int I2C3_write(uint8_t devAddr, uint8_t data){
+	return I2C_write_byte(I2C3, devAddr, data);
+}
+```
+
+**Parameters**
+
+* **devAddr**: 7-bit I2C slave address (unshifted, without the read/write bit).
+* **data**: One byte to transmit.
+
+**Returns**
+
+`0` on success; `-1` on timeout/NACK/error.
+
+**Example Code**
+
+```c
+I2C3_init();
+int status = I2C3_write(LM75_ADDR, LM75_REG_TEMP);
+```
+
+
+#### I2C1_read()
+
+Receives the requested number of bytes from an I2C device using I2C1.
+
+```c
+int I2C1_read(uint8_t devAddr, uint8_t *buf, uint32_t len){
+	return I2C_read_buf(I2C1, devAddr, buf, len);
+}
+```
+
+**Parameters**
+
+* **devAddr**: 7-bit I2C slave address (unshifted, without the read/write bit).
+* **buf**: Pointer to the destination buffer for received bytes.
+* **len**: Number of bytes to read (0 is accepted).
+
+**Returns**
+
+`0` on success; `-1` on timeout/NACK/error.
+
+**Note**
+
+To read a particular register, write its register address first, then call the read function.
+
+**Example Code**
+
+```c
+uint8_t buf[2];
+I2C1_init();
+I2C1_write(LM75_ADDR, LM75_REG_TEMP);
+int status = I2C1_read(LM75_ADDR, buf, 2);
+```
+
+
+#### I2C2_read()
+
+Receives the requested number of bytes from an I2C device using I2C2.
+
+```c
+int I2C2_read(uint8_t devAddr, uint8_t *buf, uint32_t len){
+	return I2C_read_buf(I2C2, devAddr, buf, len);
+}
+```
+
+**Parameters**
+
+* **devAddr**: 7-bit I2C slave address (unshifted, without the read/write bit).
+* **buf**: Pointer to the destination buffer for received bytes.
+* **len**: Number of bytes to read (0 is accepted).
+
+**Returns**
+
+`0` on success; `-1` on timeout/NACK/error.
+
+**Note**
+
+To read a particular register, write its register address first, then call the read function.
+
+**Example Code**
+
+```c
+uint8_t buf[2];
+I2C2_init();
+I2C2_write(LM75_ADDR, LM75_REG_TEMP);
+int status = I2C2_read(LM75_ADDR, buf, 2);
+```
+
+
+#### I2C3_read()
+
+Receives the requested number of bytes from an I2C device using I2C3.
+
+```c
+int I2C3_read(uint8_t devAddr, uint8_t *buf, uint32_t len){
+	return I2C_read_buf(I2C3, devAddr, buf, len);
+}
+```
+
+**Parameters**
+
+* **devAddr**: 7-bit I2C slave address (unshifted, without the read/write bit).
+* **buf**: Pointer to the destination buffer for received bytes.
+* **len**: Number of bytes to read (0 is accepted).
+
+**Returns**
+
+`0` on success; `-1` on timeout/NACK/error.
+
+**Note**
+
+To read a particular register, write its register address first, then call the read function.
+
+**Example Code**
+
+```c
+uint8_t buf[2];
+I2C3_init();
+I2C3_write(LM75_ADDR, LM75_REG_TEMP);
+int status = I2C3_read(LM75_ADDR, buf, 2);
+```
+
+
+#### LCD_init()
+
+Sends the LCD startup command sequence to initialize a character LCD in 4-bit, two-line mode using I2C1.
+
+```c
+void LCD_init(void){
+    delay_ms(50);
+    LCD_command(0x33);  // Function set: Initialize LCD in 8-bit mode first (to reset LCD)
+    LCD_command(0x32);  // Function set: Switch to 4-bit mode
+    LCD_command(0x28);  // Function set: 4-bit, 2-line, 5x8 dots
+    LCD_command(0x0C);  // Display ON, Cursor OFF, Blink OFF
+    LCD_command(0x06);  // Entry mode set: Increment cursor, no display shift
+    LCD_command(0x01);  // Clear display and return home
+    delay_ms(2);
+}
+```
+
+**Parameters**
+
+None
+
+**Note**
+
+Initialize the system clock and SysTick before `LCD_init()` because it uses `delay_ms()`. This LCD implementation uses I2C1 and `LCD_ADDR` (0x27).
+
+**Example Code**
+
+```c
+I2C1_init();
+LCD_init();
+```
+
+
+#### LCD_command()
+
+Sends an LCD controller command through the I2C1 LCD interface.
+
+```c
+void LCD_command(uint8_t cmd){ LCD_send(cmd, LCD_CMD); }
+```
+
+**Parameters**
+
+* **cmd**: LCD controller command byte.
+
+**Example Code**
+
+```c
+LCD_command(0x01); // Clear display
+```
+
+
+#### LCD_data()
+
+Sends one character byte to the LCD controller.
+
+```c
+void LCD_data(uint8_t data){ LCD_send(data, LCD_DATA); }
+```
+
+**Parameters**
+
+* **data**: One byte to transmit.
+
+**Example Code**
+
+```c
+LCD_data('A');
+```
+
+
+#### LCD_print()
+
+Prints a null-terminated string to the LCD, one character at a time.
+
+```c
+void LCD_print(char *str){
+    while(*str){ LCD_data(*str++); }
+}
+```
+
+**Parameters**
+
+* **str**: Null-terminated string to display.
+
+**Example Code**
+
+```c
+LCD_print("Hello STM32");
+```
+
+
+#### LCD_setCursor()
+
+Moves the LCD cursor to the selected column and row using a 20x4 row offset table.
+
+```c
+void LCD_setCursor(uint8_t col, uint8_t row){
+    uint8_t addr[] = {0x00, 0x40, 0x14, 0x54}; // 20x4
+    LCD_command(0x80 | (addr[row] + col));
+}
+```
+
+**Parameters**
+
+* **col**: Zero-based LCD column index.
+* **row**: Zero-based LCD row index (0–3 for the 20x4 row address table).
+
+**Note**
+
+The implementation uses a 20x4 row address table and does not bounds-check the row or column.
+
+**Example Code**
+
+```c
+LCD_setCursor(0, 1);
+LCD_print("Temperature");
+```
+
+
+***
+
+### ecDHT11
+
+DHT11 temperature and humidity sensor driver with timing and checksum validation.
+
+#### Header File
+
+`#include "ecDHT11.h"`
+
+```c
+#define DHT11_OK			 0
+#define DHT11_ERR_TOOSOON	-1		// called again before DHT11_MIN_PERIOD_MS
+#define DHT11_ERR_NO_REPLY	-2		// the sensor never answered the start pulse
+#define DHT11_ERR_TIMEOUT	-3		// a bit edge did not arrive in time
+#define DHT11_ERR_CHECKSUM	-4		// 40 bits arrived but the checksum is wrong
+#define DHT11_MIN_PERIOD_MS	2000	// datasheet minimum between two reads
+
+void DHT11_init(PinName_t pinName);
+int  DHT11_read(void);
+int  DHT11_temperature(void);
+int  DHT11_humidity(void);
+```
+
+
+#### DHT11_init()
+
+Stores the DHT11 data pin, configures it as a pulled-up input, and resets the driver read-history flag.
+
+```c
+void DHT11_init(PinName_t pinName){
+	_pin = pinName;
+
+	GPIO_init(_pin, INPUT);
+	GPIO_pupd(_pin, PULL_UP);				// idle high between transactions
+
+	_everRead = 0;
+}
+```
+
+**Parameters**
+
+* **pinName**: GPIO pin connected to the DHT11 data line (e.g., PA_6).
+
+**Note**
+
+Initialize SysTick before reading the sensor. The data line needs a pull-up resistor (typically on the DHT11 breakout board).
+
+**Example Code**
+
+```c
+DHT11_init(PA_6); // D12
+```
+
+
+#### DHT11_read()
+
+Reads a 40-bit DHT11 frame, checks the minimum sample interval and checksum, and updates saved measurements on success.
+
+```c
+int DHT11_read(void){
+	uint8_t  data[5] = {0, 0, 0, 0, 0};
+	uint32_t primask;
+	int      err = DHT11_OK;
+
+	// The sensor needs 2 s between conversions. Asking sooner returns stale or
+	// corrupt data, so say so rather than hand back a bad reading.
+	if(_everRead && (msTicks - _lastRead) < DHT11_MIN_PERIOD_MS)
+		return DHT11_ERR_TOOSOON;
+
+// 1. Start pulse : hold the line low for at least 18 ms. This is a minimum,
+//    so interrupts stay enabled and delay_ms() may be used.
+	GPIO_init(_pin, OUTPUT);
+	GPIO_otype(_pin, PUSH_PULL);
+	GPIO_write(_pin, LOW);
+	delay_ms(DHT11_START_MS);
+
+// 2. Release the line. Everything from here is timed in microseconds, so the
+//    interrupts go off. PRIMASK is saved and restored instead of enabling
+//    blindly, in case the caller had already disabled them.
+	primask = __get_PRIMASK();
+	__disable_irq();
+
+	GPIO_init(_pin, INPUT);
+	GPIO_pupd(_pin, PULL_UP);
+
+	// The sensor answers with 80 us low, then 80 us high, then the first bit
+	if(wait_level(LOW,  DHT11_EDGE_US) ||
+	   wait_level(HIGH, DHT11_EDGE_US) ||
+	   wait_level(LOW,  DHT11_EDGE_US))
+		err = DHT11_ERR_NO_REPLY;
+
+// 3. 40 bits, MSB first. Every bit opens with 50 us low; the high that follows
+//    is short for a 0 and long for a 1, so one sample taken 40 us after the
+//    rising edge separates them without measuring any width.
+	if(!err){
+		for(uint32_t i = 0; i < 40; i++){
+			if(wait_level(HIGH, DHT11_EDGE_US)){		// the 50 us low ends
+				err = DHT11_ERR_TIMEOUT;
+				break;
+			}
+
+			wait_us(DHT11_SAMPLE_US);
+			data[i / 8] <<= 1;
+			if(GPIO_read(_pin) == HIGH)	data[i / 8] |= 0x01;
+
+			if(wait_level(LOW, DHT11_EDGE_US)){			// the bit ends
+				err = DHT11_ERR_TIMEOUT;
+				break;
+			}
+		}
+	}
+
+	__set_PRIMASK(primask);
+	_lastRead = msTicks;
+	_everRead = 1;
+
+	if(err)	return err;
+
+// 4. Checksum : the low byte of the sum of the first four
+	if((uint8_t)(data[0] + data[1] + data[2] + data[3]) != data[4])
+		return DHT11_ERR_CHECKSUM;
+
+	_humidity    = data[0];				// data[1] is always 0 on a DHT11
+	_temperature = data[2];				// data[3] is always 0 on a DHT11
+	return DHT11_OK;
+}
+```
+
+**Parameters**
+
+None
+
+**Returns**
+
+`DHT11_OK` (0), `DHT11_ERR_TOOSOON` (-1), `DHT11_ERR_NO_REPLY` (-2), `DHT11_ERR_TIMEOUT` (-3), or `DHT11_ERR_CHECKSUM` (-4).
+
+**Note**
+
+Keep at least `DHT11_MIN_PERIOD_MS` (2000 ms) between attempts after the first read. Data values remain unchanged after a failed read. The driver briefly disables interrupts during bit sampling.
+
+**Example Code**
+
+```c
+DHT11_init(PA_6);
+int status = DHT11_read();
+if (status == DHT11_OK) {
+    int temp = DHT11_temperature();
+    int humi = DHT11_humidity();
+}
+```
+
+
+#### DHT11_temperature()
+
+Returns the temperature in degrees Celsius from the most recent successful DHT11 read.
+
+```c
+int DHT11_temperature(void){	return _temperature;	}
+```
+
+**Parameters**
+
+None
+
+**Returns**
+
+Temperature in °C from the last successful read.
+
+**Note**
+
+Only meaningful after `DHT11_read()` returns `DHT11_OK`.
+
+**Example Code**
+
+```c
+int temperatureC = DHT11_temperature();
+```
+
+
+#### DHT11_humidity()
+
+Returns the relative humidity percentage from the most recent successful DHT11 read.
+
+```c
+int DHT11_humidity(void){		return _humidity;		}
+```
+
+**Parameters**
+
+None
+
+**Returns**
+
+Relative humidity in %RH from the last successful read.
+
+**Note**
+
+Only meaningful after `DHT11_read()` returns `DHT11_OK`.
+
+**Example Code**
+
+```c
+int humidityRH = DHT11_humidity();
+```
+
+
+***
+
+### ecSTM32F4v2
+
+Umbrella header for the course drivers, board pin definitions, and optional MCU initialization.
+
+#### Header File
+
+`#include "ecSTM32F4v2.h"`
+
+```c
+#include "stm32f4xx.h"
+#include "stm32f411xe.h"
+#include "math.h"
+#include "ecPinNames.h"
+#include "ecRCC2.h"
+#include "ecGPIO2.h"
+#include "ecEXTI2.h"
+#include "ecSysTick2.h"
+#include "ecTIM2.h"
+#include "ecPWM2.h"
+#include "ecStepper2.h"
+#include "ecADC2.h"
+#include "ecUART2.h"
+#include "ecICAP2.h"
+#include "ecI2C2.h"
+#include "ecDHT11.h"
+#define LED0_PIN        PB_12 		//EVAL board JKIT LED0
+#define LED7_PIN        PC_3 		//EVAL board JKIT LED7
+#define SW1_PIN         PD_2        //EVAL board JKIT SW1
+#define SW2_PIN         PA_4	    //EVAL board JKIT SW2
+#define LD2             PA_5        //NUCLEO board LED2
+#define BUTTON_PIN      PC_13       //NUCLEO board BUTTON1
+#define DELAY_UNIT		US			// microsec
+#define MOTOR_RPM		10			// 1rpm
+void MCU_init(void);
+```
+
+
+#### MCU_init()
+
+Performs the default board/course initialization: 84 MHz PLL, SysTick, LEDs, switches and EXTI, stepper, and USART1/2.
+
+```c
+void MCU_init(void){
+	RCC_PLL_init();                 // System Clock = 84MHz
+	SysTick_init();                 // SysTick Timer Initialization. SysTick: programming manual (STK)
+	// Initialize GPIOB_12 for Output
+	GPIO_init(LED0_PIN, OUTPUT);    // LED0 for EVAL board	
+	GPIO_init(LED7_PIN, OUTPUT);    // LED7 for EVAL board
+		
+	// Initialize GPIOA_4 for Input Button
+	GPIO_init(SW2_PIN, INPUT);  // INPUT for EVAL board
+	GPIO_pupd(SW2_PIN, PULL_UP);  // PULL-UP for EVAL board
+
+    // Initialize GPIOD_2 for Input Button
+	GPIO_init(SW1_PIN, INPUT);  // INPUT for EVAL board
+	GPIO_pupd(SW1_PIN, PULL_UP);  // PULL-UP for EVAL board
+
+    // Initialize GPIOA_5 for Output Button and clear
+    GPIO_init(LD2, OUTPUT);
+	GPIO_write(LD2, LOW);
+
+    // FND_init(pinFND);
+    // FND_select_init(selectFND);
+
+    // // Initialize 7-segment pins
+    // for(int i=0; i<8; i++){
+    //     GPIO_init_all(pinFND[i], OUTPUT, MEDIUM_SPEED, PUSH_PULL, NO_PUPD);
+    // }
+
+    // // Initialize GPIOA_10 for Output Button
+	// GPIO_init(selectFND[0], OUTPUT);  // INPUT for EVAL board
+	// GPIO_otype(selectFND[0], PUSH_PULL);  // PULL-UP for EVAL board
+		
+	// Initialize EXTI PA_4
+	EXTI_init(SW2_PIN, FALL, 10);	
+    // Initialize EXTI PD_2
+    EXTI_init(SW1_PIN, FALL, 5);	
+
+    // Initialize Stepper Motor
+    GPIO_init(BUTTON_PIN, INPUT);           		// GPIOC pin13 initialization
+    EXTI_init(BUTTON_PIN, FALL,0);           		// External Interrupt Setting
+
+	stepper_init(STEPPER_MODE, pinStepper); 		// Stepper GPIO pin initialization
+	stepper_speed(MOTOR_RPM, DELAY_UNIT);           //  set stepper motor speed (rpm)    
+
+    // Initialize USART1,2
+    // No Parity / 8-bit word length / Oversampling x16 / Stop bit =1
+    // USART2: USB serial init
+    USART_init(USART2, PA_2, PA_3, 9600);
+    //USART2_baud(BAUD_38400);
+    // USART1: MCU2 serial init
+    USART_init(USART1, PA_9, PA_10, 9600);
+    //USART1_baud(BAUD_38400);
+        
+
+    
+    // TIMx Default Initialization
+    // ...
+    // PWM Default Initialization
+    // ...  
+    // Others
+}
+```
+
+**Parameters**
+
+None
+
+**Note**
+
+This header defines both `MCU_init()` and a global `pinStepper` array. Include it in only one compilation unit if using this definition as-is, and avoid its default pin initialization when those pins are needed by other hardware.
+
+**Example Code**
+
+```c
+MCU_init(); // Call once at startup if these default peripherals and pins are intended.
+```
+
+
